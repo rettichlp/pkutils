@@ -1,6 +1,6 @@
 package de.rettichlp;
 
-import de.rettichlp.common.manager.MessageManager;
+import de.rettichlp.common.manager.WantedManager;
 import de.rettichlp.common.storage.Storage;
 import net.fabricmc.api.ClientModInitializer;
 
@@ -14,8 +14,12 @@ public class PKUtilsClient implements ClientModInitializer {
     public void onInitializeClient() {
         // This entrypoint is suitable for setting up client-specific logic, such as rendering.
 
-        MessageManager messageManager = new MessageManager();
+        WantedManager wantedManager = new WantedManager();
 
-        GAME.register((message, overlay) -> messageManager.process(message));
+        GAME.register((message, overlay) -> {
+            String rawMessage = message.getString();
+
+            wantedManager.onMessage(rawMessage);
+        });
     }
 }

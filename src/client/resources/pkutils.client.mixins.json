@@ -3,7 +3,7 @@
     "package": "de.rettichlp.mixin.client",
     "compatibilityLevel": "JAVA_21",
     "client": [
-        "ExampleClientMixin"
+        "NametagColorMixin"
     ],
     "injectors": {
         "defaultRequire": 1
