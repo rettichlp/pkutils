@@ -1,5 +1,6 @@
 package de.rettichlp;
 
+import de.rettichlp.common.manager.JobTransportManager;
 import de.rettichlp.common.manager.WantedManager;
 import de.rettichlp.common.storage.Storage;
 import net.fabricmc.api.ClientModInitializer;
@@ -14,11 +15,13 @@ public class PKUtilsClient implements ClientModInitializer {
     public void onInitializeClient() {
         // This entrypoint is suitable for setting up client-specific logic, such as rendering.
 
+        JobTransportManager jobTransportManager = new JobTransportManager();
         WantedManager wantedManager = new WantedManager();
 
         GAME.register((message, overlay) -> {
             String rawMessage = message.getString();
 
+            jobTransportManager.onMessage(rawMessage);
             wantedManager.onMessage(rawMessage);
         });
     }
