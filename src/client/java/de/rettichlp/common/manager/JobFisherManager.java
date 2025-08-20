@@ -29,18 +29,19 @@ public class JobFisherManager implements MessageListener {
     private static final Pattern FISHER_CATCH_SUCCESS = compile("^\\[Fischer] Du hast \\d+kg frischen Fisch gefangen! \\(\\d+kg\\)$");
     private static final Pattern FISHER_CATCH_FAILURE = compile("^\\[Fischer] Du hast das Fischernetz verloren\\.\\.\\.$");
 
-    private final ClientPlayNetworkHandler networkHandler;
+    private ClientPlayNetworkHandler networkHandler;
 
     private Collection<FisherJobSpot> currentFisherJobSpots = new ArrayList<>();
 
     public JobFisherManager() {
-        this.networkHandler = ofNullable(MinecraftClient.getInstance().player)
-                .map(clientPlayerEntity -> clientPlayerEntity.networkHandler)
-                .orElseThrow();
     }
 
     @Override
     public void onMessage(String message) {
+        this.networkHandler = ofNullable(MinecraftClient.getInstance().player)
+                .map(clientPlayerEntity -> clientPlayerEntity.networkHandler)
+                .orElseThrow();
+
         Matcher fisherStartMatcher = FISHER_START.matcher(message);
         if (fisherStartMatcher.find()) {
             this.currentFisherJobSpots = new ArrayList<>();
