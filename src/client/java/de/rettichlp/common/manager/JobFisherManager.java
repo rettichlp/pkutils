@@ -94,11 +94,11 @@ public class JobFisherManager extends BaseManager implements MessageListener {
     @AllArgsConstructor
     private enum FisherJobSpot {
 
-        SPOT_1(new BlockPos(-570, 63, 160)),
-        SPOT_2(new BlockPos(-555, 63, 106)),
-        SPOT_3(new BlockPos(-521, 63, 78)),
-        SPOT_4(new BlockPos(-569, 63, 50)),
-        SPOT_5(new BlockPos(-522, 63, 10));
+        SPOT_1(new BlockPos(-568, 63, 158)),
+        SPOT_2(new BlockPos(-547, 63, 104)),
+        SPOT_3(new BlockPos(-562, 63, 50)),
+        SPOT_4(new BlockPos(-506, 63, 18)),
+        SPOT_5(new BlockPos(-452, 63, 26));
 
         private final BlockPos position;
 
