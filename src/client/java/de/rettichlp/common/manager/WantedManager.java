@@ -9,9 +9,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static de.rettichlp.PKUtilsClient.networkHandler;
+import static de.rettichlp.PKUtilsClient.player;
 import static de.rettichlp.PKUtilsClient.storage;
+import static de.rettichlp.common.storage.schema.Faction.POLIZEI;
 import static java.lang.Integer.parseInt;
 import static java.lang.System.currentTimeMillis;
+import static java.util.Objects.nonNull;
 import static java.util.regex.Pattern.compile;
 
 @NoArgsConstructor
@@ -24,7 +27,10 @@ public class WantedManager extends BaseManager implements JoinListener, MessageL
 
     @Override
     public void onJoin() {
-        delayedAction(() -> networkHandler.sendChatCommand("wanteds"), 15000);
+        storage.getFactionMembers(POLIZEI).stream()
+                .filter(factionMember -> nonNull(player.getDisplayName()) && factionMember.getPlayerName().equals(player.getDisplayName().getString()))
+                .findAny()
+                .ifPresent(fm -> delayedAction(() -> networkHandler.sendChatCommand("wanteds"), 15000));
     }
 
     @Override
