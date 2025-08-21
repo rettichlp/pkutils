@@ -3,9 +3,7 @@ package de.rettichlp.common.manager;
 import de.rettichlp.common.listener.MessageListener;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.network.ClientPlayerEntity;
+import lombok.NoArgsConstructor;
 import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
@@ -17,11 +15,13 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static de.rettichlp.PKUtilsClient.networkHandler;
+import static de.rettichlp.PKUtilsClient.player;
 import static java.lang.Double.compare;
 import static java.util.Arrays.stream;
-import static java.util.Optional.ofNullable;
 import static java.util.regex.Pattern.compile;
 
+@NoArgsConstructor
 public class JobFisherManager implements MessageListener {
 
     private static final Pattern FISHER_START = compile("^\\[Fischer] Mit /findschwarm kannst du dir den nächsten Fischschwarm anzeigen lassen\\.$");
@@ -29,30 +29,21 @@ public class JobFisherManager implements MessageListener {
     private static final Pattern FISHER_CATCH_SUCCESS = compile("^\\[Fischer] Du hast \\d+kg frischen Fisch gefangen! \\(\\d+kg\\)$");
     private static final Pattern FISHER_CATCH_FAILURE = compile("^\\[Fischer] Du hast das Fischernetz verloren\\.\\.\\.$");
 
-    private ClientPlayNetworkHandler networkHandler;
-
     private Collection<FisherJobSpot> currentFisherJobSpots = new ArrayList<>();
-
-    public JobFisherManager() {
-    }
 
     @Override
     public void onMessage(String message) {
-        this.networkHandler = ofNullable(MinecraftClient.getInstance().player)
-                .map(clientPlayerEntity -> clientPlayerEntity.networkHandler)
-                .orElseThrow();
-
         Matcher fisherStartMatcher = FISHER_START.matcher(message);
         if (fisherStartMatcher.find()) {
             this.currentFisherJobSpots = new ArrayList<>();
             String naviCommand = FisherJobSpot.SPOT_1.getNaviCommand();
-            this.networkHandler.sendChatCommand(naviCommand);
+            networkHandler.sendChatCommand(naviCommand);
             return;
         }
 
         Matcher fisherSpotFoundMatcher = FISHER_SPOT_FOUND_PATTERN.matcher(message);
         if (fisherSpotFoundMatcher.find()) {
-            this.networkHandler.sendChatCommand("catchfish");
+            networkHandler.sendChatCommand("catchfish");
             FisherJobSpot nearestFisherJobSpot = getNearestFisherJobSpot(getNotVisitedFisherJobSpots()).orElseThrow();
             this.currentFisherJobSpots.add(nearestFisherJobSpot);
             return;
@@ -66,10 +57,10 @@ public class JobFisherManager implements MessageListener {
 
             nearestFisherJobSpot.ifPresentOrElse(fisherJobSpot -> {
                 String naviCommand = fisherJobSpot.getNaviCommand();
-                this.networkHandler.sendChatCommand(naviCommand);
+                networkHandler.sendChatCommand(naviCommand);
             }, () -> {
                 // all spots visited, go to harbor
-                this.networkHandler.sendChatCommand("navi -504 63 197");
+                networkHandler.sendChatCommand("navi -504 63 197");
             });
 
             return;
@@ -77,14 +68,13 @@ public class JobFisherManager implements MessageListener {
 
         if (message.equals("Du hast dein Ziel erreicht!") && this.currentFisherJobSpots.size() == 5) {
             this.currentFisherJobSpots = new ArrayList<>();
-            this.networkHandler.sendChatCommand("dropfish");
+            networkHandler.sendChatCommand("dropfish");
         }
     }
 
     private @NotNull Optional<FisherJobSpot> getNearestFisherJobSpot(@NotNull Collection<FisherJobSpot> fisherJobSpots) {
         return fisherJobSpots.stream()
                 .min((spot1, spot2) -> {
-                    ClientPlayerEntity player = ofNullable(MinecraftClient.getInstance().player).orElseThrow();
                     double distance1 = player.squaredDistanceTo(spot1.getPosition().getX(), spot1.getPosition().getY(), spot1.getPosition().getZ());
                     double distance2 = player.squaredDistanceTo(spot2.getPosition().getX(), spot2.getPosition().getY(), spot2.getPosition().getZ());
                     return compare(distance1, distance2);
