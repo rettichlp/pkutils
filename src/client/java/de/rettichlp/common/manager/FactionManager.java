@@ -50,7 +50,7 @@ public class FactionManager extends BaseManager implements JoinListener, Message
                     .orElseThrow(() -> new IllegalStateException("Could not find faction with name: " + factionName));
 
             storage.resetFactionMembers(this.factionMemberRetrievalFaction);
-            delayedAction(() -> this.showMessage = true, 500);
+            delayedAction(() -> this.showMessage = true, Faction.values().length * 1000L + 1000);
             return this.showMessage;
         }
 
