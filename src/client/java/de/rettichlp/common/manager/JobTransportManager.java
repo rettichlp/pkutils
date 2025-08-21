@@ -15,7 +15,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.regex.Pattern.compile;
 
 @NoArgsConstructor
-public class JobTransportManager implements MessageListener {
+public class JobTransportManager extends BaseManager implements MessageListener {
 
     private static final Pattern TRANSPORT_DELIVER_PATTERN = compile("^\\[Transport] Du hast eine Kiste abgeliefert\\.$");
     private static final Pattern DRINK_TRANSPORT_DELIVER_PATTERN = compile("^\\[Bar] Du hast eine Flasche abgegeben!$");
@@ -38,14 +38,5 @@ public class JobTransportManager implements MessageListener {
         if (drinTransportDeliverMatcher.find()) {
             delayedAction(() -> this.networkHandler.sendChatCommand("dropdrink"), 2500);
         }
-    }
-
-    private void delayedAction(Runnable runnable, long milliseconds) {
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                runnable.run();
-            }
-        }, milliseconds);
     }
 }

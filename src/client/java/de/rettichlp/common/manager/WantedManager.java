@@ -16,7 +16,7 @@ import static java.util.Optional.ofNullable;
 import static java.util.regex.Pattern.compile;
 
 @NoArgsConstructor
-public class WantedManager implements MessageListener {
+public class WantedManager extends BaseManager implements MessageListener {
 
     private final static Pattern WELCOME_BACK_PATTERN = compile("Willkommen zurück!");
     private final static Pattern ONLINE_WANTED_PLAYERS_HEADER_PATTERN = compile("Online Spieler mit WantedPunkten:");
