@@ -1,5 +1,6 @@
 package de.rettichlp;
 
+import de.rettichlp.commands.RichTaxesCommand;
 import de.rettichlp.common.command.SyncCommand;
 import de.rettichlp.common.manager.JobFisherManager;
 import de.rettichlp.common.manager.JobTransportManager;
@@ -53,9 +54,11 @@ public class PKUtilsClient implements ClientModInitializer {
             return showMessage1 && showMessage2 && showMessage3;
         });
 
+        RichTaxesCommand richTaxesCommand = new RichTaxesCommand();
         SyncCommand syncCommand = new SyncCommand();
 
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
+            richTaxesCommand.register(dispatcher);
             syncCommand.register(dispatcher);
         });
     }
