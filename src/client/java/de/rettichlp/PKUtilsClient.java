@@ -1,10 +1,12 @@
 package de.rettichlp;
 
+import de.rettichlp.commands.RichTaxesCommand;
 import de.rettichlp.common.manager.JobFisherManager;
 import de.rettichlp.common.manager.JobTransportManager;
 import de.rettichlp.common.manager.WantedManager;
 import de.rettichlp.common.storage.Storage;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
@@ -30,6 +32,8 @@ public class PKUtilsClient implements ClientModInitializer {
         jobTransportManager = new JobTransportManager();
         wantedManager = new WantedManager();
 
+        RichTaxesCommand richTaxesCommand = new RichTaxesCommand();
+
         ClientPlayConnectionEvents.JOIN.register((handler, sender, minecraftClient) -> {
             assert minecraftClient.player != null; // cannot be null at this point
             player = minecraftClient.player;
@@ -44,6 +48,11 @@ public class PKUtilsClient implements ClientModInitializer {
             jobFisherManager.onMessage(rawMessage);
             jobTransportManager.onMessage(rawMessage);
             wantedManager.onMessage(rawMessage);
+            richTaxesCommand.onMessage(rawMessage);
+        });
+
+        ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
+            richTaxesCommand.register(dispatcher);
         });
     }
 }
