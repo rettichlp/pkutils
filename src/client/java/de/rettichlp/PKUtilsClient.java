@@ -42,18 +42,22 @@ public class PKUtilsClient implements ClientModInitializer {
             wantedManager.onJoin();
         }));
 
-        ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
-            // ignore messages until player is initialized
+        ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> {
+            // ignore messages until the player is initialized
             if (player == null || networkHandler == null) {
-                return;
+                return true;
             }
 
             String rawMessage = message.getString();
 
-            factionManager.onMessage(rawMessage);
-            jobFisherManager.onMessage(rawMessage);
-            jobTransportManager.onMessage(rawMessage);
-            wantedManager.onMessage(rawMessage);
+            boolean showMessage1 = factionManager.onMessage(rawMessage);
+            boolean showMessage2 = jobFisherManager.onMessage(rawMessage);
+            boolean showMessage3 = jobTransportManager.onMessage(rawMessage);
+            boolean showMessage4 = wantedManager.onMessage(rawMessage);
+
+            storage.print();
+
+            return showMessage1 && showMessage2 && showMessage3 && showMessage4;
         });
     }
 }

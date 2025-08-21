@@ -25,6 +25,7 @@ public class WantedManager extends BaseManager implements JoinListener, MessageL
     private final static Pattern ONLINE_WANTED_PLAYERS_ENTRY_PATTERN = compile("- (?<playerName>[A-Za-z0-9_]+) \\| (?<wantedPointAmount>\\d+) \\| (?<reason>.+)(?<afk> \\| AFK|)");
 
     private long activeWantedCheck = 0;
+    private boolean showMessage = true;
 
     @Override
     public void onJoin() {
@@ -32,17 +33,19 @@ public class WantedManager extends BaseManager implements JoinListener, MessageL
             Faction faction = storage.getFaction(requireNonNull(player.getDisplayName()).getString());
             if (faction == POLIZEI) {
                 networkHandler.sendChatCommand("wanteds");
+                this.showMessage = false;
             }
         }, 15000);
     }
 
     @Override
-    public void onMessage(String message) {
+    public boolean onMessage(String message) {
         Matcher onlineWantedPlayersHeaderMatcher = ONLINE_WANTED_PLAYERS_HEADER_PATTERN.matcher(message);
         if (onlineWantedPlayersHeaderMatcher.find()) {
             this.activeWantedCheck = currentTimeMillis();
             storage.resetWantedEntries();
-            return;
+            delayedAction(() -> this.showMessage = true, 500);
+            return this.showMessage;
         }
 
         Matcher onlineWantedPlayersEntryMatcher = ONLINE_WANTED_PLAYERS_ENTRY_PATTERN.matcher(message);
@@ -53,6 +56,9 @@ public class WantedManager extends BaseManager implements JoinListener, MessageL
 
             WantedEntry wantedEntry = new WantedEntry(playerName, wantedPointAmount, reason);
             storage.addWantedEntry(wantedEntry);
+            return this.showMessage;
         }
+
+        return true;
     }
 }

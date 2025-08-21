@@ -26,9 +26,11 @@ public class FactionManager extends BaseManager implements JoinListener, Message
 
     private Faction factionMemberRetrievalFaction;
     private long factionMemberRetrievalTimestamp;
+    private boolean showMessage = true;
 
     @Override
     public void onJoin() {
+        this.showMessage = false;
         for (Faction faction : Faction.values()) {
             if (faction == NULL) {
                 continue;
@@ -39,7 +41,7 @@ public class FactionManager extends BaseManager implements JoinListener, Message
     }
 
     @Override
-    public void onMessage(String message) {
+    public boolean onMessage(String message) {
         Matcher factionMemberAllHeaderMatcher = FACTION_MEMBER_ALL_HEADER.matcher(message);
         if (factionMemberAllHeaderMatcher.find()) {
             String factionName = factionMemberAllHeaderMatcher.group("factionName");
@@ -48,7 +50,8 @@ public class FactionManager extends BaseManager implements JoinListener, Message
                     .orElseThrow(() -> new IllegalStateException("Could not find faction with name: " + factionName));
 
             storage.resetFactionMembers(this.factionMemberRetrievalFaction);
-            return;
+            delayedAction(() -> this.showMessage = true, Faction.values().length * 1000L + 1000);
+            return this.showMessage;
         }
 
         Matcher factionMemberAllEntryMatcher = FACTION_MEMBER_ALL_ENTRY.matcher(message);
@@ -61,6 +64,10 @@ public class FactionManager extends BaseManager implements JoinListener, Message
                 FactionMember factionMember = new FactionMember(playerName, rank);
                 storage.addFactionMember(this.factionMemberRetrievalFaction, factionMember);
             }
+
+            return this.showMessage;
         }
+
+        return true;
     }
 }

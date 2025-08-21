@@ -2,5 +2,5 @@ package de.rettichlp.common.listener;
 
 public interface MessageListener {
 
-    void onMessage(String message);
+    boolean onMessage(String message);
 }
