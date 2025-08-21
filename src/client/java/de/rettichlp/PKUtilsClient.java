@@ -1,6 +1,5 @@
 package de.rettichlp;
 
-import de.rettichlp.common.manager.FactionManager;
 import de.rettichlp.common.manager.JobFisherManager;
 import de.rettichlp.common.manager.JobTransportManager;
 import de.rettichlp.common.manager.WantedManager;
@@ -19,7 +18,6 @@ public class PKUtilsClient implements ClientModInitializer {
     public static Storage storage = new Storage();
 
     // managers
-    public static FactionManager factionManager;
     public static JobFisherManager jobFisherManager;
     public static JobTransportManager jobTransportManager;
     public static WantedManager wantedManager;
@@ -28,7 +26,6 @@ public class PKUtilsClient implements ClientModInitializer {
     public void onInitializeClient() {
         // This entrypoint is suitable for setting up client-specific logic, such as rendering.
 
-        factionManager = new FactionManager();
         jobFisherManager = new JobFisherManager();
         jobTransportManager = new JobTransportManager();
         wantedManager = new WantedManager();
@@ -38,7 +35,6 @@ public class PKUtilsClient implements ClientModInitializer {
             player = minecraftClient.player;
             networkHandler = minecraftClient.player.networkHandler;
 
-            factionManager.onJoin();
             wantedManager.onJoin();
         });
 
