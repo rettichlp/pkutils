@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static de.rettichlp.PKUtils.LOGGER;
+import static de.rettichlp.common.storage.schema.Faction.NULL;
 
 public class Storage {
 
@@ -38,10 +39,13 @@ public class Storage {
         return this.factionMembers.getOrDefault(faction, new HashSet<>());
     }
 
-    public void resetFactionMembers() {
-        for (Faction faction : Faction.values()) {
-            resetFactionMembers(faction);
-        }
+    public Faction getFaction(String playerName) {
+        return this.factionMembers.entrySet().stream()
+                .filter(entry -> entry.getValue().stream()
+                        .anyMatch(factionMember -> factionMember.getPlayerName().equals(playerName)))
+                .map(Map.Entry::getKey)
+                .findFirst()
+                .orElse(NULL);
     }
 
     public void resetFactionMembers(Faction faction) {
