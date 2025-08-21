@@ -1,0 +1,73 @@
+package de.rettichlp.common.manager;
+
+import de.rettichlp.common.listener.JoinListener;
+import de.rettichlp.common.listener.MessageListener;
+import de.rettichlp.common.storage.schema.Faction;
+import de.rettichlp.common.storage.schema.FactionMember;
+import lombok.NoArgsConstructor;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static de.rettichlp.PKUtilsClient.networkHandler;
+import static de.rettichlp.PKUtilsClient.storage;
+import static de.rettichlp.common.storage.schema.Faction.NULL;
+import static de.rettichlp.common.storage.schema.Faction.fromDisplayName;
+import static java.lang.Integer.parseInt;
+import static java.lang.System.currentTimeMillis;
+import static java.util.Objects.nonNull;
+import static java.util.regex.Pattern.compile;
+
+@NoArgsConstructor
+public class FactionManager extends BaseManager implements JoinListener, MessageListener {
+
+    private static final Pattern FACTION_MEMBER_ALL_HEADER = compile("^={4} Mitglieder von (?<factionName>.+) ={4}$");
+    private static final Pattern FACTION_MEMBER_ALL_ENTRY = compile("^\\s*-\\s*(?<rank>\\d)\\s*\\|\\s*(?<playerNames>.+)$");
+
+    private Faction factionMemberRetrievalFaction;
+    private long factionMemberRetrievalTimestamp;
+    private boolean showMessage = true;
+
+    @Override
+    public void onJoin() {
+        this.showMessage = false;
+        for (Faction faction : Faction.values()) {
+            if (faction == NULL) {
+                continue;
+            }
+
+            delayedAction(() -> networkHandler.sendChatCommand("memberinfoall " + faction.getDisplayName()), 1000 * faction.ordinal() + 1000);
+        }
+    }
+
+    @Override
+    public boolean onMessage(String message) {
+        Matcher factionMemberAllHeaderMatcher = FACTION_MEMBER_ALL_HEADER.matcher(message);
+        if (factionMemberAllHeaderMatcher.find()) {
+            String factionName = factionMemberAllHeaderMatcher.group("factionName");
+            this.factionMemberRetrievalTimestamp = currentTimeMillis();
+            this.factionMemberRetrievalFaction = fromDisplayName(factionName)
+                    .orElseThrow(() -> new IllegalStateException("Could not find faction with name: " + factionName));
+
+            storage.resetFactionMembers(this.factionMemberRetrievalFaction);
+            delayedAction(() -> this.showMessage = true, Faction.values().length * 1000L + 1000);
+            return this.showMessage;
+        }
+
+        Matcher factionMemberAllEntryMatcher = FACTION_MEMBER_ALL_ENTRY.matcher(message);
+        if (factionMemberAllEntryMatcher.find() && (currentTimeMillis() - this.factionMemberRetrievalTimestamp < 500) && nonNull(this.factionMemberRetrievalFaction)) {
+            int rank = parseInt(factionMemberAllEntryMatcher.group("rank"));
+            String[] playerNames = factionMemberAllEntryMatcher.group("playerNames")
+                    .split(", ");
+
+            for (String playerName : playerNames) {
+                FactionMember factionMember = new FactionMember(playerName, rank);
+                storage.addFactionMember(this.factionMemberRetrievalFaction, factionMember);
+            }
+
+            return this.showMessage;
+        }
+
+        return true;
+    }
+}

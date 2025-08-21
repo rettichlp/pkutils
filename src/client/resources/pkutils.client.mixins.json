@@ -1,0 +1,11 @@
+{
+    "required": true,
+    "package": "de.rettichlp.mixin.client",
+    "compatibilityLevel": "JAVA_21",
+    "client": [
+        "NametagColorMixin"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    }
+}
