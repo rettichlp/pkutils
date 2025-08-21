@@ -6,6 +6,7 @@ import lombok.Getter;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
+import lombok.NoArgsConstructor;
 import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
@@ -22,6 +23,7 @@ import static java.util.Arrays.stream;
 import static java.util.Optional.ofNullable;
 import static java.util.regex.Pattern.compile;
 
+@NoArgsConstructor
 public class JobFisherManager implements MessageListener {
 
     private static final Pattern FISHER_START = compile("^\\[Fischer] Mit /findschwarm kannst du dir den nächsten Fischschwarm anzeigen lassen\\.$");
@@ -32,9 +34,6 @@ public class JobFisherManager implements MessageListener {
     private ClientPlayNetworkHandler networkHandler;
 
     private Collection<FisherJobSpot> currentFisherJobSpots = new ArrayList<>();
-
-    public JobFisherManager() {
-    }
 
     @Override
     public void onMessage(String message) {
