@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 import static de.rettichlp.PKUtilsClient.networkHandler;
 import static de.rettichlp.PKUtilsClient.storage;
 import static de.rettichlp.common.storage.schema.Faction.NULL;
-import static de.rettichlp.common.storage.schema.Faction.fromFactionKey;
+import static de.rettichlp.common.storage.schema.Faction.fromDisplayName;
 import static java.lang.Integer.parseInt;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Objects.nonNull;
@@ -34,7 +34,7 @@ public class FactionManager extends BaseManager implements JoinListener, Message
                 continue;
             }
 
-            delayedAction(() -> networkHandler.sendChatCommand("memberinfoall " + faction.getFactionKey()), 1000 * faction.ordinal() + 1000);
+            delayedAction(() -> networkHandler.sendChatCommand("memberinfoall " + faction.getDisplayName()), 1000 * faction.ordinal() + 1000);
         }
     }
 
@@ -44,7 +44,7 @@ public class FactionManager extends BaseManager implements JoinListener, Message
         if (factionMemberAllHeaderMatcher.find()) {
             String factionName = factionMemberAllHeaderMatcher.group("factionName");
             this.factionMemberRetrievalTimestamp = currentTimeMillis();
-            this.factionMemberRetrievalFaction = fromFactionKey(factionName)
+            this.factionMemberRetrievalFaction = fromDisplayName(factionName)
                     .orElseThrow(() -> new IllegalStateException("Could not find faction with name: " + factionName));
 
             storage.resetFactionMembers(this.factionMemberRetrievalFaction);

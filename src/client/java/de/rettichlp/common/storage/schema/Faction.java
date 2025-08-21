@@ -28,41 +28,32 @@ import static net.minecraft.util.Formatting.YELLOW;
 @AllArgsConstructor
 public enum Faction {
 
-    NULL("", "Keine Auswahl", "", false, GRAY, ""),
-    FBI("fbi", "FBI", "F.B.I.", false, DARK_BLUE, "✯"),
-    POLIZEI("polizei", "Polizei", "Polizei", false, BLUE, "✯"),
-    RETTUNGSDIENST("rettungsdienst", "Rettungsdienst", "Rettungsdienst", false, DARK_RED, "✚"),
+    NULL("", "Keine Auswahl", false, GRAY, ""),
+    FBI("fbi", "F.B.I.", false, DARK_BLUE, "✯"),
+    POLIZEI("polizei", "Polizei", false, BLUE, "✯"),
+    RETTUNGSDIENST("rettungsdienst", "Rettungsdienst", false, DARK_RED, "✚"),
 
-    CALDERON("calderon", "Calderón Kartell", "Kartell", true, GOLD, "☀"),
-    KERZAKOV("kerzakov", "Kerzakov Familie", "Kerzakov", true, RED, "✮"),
-    LACOSANOSTRA("lacosanostra", "La Cosa Nostra", "Mafia", true, DARK_AQUA, "⚜"),
-    LEMILIEU("le_milieu", "Le Milieu", "France", true, DARK_AQUA, "Ⓜ"),
-    OBRIEN("obrien", "O'brien Familie", "Obrien", true, DARK_GREEN, "☘"),
-    WESTSIDEBALLAS("westsideballas", "Westside Ballas", "Gang", true, DARK_PURPLE, "☠"),
+    CALDERON("calderon", "Calderón Kartell", true, GOLD, "☀"),
+    KERZAKOV("kerzakov", "Kerzakov Familie", true, RED, "✮"),
+    LACOSANOSTRA("lacosanostra", "La Cosa Nostra", true, DARK_AQUA, "⚜"),
+    LEMILIEU("le_milieu", "Le Milieu", true, DARK_AQUA, "Ⓜ"),
+    // OBRIEN("obrien", "O'brien Familie", true, DARK_GREEN, "☘"),
+    WESTSIDEBALLAS("westsideballas", "Westside Ballas", true, DARK_PURPLE, "☠"),
 
-    HITMAN("hitman", "Hitman", "Hitman", false, AQUA, "➹"),
-    KIRCHE("kirche", "Kirche", "Kirche", false, LIGHT_PURPLE, "†"),
-    NEWS("news", "News Agency", "News", false, YELLOW, "✉"),
-    TERRORISTEN("terroristen", "Terroristen", "Terroristen", false, GRAY, "❇");
+    HITMAN("hitman", "Hitman", false, AQUA, "➹"),
+    KIRCHE("kirche", "Kirche", false, LIGHT_PURPLE, "†"),
+    NEWS("news", "News", false, YELLOW, "✉"),
+    TERRORISTEN("terroristen", "Terroristen", false, GRAY, "❇");
 
     private final String apiName;
     private final String displayName;
-    private final String factionKey;
     private final boolean isBadFaction;
     private final Formatting color;
     private final String icon;
 
     public static @NotNull Optional<Faction> fromDisplayName(String displayName) {
         return stream(Faction.values())
-                .filter(faction -> faction.getDisplayName()
-                        .equalsIgnoreCase(displayName))
-                .findFirst();
-    }
-
-    public static @NotNull Optional<Faction> fromFactionKey(String factionKey) {
-        return stream(Faction.values())
-                .filter(faction -> faction.getFactionKey()
-                        .equalsIgnoreCase(factionKey))
+                .filter(faction -> displayName.contains(faction.getDisplayName()))
                 .findFirst();
     }
 
