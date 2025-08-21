@@ -23,6 +23,9 @@ public class Storage {
     private final List<WantedEntry> wantedEntries = new ArrayList<>();
 
     public void print() {
+        // factionMembers
+        this.factionMembers.forEach((faction, factionMembers) -> LOGGER.info("factionMembers[{}:{}]: {}", faction, factionMembers.size(), this.factionMembers));
+        // wantedEntries
         LOGGER.info("wantedEntries[{}]: {}", this.wantedEntries.size(), this.wantedEntries);
     }
 
