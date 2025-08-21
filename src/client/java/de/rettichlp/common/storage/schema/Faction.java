@@ -29,7 +29,7 @@ import static net.minecraft.util.Formatting.YELLOW;
 public enum Faction {
 
     NULL("", "Keine Auswahl", "", false, GRAY, ""),
-    FBI("fbi", "FBI", "FBI", false, DARK_BLUE, "✯"),
+    FBI("fbi", "FBI", "F.B.I.", false, DARK_BLUE, "✯"),
     POLIZEI("polizei", "Polizei", "Polizei", false, BLUE, "✯"),
     RETTUNGSDIENST("rettungsdienst", "Rettungsdienst", "Rettungsdienst", false, DARK_RED, "✚"),
 
