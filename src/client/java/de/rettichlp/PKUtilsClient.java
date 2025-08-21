@@ -7,8 +7,13 @@ import de.rettichlp.common.storage.Storage;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.client.network.ClientPlayerEntity;
 
 public class PKUtilsClient implements ClientModInitializer {
+
+    public static ClientPlayerEntity player;
+    public static ClientPlayNetworkHandler networkHandler;
 
     public static Storage storage = new Storage();
 
