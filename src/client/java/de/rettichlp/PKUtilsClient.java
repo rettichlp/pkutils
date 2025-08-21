@@ -33,18 +33,24 @@ public class PKUtilsClient implements ClientModInitializer {
         jobTransportManager = new JobTransportManager();
         wantedManager = new WantedManager();
 
-        ClientPlayConnectionEvents.JOIN.register((handler, sender, minecraftClient) -> {
+        ClientPlayConnectionEvents.JOIN.register((handler, sender, minecraftClient) -> minecraftClient.execute(() -> {
             assert minecraftClient.player != null; // cannot be null at this point
             player = minecraftClient.player;
             networkHandler = minecraftClient.player.networkHandler;
 
             factionManager.onJoin();
             wantedManager.onJoin();
-        });
+        }));
 
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
+            // ignore messages until player is initialized
+            if (player == null || networkHandler == null) {
+                return;
+            }
+
             String rawMessage = message.getString();
 
+            factionManager.onMessage(rawMessage);
             jobFisherManager.onMessage(rawMessage);
             jobTransportManager.onMessage(rawMessage);
             wantedManager.onMessage(rawMessage);
