@@ -59,13 +59,13 @@ public enum Faction {
 
     public Text getNameTagSuffix() {
         return this == NULL ? empty() : empty()
-                .append(Text.of("◤")
+                .append(Text.of("⌜")
                         .copy()
                         .formatted(DARK_GRAY))
                 .append(Text.of(this.icon)
                         .copy()
                         .formatted(this.color))
-                .append(Text.of("◢")
+                .append(Text.of("⌟")
                         .copy()
                         .formatted(DARK_GRAY));
     }
