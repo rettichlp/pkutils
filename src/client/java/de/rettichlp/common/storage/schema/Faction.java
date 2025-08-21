@@ -24,9 +24,6 @@ import static net.minecraft.util.Formatting.LIGHT_PURPLE;
 import static net.minecraft.util.Formatting.RED;
 import static net.minecraft.util.Formatting.YELLOW;
 
-/**
- * @author RettichLP
- */
 @Getter
 @AllArgsConstructor
 public enum Faction {
