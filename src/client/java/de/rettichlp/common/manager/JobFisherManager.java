@@ -22,7 +22,7 @@ import static java.util.Arrays.stream;
 import static java.util.regex.Pattern.compile;
 
 @NoArgsConstructor
-public class JobFisherManager implements MessageListener {
+public class JobFisherManager extends BaseManager implements MessageListener {
 
     private static final Pattern FISHER_START = compile("^\\[Fischer] Mit /findschwarm kannst du dir den nächsten Fischschwarm anzeigen lassen\\.$");
     private static final Pattern FISHER_SPOT_FOUND_PATTERN = compile("^\\[Fischer] Du hast einen Fischschwarm gefunden!$");
@@ -32,13 +32,13 @@ public class JobFisherManager implements MessageListener {
     private Collection<FisherJobSpot> currentFisherJobSpots = new ArrayList<>();
 
     @Override
-    public void onMessage(String message) {
+    public boolean onMessage(String message) {
         Matcher fisherStartMatcher = FISHER_START.matcher(message);
         if (fisherStartMatcher.find()) {
             this.currentFisherJobSpots = new ArrayList<>();
             String naviCommand = FisherJobSpot.SPOT_1.getNaviCommand();
             networkHandler.sendChatCommand(naviCommand);
-            return;
+            return true;
         }
 
         Matcher fisherSpotFoundMatcher = FISHER_SPOT_FOUND_PATTERN.matcher(message);
@@ -46,7 +46,8 @@ public class JobFisherManager implements MessageListener {
             networkHandler.sendChatCommand("catchfish");
             FisherJobSpot nearestFisherJobSpot = getNearestFisherJobSpot(getNotVisitedFisherJobSpots()).orElseThrow();
             this.currentFisherJobSpots.add(nearestFisherJobSpot);
-            return;
+            delayedAction(() -> networkHandler.sendChatCommand("stoproute"), 1000);
+            return true;
         }
 
         Matcher fisherCatchSuccessMatcher = FISHER_CATCH_SUCCESS.matcher(message);
@@ -63,13 +64,15 @@ public class JobFisherManager implements MessageListener {
                 networkHandler.sendChatCommand("navi -504 63 197");
             });
 
-            return;
+            return true;
         }
 
         if (message.equals("Du hast dein Ziel erreicht!") && this.currentFisherJobSpots.size() == 5) {
             this.currentFisherJobSpots = new ArrayList<>();
             networkHandler.sendChatCommand("dropfish");
         }
+
+        return true;
     }
 
     private @NotNull Optional<FisherJobSpot> getNearestFisherJobSpot(@NotNull Collection<FisherJobSpot> fisherJobSpots) {

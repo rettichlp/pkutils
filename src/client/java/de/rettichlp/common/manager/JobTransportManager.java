@@ -17,16 +17,19 @@ public class JobTransportManager extends BaseManager implements MessageListener 
     private static final Pattern DRINK_TRANSPORT_DELIVER_PATTERN = compile("^\\[Bar] Du hast eine Flasche abgegeben!$");
 
     @Override
-    public void onMessage(String message) {
+    public boolean onMessage(String message) {
         Matcher transportDeliverMatcher = TRANSPORT_DELIVER_PATTERN.matcher(message);
         if (transportDeliverMatcher.find()) {
             delayedAction(() -> networkHandler.sendChatCommand("droptransport"), SECONDS.toMillis(10));
-            return;
+            return true;
         }
 
         Matcher drinTransportDeliverMatcher = DRINK_TRANSPORT_DELIVER_PATTERN.matcher(message);
         if (drinTransportDeliverMatcher.find()) {
             delayedAction(() -> networkHandler.sendChatCommand("dropdrink"), 2500);
+            return true;
         }
+
+        return true;
     }
 }
