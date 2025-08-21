@@ -55,8 +55,6 @@ public class PKUtilsClient implements ClientModInitializer {
             boolean showMessage3 = jobTransportManager.onMessage(rawMessage);
             boolean showMessage4 = wantedManager.onMessage(rawMessage);
 
-            storage.print();
-
             return showMessage1 && showMessage2 && showMessage3 && showMessage4;
         });
     }
