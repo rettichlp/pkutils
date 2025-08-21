@@ -5,6 +5,8 @@ import lombok.NoArgsConstructor;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static net.minecraft.client.MinecraftClient.getInstance;
+
 @NoArgsConstructor
 public class BaseManager {
 
@@ -12,7 +14,7 @@ public class BaseManager {
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-                runnable.run();
+                getInstance().execute(runnable);
             }
         }, milliseconds);
     }

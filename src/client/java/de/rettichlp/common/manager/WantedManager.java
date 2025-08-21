@@ -2,6 +2,7 @@ package de.rettichlp.common.manager;
 
 import de.rettichlp.common.listener.JoinListener;
 import de.rettichlp.common.listener.MessageListener;
+import de.rettichlp.common.storage.schema.Faction;
 import de.rettichlp.common.storage.schema.WantedEntry;
 import lombok.NoArgsConstructor;
 
@@ -9,9 +10,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static de.rettichlp.PKUtilsClient.networkHandler;
+import static de.rettichlp.PKUtilsClient.player;
 import static de.rettichlp.PKUtilsClient.storage;
+import static de.rettichlp.common.storage.schema.Faction.POLIZEI;
 import static java.lang.Integer.parseInt;
 import static java.lang.System.currentTimeMillis;
+import static java.util.Objects.requireNonNull;
 import static java.util.regex.Pattern.compile;
 
 @NoArgsConstructor
@@ -24,7 +28,12 @@ public class WantedManager extends BaseManager implements JoinListener, MessageL
 
     @Override
     public void onJoin() {
-        delayedAction(() -> networkHandler.sendChatCommand("wanteds"), 15000);
+        delayedAction(() -> {
+            Faction faction = storage.getFaction(requireNonNull(player.getDisplayName()).getString());
+            if (faction == POLIZEI) {
+                networkHandler.sendChatCommand("wanteds");
+            }
+        }, 15000);
     }
 
     @Override

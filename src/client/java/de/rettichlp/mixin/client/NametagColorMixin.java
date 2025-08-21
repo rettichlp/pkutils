@@ -1,5 +1,6 @@
 package de.rettichlp.mixin.client;
 
+import de.rettichlp.common.storage.schema.Faction;
 import de.rettichlp.common.storage.schema.WantedEntry;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.state.EntityRenderState;
@@ -18,9 +19,13 @@ import java.util.Optional;
 
 import static de.rettichlp.PKUtilsClient.storage;
 import static java.util.Objects.nonNull;
-import static net.minecraft.util.Formatting.*;
+import static net.minecraft.text.Text.empty;
+import static net.minecraft.util.Formatting.DARK_GREEN;
 import static net.minecraft.util.Formatting.DARK_RED;
+import static net.minecraft.util.Formatting.GOLD;
+import static net.minecraft.util.Formatting.GREEN;
 import static net.minecraft.util.Formatting.RED;
+import static net.minecraft.util.Formatting.YELLOW;
 
 @Mixin(EntityRenderer.class)
 public abstract class NametagColorMixin<S extends Entity, T extends EntityRenderState> {
@@ -39,12 +44,18 @@ public abstract class NametagColorMixin<S extends Entity, T extends EntityRender
                     .filter(wantedEntry -> wantedEntry.getPlayerName().equals(displayNameString))
                     .findAny();
 
-            if (optionalWantedEntry.isEmpty()) {
-                return original;
-            }
+            Faction faction = storage.getFaction(displayNameString);
+            Text nameTagSuffix = faction.getNameTagSuffix();
 
-            Formatting color = getWantedPointColor(optionalWantedEntry.get());
-            return displayName.copy().styled(style -> style.withColor(color));
+            return optionalWantedEntry.isEmpty()
+                    ? empty()
+                    .append(displayName.copy())
+                    .append(" ")
+                    .append(nameTagSuffix)
+                    : empty()
+                    .append(displayName.copy().styled(style -> style.withColor(getWantedPointColor(optionalWantedEntry.get()))))
+                    .append(" ")
+                    .append(nameTagSuffix);
         }
 
         return original;

@@ -7,9 +7,8 @@ import lombok.ToString;
 @Getter
 @ToString
 @AllArgsConstructor
-public class WantedEntry {
+public class FactionMember {
 
     private final String playerName;
-    private final int wantedPointAmount;
-    private final String reason;
+    private final int rank;
 }
