@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 import static de.rettichlp.PKUtilsClient.networkHandler;
 import static de.rettichlp.PKUtilsClient.storage;
 import static de.rettichlp.common.storage.schema.Faction.NULL;
-import static de.rettichlp.common.storage.schema.Faction.fromDisplayName;
+import static de.rettichlp.common.storage.schema.Faction.fromFactionKey;
 import static java.lang.Integer.parseInt;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Objects.nonNull;
@@ -21,7 +21,7 @@ import static java.util.regex.Pattern.compile;
 @NoArgsConstructor
 public class FactionManager extends BaseManager implements JoinListener, MessageListener {
 
-    private static final Pattern FACTION_MEMBER_ALL_HEADER = compile("^={4} Mitglieder von (?<factionName>\\w) ={4}$");
+    private static final Pattern FACTION_MEMBER_ALL_HEADER = compile("^={4} Mitglieder von (?<factionName>.+) ={4}$");
     private static final Pattern FACTION_MEMBER_ALL_ENTRY = compile("^\\s*-\\s*(?<rank>\\d)\\s*\\|\\s*(?<playerNames>.+)$");
 
     private Faction factionMemberRetrievalFaction;
@@ -44,7 +44,7 @@ public class FactionManager extends BaseManager implements JoinListener, Message
         if (factionMemberAllHeaderMatcher.find()) {
             String factionName = factionMemberAllHeaderMatcher.group("factionName");
             this.factionMemberRetrievalTimestamp = currentTimeMillis();
-            this.factionMemberRetrievalFaction = fromDisplayName(factionName)
+            this.factionMemberRetrievalFaction = fromFactionKey(factionName)
                     .orElseThrow(() -> new IllegalStateException("Could not find faction with name: " + factionName));
 
             storage.resetFactionMembers(this.factionMemberRetrievalFaction);
