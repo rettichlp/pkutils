@@ -29,7 +29,7 @@ public class PKUtilsClient implements ClientModInitializer {
     public static ClientPlayerEntity player;
     public static ClientPlayNetworkHandler networkHandler;
 
-    public static Storage storage = new Storage();
+    public static final Storage storage = new Storage();
 
     // managers
     public static FactionManager factionManager;
@@ -81,7 +81,7 @@ public class PKUtilsClient implements ClientModInitializer {
             String commandLabel = parts[0]; // get the command label
 
             if (containsUppercase(commandLabel)) {
-                String labelLowerCase = commandLabel.toLowerCase(); // get the command label in lowercase
+                String labelLowerCase = commandLabel.toLowerCase(); // get the lowercase command label
 
                 StringJoiner stringJoiner = new StringJoiner(" ");
                 stringJoiner.add(labelLowerCase);

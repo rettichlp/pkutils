@@ -58,7 +58,7 @@ public class WantedManager extends BaseManager implements IMessageReceiveListene
         Matcher wantedGivenPointsMatcher = WANTED_GIVEN_POINTS_PATTERN.matcher(message);
         if (wantedGivenPointsMatcher.find()) {
             String playerName = wantedGivenPointsMatcher.group(1);
-            int wantedPoints = Integer.parseInt(wantedGivenPointsMatcher.group(2));
+            int wantedPoints = parseInt(wantedGivenPointsMatcher.group(2));
 
             storage.getWantedEntries().stream()
                     .filter(wantedEntry -> wantedEntry.getPlayerName().equals(playerName))
