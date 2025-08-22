@@ -43,10 +43,10 @@ public class JobFisherManager extends BaseManager implements IMessageListener {
 
         Matcher fisherSpotFoundMatcher = FISHER_SPOT_FOUND_PATTERN.matcher(message);
         if (fisherSpotFoundMatcher.find()) {
-            networkHandler.sendChatCommand("catchfish");
+            networkHandler.sendChatCommand("stoproute");
             FisherJobSpot nearestFisherJobSpot = getNearestFisherJobSpot(getNotVisitedFisherJobSpots()).orElseThrow();
             this.currentFisherJobSpots.add(nearestFisherJobSpot);
-            delayedAction(() -> networkHandler.sendChatCommand("stoproute"), 1000);
+            delayedAction(() -> networkHandler.sendChatCommand("catchfish"), 1000);
             return true;
         }
 
