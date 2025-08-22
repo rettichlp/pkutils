@@ -1,6 +1,6 @@
 {
     "required": true,
-    "package": "de.rettichlp.mixin",
+    "package": "de.rettichlp.pkutils.mixin",
     "compatibilityLevel": "JAVA_21",
     "mixins": [
         "ExampleMixin"

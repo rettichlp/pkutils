@@ -1,4 +1,4 @@
-package de.rettichlp.common.listener;
+package de.rettichlp.pkutils.common.listener;
 
 public interface IMessageListener {
 

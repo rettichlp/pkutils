@@ -1,20 +1,20 @@
-package de.rettichlp.common.manager;
+package de.rettichlp.pkutils.common.manager;
 
-import de.rettichlp.common.listener.IMessageListener;
-import de.rettichlp.common.storage.schema.Faction;
-import de.rettichlp.common.storage.schema.FactionMember;
-import de.rettichlp.common.storage.schema.WantedEntry;
+import de.rettichlp.pkutils.common.listener.IMessageListener;
+import de.rettichlp.pkutils.common.storage.schema.Faction;
+import de.rettichlp.pkutils.common.storage.schema.FactionMember;
+import de.rettichlp.pkutils.common.storage.schema.WantedEntry;
 import lombok.NoArgsConstructor;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static de.rettichlp.PKUtils.LOGGER;
-import static de.rettichlp.PKUtilsClient.networkHandler;
-import static de.rettichlp.PKUtilsClient.player;
-import static de.rettichlp.PKUtilsClient.storage;
-import static de.rettichlp.common.storage.schema.Faction.NULL;
-import static de.rettichlp.common.storage.schema.Faction.fromDisplayName;
+import static de.rettichlp.pkutils.PKUtils.LOGGER;
+import static de.rettichlp.pkutils.PKUtilsClient.networkHandler;
+import static de.rettichlp.pkutils.PKUtilsClient.player;
+import static de.rettichlp.pkutils.PKUtilsClient.storage;
+import static de.rettichlp.pkutils.common.storage.schema.Faction.NULL;
+import static de.rettichlp.pkutils.common.storage.schema.Faction.fromDisplayName;
 import static java.lang.Integer.parseInt;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Objects.nonNull;

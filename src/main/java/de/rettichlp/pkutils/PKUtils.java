@@ -1,4 +1,4 @@
-package de.rettichlp;
+package de.rettichlp.pkutils;
 
 import net.fabricmc.api.ModInitializer;
 import org.slf4j.Logger;

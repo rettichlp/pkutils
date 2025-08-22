@@ -1,12 +1,12 @@
-package de.rettichlp.common.manager;
+package de.rettichlp.pkutils.common.manager;
 
-import de.rettichlp.common.listener.IMessageListener;
+import de.rettichlp.pkutils.common.listener.IMessageListener;
 import lombok.NoArgsConstructor;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static de.rettichlp.PKUtilsClient.networkHandler;
+import static de.rettichlp.pkutils.PKUtilsClient.networkHandler;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.regex.Pattern.compile;
 

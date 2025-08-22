@@ -1,6 +1,6 @@
-package de.rettichlp.common.manager;
+package de.rettichlp.pkutils.common.manager;
 
-import de.rettichlp.common.listener.IMessageListener;
+import de.rettichlp.pkutils.common.listener.IMessageListener;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,8 +15,8 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static de.rettichlp.PKUtilsClient.networkHandler;
-import static de.rettichlp.PKUtilsClient.player;
+import static de.rettichlp.pkutils.PKUtilsClient.networkHandler;
+import static de.rettichlp.pkutils.PKUtilsClient.player;
 import static java.lang.Double.compare;
 import static java.util.Arrays.stream;
 import static java.util.regex.Pattern.compile;

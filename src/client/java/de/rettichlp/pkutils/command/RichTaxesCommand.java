@@ -1,16 +1,16 @@
-package de.rettichlp.commands;
+package de.rettichlp.pkutils.command;
 
 import com.mojang.brigadier.CommandDispatcher;
-import de.rettichlp.common.listener.IMessageListener;
-import de.rettichlp.common.manager.BaseManager;
+import de.rettichlp.pkutils.common.listener.IMessageListener;
+import de.rettichlp.pkutils.common.manager.BaseManager;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.text.Text;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static de.rettichlp.PKUtilsClient.networkHandler;
-import static de.rettichlp.PKUtilsClient.player;
+import static de.rettichlp.pkutils.PKUtilsClient.networkHandler;
+import static de.rettichlp.pkutils.PKUtilsClient.player;
 import static java.util.regex.Pattern.compile;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
 

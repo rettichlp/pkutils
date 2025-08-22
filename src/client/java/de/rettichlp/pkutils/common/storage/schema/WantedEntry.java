@@ -1,4 +1,4 @@
-package de.rettichlp.common.storage.schema;
+package de.rettichlp.pkutils.common.storage.schema;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

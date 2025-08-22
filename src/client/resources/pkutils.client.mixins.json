@@ -1,6 +1,6 @@
 {
     "required": true,
-    "package": "de.rettichlp.mixin.client",
+    "package": "de.rettichlp.pkutils.mixin.client",
     "compatibilityLevel": "JAVA_21",
     "client": [
         "NametagColorMixin"

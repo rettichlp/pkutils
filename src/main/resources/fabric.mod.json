@@ -16,10 +16,10 @@
     "environment": "*",
     "entrypoints": {
         "main": [
-            "de.rettichlp.PKUtils"
+            "de.rettichlp.pkutils.PKUtils"
         ],
         "client": [
-            "de.rettichlp.PKUtilsClient"
+            "de.rettichlp.pkutils.PKUtilsClient"
         ]
     },
     "mixins": [

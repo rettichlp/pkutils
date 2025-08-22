@@ -1,4 +1,4 @@
-package de.rettichlp.common.manager;
+package de.rettichlp.pkutils.common.manager;
 
 import lombok.NoArgsConstructor;
 import net.minecraft.text.Text;
@@ -6,7 +6,7 @@ import net.minecraft.text.Text;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static de.rettichlp.PKUtilsClient.player;
+import static de.rettichlp.pkutils.PKUtilsClient.player;
 import static net.minecraft.client.MinecraftClient.getInstance;
 import static net.minecraft.text.Text.of;
 import static net.minecraft.util.Formatting.DARK_GRAY;
