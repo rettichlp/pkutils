@@ -1,5 +1,6 @@
 package de.rettichlp.pkutils.common.storage;
 
+import de.rettichlp.pkutils.common.storage.schema.BlacklistEntry;
 import de.rettichlp.pkutils.common.storage.schema.Faction;
 import de.rettichlp.pkutils.common.storage.schema.FactionMember;
 import de.rettichlp.pkutils.common.storage.schema.WantedEntry;
@@ -21,13 +22,26 @@ public class Storage {
     private final Map<Faction, Set<FactionMember>> factionMembers = new HashMap<>();
 
     @Getter
+    private final List<BlacklistEntry> blacklistEntries = new ArrayList<>();
+
+    @Getter
     private final List<WantedEntry> wantedEntries = new ArrayList<>();
 
     public void print() {
         // factionMembers
         this.factionMembers.forEach((faction, factionMembers) -> LOGGER.info("factionMembers[{}:{}]: {}", faction, factionMembers.size(), factionMembers));
+        // blacklistEntries
+        LOGGER.info("blacklistEntries[{}]: {}", this.blacklistEntries.size(), this.blacklistEntries);
         // wantedEntries
         LOGGER.info("wantedEntries[{}]: {}", this.wantedEntries.size(), this.wantedEntries);
+    }
+
+    public void addBlacklistEntry(BlacklistEntry entry) {
+        this.blacklistEntries.add(entry);
+    }
+
+    public void resetBlacklistEntries() {
+        this.blacklistEntries.clear();
     }
 
     public void addFactionMember(Faction faction, FactionMember factionMember) {

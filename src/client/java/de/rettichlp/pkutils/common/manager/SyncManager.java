@@ -1,6 +1,7 @@
 package de.rettichlp.pkutils.common.manager;
 
 import de.rettichlp.pkutils.common.listener.IMessageReceiveListener;
+import de.rettichlp.pkutils.common.storage.schema.BlacklistEntry;
 import de.rettichlp.pkutils.common.storage.schema.Faction;
 import de.rettichlp.pkutils.common.storage.schema.FactionMember;
 import de.rettichlp.pkutils.common.storage.schema.WantedEntry;
@@ -29,14 +30,16 @@ public class SyncManager extends BaseManager implements IMessageReceiveListener 
     private static final Pattern SERVER_PASSWORD_ACCEPTED_PATTERN = compile("^Du hast deinen Account freigeschaltet\\.$");
     private static final Pattern FACTION_MEMBER_ALL_HEADER = compile("^={4} Mitglieder von (?<factionName>.+) ={4}$");
     private static final Pattern FACTION_MEMBER_ALL_ENTRY = compile("^\\s*-\\s*(?<rank>\\d)\\s*\\|\\s*(?<playerNames>.+)$");
-    private final static Pattern FACTION_POLICE_WANTED_ONLINE_PLAYERS_HEADER_PATTERN = compile("Online Spieler mit WantedPunkten:");
-    private final static Pattern FACTION_POLICE_WANTED_ONLINE_PLAYERS_ENTRY_PATTERN = compile("- (?<playerName>[A-Za-z0-9_]+) \\| (?<wantedPointAmount>\\d+) \\| (?<reason>.+)(?<afk> \\| AFK|)");
+    private static final Pattern FACTION_POLICE_WANTED_ONLINE_PLAYERS_HEADER_PATTERN = compile("Online Spieler mit WantedPunkten:");
+    private static final Pattern FACTION_POLICE_WANTED_ONLINE_PLAYERS_ENTRY_PATTERN = compile("- (?<playerName>[A-Za-z0-9_]+) \\| (?<wantedPointAmount>\\d+) \\| (?<reason>.+)(?<afk> \\| AFK|)");
+    private static final Pattern BLACKLIST_HEADER_PATTERN = compile("^==== Blacklist .+ ====$");
+    private static final Pattern BLACKLIST_ENTRY_PATTERN = compile("^ » (?<playerName>[A-Za-z0-9_]+) \\| (?<reason>.+) \\| (?<dateTime>.+) \\| (?<kills>\\d+) Kills \\| (?<price>\\d+)\\$(| \\(AFK\\))$");
 
     private boolean gameSyncProcessScheduled = false;
     private boolean gameSyncProcessActive = false;
     private Faction factionMemberRetrievalFaction;
     private long factionMemberRetrievalTimestamp;
-    private long activeWantedCheck = 0;
+    private long activeCheck = 0;
 
     @Override
     public boolean onMessageReceive(String message) {
@@ -98,19 +101,41 @@ public class SyncManager extends BaseManager implements IMessageReceiveListener 
 
         Matcher policeWantedOnlinePlayersHeaderMatcher = FACTION_POLICE_WANTED_ONLINE_PLAYERS_HEADER_PATTERN.matcher(message);
         if (policeWantedOnlinePlayersHeaderMatcher.find()) {
-            this.activeWantedCheck = currentTimeMillis();
+            this.activeCheck = currentTimeMillis();
             storage.resetWantedEntries();
             return !this.gameSyncProcessActive;
         }
 
         Matcher policeWantedOnlinePlayersEntryMatcher = FACTION_POLICE_WANTED_ONLINE_PLAYERS_ENTRY_PATTERN.matcher(message);
-        if (policeWantedOnlinePlayersEntryMatcher.find() && (currentTimeMillis() - this.activeWantedCheck < 100)) {
+        if (policeWantedOnlinePlayersEntryMatcher.find() && (currentTimeMillis() - this.activeCheck < 100)) {
             String playerName = policeWantedOnlinePlayersEntryMatcher.group("playerName");
             int wantedPointAmount = parseInt(policeWantedOnlinePlayersEntryMatcher.group("wantedPointAmount"));
             String reason = policeWantedOnlinePlayersEntryMatcher.group("reason");
 
             WantedEntry wantedEntry = new WantedEntry(playerName, wantedPointAmount, reason);
             storage.addWantedEntry(wantedEntry);
+            return !this.gameSyncProcessActive;
+        }
+
+        // FACTION SPECIFIC INIT - BAD FRAK - BLACKLIST
+
+        Matcher blacklistHeaderMatcher = BLACKLIST_HEADER_PATTERN.matcher(message);
+        if (blacklistHeaderMatcher.find()) {
+            this.activeCheck = currentTimeMillis();
+            storage.resetBlacklistEntries();
+            return !this.gameSyncProcessActive;
+        }
+
+        Matcher blacklistEntryMatcher = BLACKLIST_ENTRY_PATTERN.matcher(message);
+        if (blacklistEntryMatcher.find() && (currentTimeMillis() - this.activeCheck < 100)) {
+            String playerName = blacklistEntryMatcher.group("playerName");
+            String reason = blacklistEntryMatcher.group("reason");
+            boolean outlaw = reason.contains("(VF)");
+            int kills = parseInt(blacklistEntryMatcher.group("kills"));
+            int price = parseInt(blacklistEntryMatcher.group("price"));
+
+            BlacklistEntry blacklistEntry = new BlacklistEntry(playerName, reason, outlaw, kills, price);
+            storage.addBlacklistEntry(blacklistEntry);
             return !this.gameSyncProcessActive;
         }
 
@@ -145,6 +170,7 @@ public class SyncManager extends BaseManager implements IMessageReceiveListener 
             Faction faction = storage.getFaction(requireNonNull(player.getDisplayName()).getString());
             switch (faction) {
                 case POLIZEI -> networkHandler.sendChatCommand("wanteds"); // TODO duty check
+                case CALDERON, KERZAKOV, LACOSANOSTRA, LEMILIEU, WESTSIDEBALLAS -> networkHandler.sendChatCommand("blacklist");
             }
         }, 13000);
 
