@@ -10,9 +10,15 @@ import de.rettichlp.pkutils.common.storage.Storage;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
+import net.fabricmc.fabric.api.client.message.v1.ClientSendMessageEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.StringJoiner;
+
+import static java.lang.Character.isUpperCase;
 
 public class PKUtilsClient implements ClientModInitializer {
 
@@ -55,6 +61,27 @@ public class PKUtilsClient implements ClientModInitializer {
             return showMessage1 && showMessage2 && showMessage3;
         });
 
+        ClientSendMessageEvents.ALLOW_COMMAND.register(command -> {
+            String[] parts = command.split(" ", 2); // split the message into command label and arguments
+            String commandLabel = parts[0]; // get the command label
+
+            if (containsUppercase(commandLabel)) {
+                String labelLowerCase = commandLabel.toLowerCase(); // get the command label in lowercase
+
+                StringJoiner stringJoiner = new StringJoiner(" ");
+                stringJoiner.add(labelLowerCase);
+
+                if (parts.length > 1) {
+                    stringJoiner.add(parts[1]);
+                }
+
+                networkHandler.sendChatCommand(stringJoiner.toString());
+                return false;
+            }
+
+            return true;
+        });
+
         ADropMoneyCommand aDropMoneyCommand = new ADropMoneyCommand();
         RichTaxesCommand richTaxesCommand = new RichTaxesCommand();
         SyncCommand syncCommand = new SyncCommand();
@@ -64,5 +91,15 @@ public class PKUtilsClient implements ClientModInitializer {
             richTaxesCommand.register(dispatcher);
             syncCommand.register(dispatcher);
         });
+    }
+
+    private boolean containsUppercase(@NotNull String input) {
+        for (char c : input.toCharArray()) {
+            if (isUpperCase(c)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
