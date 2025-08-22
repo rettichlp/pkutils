@@ -1,7 +1,7 @@
 package de.rettichlp.pkutils.command;
 
 import com.mojang.brigadier.CommandDispatcher;
-import de.rettichlp.pkutils.common.listener.IMessageListener;
+import de.rettichlp.pkutils.common.listener.IMessageReceiveListener;
 import de.rettichlp.pkutils.common.manager.CommandManager;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import org.jetbrains.annotations.NotNull;
@@ -13,7 +13,7 @@ import static de.rettichlp.pkutils.PKUtilsClient.networkHandler;
 import static java.util.regex.Pattern.compile;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
 
-public class RichTaxesCommand extends CommandManager implements IMessageListener {
+public class RichTaxesCommand extends CommandManager implements IMessageReceiveListener {
 
     private static final Pattern PLAYER_MONEY_BANK_AMOUNT = compile("^Ihr Bankguthaben beträgt: (?<moneyBankAmount>([+-])\\d+)\\$$");
     private static final Pattern MONEY_ATM_AMOUNT = compile("ATM \\d+: (?<moneyAtmAmount>\\d+)/100000\\$");
@@ -58,7 +58,7 @@ public class RichTaxesCommand extends CommandManager implements IMessageListener
     }
 
     @Override
-    public boolean onMessage(String message) {
+    public boolean onMessageReceive(String message) {
         Matcher playerMoneyBankAmountMatcher = PLAYER_MONEY_BANK_AMOUNT.matcher(message);
         if (playerMoneyBankAmountMatcher.find()) {
             this.moneyBankAmount = Integer.parseInt(playerMoneyBankAmountMatcher.group("moneyBankAmount"));

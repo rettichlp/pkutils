@@ -1,6 +1,6 @@
 package de.rettichlp.pkutils.common.manager;
 
-import de.rettichlp.pkutils.common.listener.IMessageListener;
+import de.rettichlp.pkutils.common.listener.IMessageReceiveListener;
 import de.rettichlp.pkutils.common.storage.schema.BlacklistEntry;
 import de.rettichlp.pkutils.common.storage.schema.Faction;
 import de.rettichlp.pkutils.common.storage.schema.FactionMember;
@@ -23,7 +23,7 @@ import static java.util.Objects.requireNonNull;
 import static java.util.regex.Pattern.compile;
 
 @NoArgsConstructor
-public class SyncManager extends BaseManager implements IMessageListener {
+public class SyncManager extends BaseManager implements IMessageReceiveListener {
 
     private static final Pattern SERVER_WELCOME_BACK_PATTERN = compile("^Willkommen zurück!$");
     private static final Pattern SERVER_PASSWORD_REQUIRED_PATTERN = compile("^Schalte deinen Account frei mit /passwort \\[Passwort]$");
@@ -42,7 +42,7 @@ public class SyncManager extends BaseManager implements IMessageListener {
     private long activeCheck = 0;
 
     @Override
-    public boolean onMessage(String message) {
+    public boolean onMessageReceive(String message) {
         // SERVER INIT
 
         // schedule the game sync process if a join message is received
