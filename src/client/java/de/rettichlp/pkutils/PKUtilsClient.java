@@ -27,6 +27,7 @@ public class PKUtilsClient implements ClientModInitializer {
     public static Storage storage = new Storage();
 
     // managers
+    public static FactionManager factionManager;
     public static JobFisherManager jobFisherManager;
     public static JobTransportManager jobTransportManager;
     public static SyncManager syncManager;
@@ -35,6 +36,7 @@ public class PKUtilsClient implements ClientModInitializer {
     public void onInitializeClient() {
         // This entrypoint is suitable for setting up client-specific logic, such as rendering.
 
+        factionManager = new FactionManager();
         jobFisherManager = new JobFisherManager();
         jobTransportManager = new JobTransportManager();
         syncManager = new SyncManager();
@@ -58,6 +60,12 @@ public class PKUtilsClient implements ClientModInitializer {
             boolean showMessage3 = syncManager.onMessageReceive(rawMessage);
 
             return showMessage1 && showMessage2 && showMessage3;
+        });
+
+        ClientSendMessageEvents.ALLOW_CHAT.register(message -> {
+            boolean sendMessage1 = factionManager.onMessageSend(message);
+
+            return sendMessage1;
         });
 
         ClientSendMessageEvents.ALLOW_COMMAND.register(command -> {
@@ -93,14 +101,6 @@ public class PKUtilsClient implements ClientModInitializer {
             syncCommand.register(dispatcher);
             toggleDchatCommand.register(dispatcher);
             toggleFchatCommand.register(dispatcher);
-        });
-
-        ClientSendMessageListener clientSendMessageListener = new ClientSendMessageListener();
-
-        ClientSendMessageEvents.ALLOW_CHAT.register(message -> {
-            clientSendMessageListener.register(message);
-
-            return true;
         });
     }
 
