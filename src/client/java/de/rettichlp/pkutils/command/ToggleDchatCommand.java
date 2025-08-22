@@ -14,7 +14,7 @@ public class ToggleDchatCommand extends CommandManager {
 
     public void register(@NotNull CommandDispatcher<FabricClientCommandSource> dispatcher) {
         dispatcher.register(
-                literal("ff")
+                literal("dd")
                         .executes(context -> {
 
                             if (fChatEnabled) {
