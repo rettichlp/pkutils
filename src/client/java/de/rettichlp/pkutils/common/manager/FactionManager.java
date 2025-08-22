@@ -23,9 +23,10 @@ public class FactionManager extends BaseManager implements IMessageSendListener 
     public boolean onMessageSend(String message) {
         if (this.toggledChat != NONE) {
             networkHandler.sendChatCommand(this.toggledChat.getCommand() + " " + message);
+            return false;
         }
 
-        return false;
+        return true;
     }
 
     @Getter
