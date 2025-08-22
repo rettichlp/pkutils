@@ -32,19 +32,19 @@ public class RichTaxesCommand extends BaseManager implements IMessageListener {
                                 networkHandler.sendChatCommand("atminfo");
                                 int amount = 0;
 
-                                if (moneyBankAmount < 100000) {
+                                if (this.moneyBankAmount < 100000) {
                                     player.sendMessage(Text.of("Du hast nicht genug Geld auf der Bank."), false);
                                     return;
                                 }
 
-                                if (atmMoneyAmount < moneyBankAmount) {
-                                    amount = moneyBankAmount - atmMoneyAmount;
+                                if (this.atmMoneyAmount < this.moneyBankAmount) {
+                                    amount = this.moneyBankAmount - this.atmMoneyAmount;
                                     networkHandler.sendChatCommand("bank abbuchen " + amount);
                                     player.sendMessage(Text.of("Du musst noch " + amount + "$ abbuchen."), false);
                                     return;
                                 }
 
-                                amount = moneyBankAmount - 100000;
+                                amount = this.moneyBankAmount - 100000;
                                 networkHandler.sendChatCommand("bank abbuchen " + amount);
                             }, 1000);
 
