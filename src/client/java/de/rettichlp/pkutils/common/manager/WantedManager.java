@@ -49,6 +49,8 @@ public class WantedManager extends BaseManager implements IMessageReceiveListene
     private static final Pattern TAKE_DRUGS_PATTERN = compile("^(Beamtin|Beamter) (?<playerName>[A-Za-z0-9_]+) hat (?<targetName>[a-zA-Z0-9_]+) (seine|ihre) Drogen abgenommen!$");
     private static final Pattern TRACKER_AGENT_PATTERN = compile("^HQ: Agent (?<playerName>[A-Za-z0-9_]+) hat ein Peilsender an (?<targetName>[A-Za-z0-9_]+) befestigt, over\\.$");
 
+    private long activeCheck = 0;
+
     @Override
     public boolean onMessageReceive(String message) {
         Matcher wantedGivenPointsMatcher = WANTED_GIVEN_POINTS_PATTERN.matcher(message);
@@ -196,7 +198,7 @@ public class WantedManager extends BaseManager implements IMessageReceiveListene
         if (wantedListHeaderMatcher.find()) {
             this.activeCheck = currentTimeMillis();
             storage.resetWantedEntries();
-            return !syncManager.gameSyncProcessActive;
+            return !syncManager.isGameSyncProcessActive();
         }
 
         Matcher wantedListEntryMatcher = WANTED_LIST_ENTRY_PATTERN.matcher(message);
@@ -211,8 +213,8 @@ public class WantedManager extends BaseManager implements IMessageReceiveListene
 
             Formatting color = getWantedPointColor(wantedPointAmount);
 
-            if (!syncManager.gameSyncProcessActive) {
                 empty()
+            if (!syncManager.isGameSyncProcessActive()) {
                         .append(of("➥").copy().formatted(DARK_GRAY)).append(" ")
                         .append(of(playerName).copy().formatted(color)).append(" ")
                         .append(of("-").copy().formatted(GRAY)).append(" ")

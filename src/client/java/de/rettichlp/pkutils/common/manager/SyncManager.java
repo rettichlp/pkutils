@@ -4,6 +4,7 @@ import de.rettichlp.pkutils.common.listener.IMessageReceiveListener;
 import de.rettichlp.pkutils.common.storage.schema.BlacklistEntry;
 import de.rettichlp.pkutils.common.storage.schema.Faction;
 import de.rettichlp.pkutils.common.storage.schema.FactionMember;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.regex.Matcher;
@@ -32,8 +33,9 @@ public class SyncManager extends BaseManager implements IMessageReceiveListener 
     private static final Pattern BLACKLIST_HEADER_PATTERN = compile("^==== Blacklist .+ ====$");
     private static final Pattern BLACKLIST_ENTRY_PATTERN = compile("^ » (?<playerName>[A-Za-z0-9_]+) \\| (?<reason>.+) \\| (?<dateTime>.+) \\| (?<kills>\\d+) Kills \\| (?<price>\\d+)\\$(| \\(AFK\\))$");
 
-    private boolean gameSyncProcessScheduled = false;
+    @Getter
     private boolean gameSyncProcessActive = false;
+    private boolean gameSyncProcessScheduled = false;
     private Faction factionMemberRetrievalFaction;
     private long factionMemberRetrievalTimestamp;
     private long activeCheck = 0;
