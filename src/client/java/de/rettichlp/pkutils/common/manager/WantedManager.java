@@ -1,0 +1,382 @@
+package de.rettichlp.pkutils.common.manager;
+
+import de.rettichlp.pkutils.common.listener.IMessageReceiveListener;
+import de.rettichlp.pkutils.common.storage.schema.WantedEntry;
+import lombok.NoArgsConstructor;
+import net.minecraft.util.Formatting;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.function.Predicate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static de.rettichlp.pkutils.PKUtilsClient.storage;
+import static de.rettichlp.pkutils.PKUtilsClient.syncManager;
+import static java.lang.Integer.parseInt;
+import static java.lang.String.valueOf;
+import static java.lang.System.currentTimeMillis;
+import static java.util.regex.Pattern.compile;
+import static net.minecraft.text.Text.empty;
+import static net.minecraft.text.Text.of;
+import static net.minecraft.util.Formatting.BLUE;
+import static net.minecraft.util.Formatting.DARK_AQUA;
+import static net.minecraft.util.Formatting.DARK_GRAY;
+import static net.minecraft.util.Formatting.DARK_GREEN;
+import static net.minecraft.util.Formatting.DARK_RED;
+import static net.minecraft.util.Formatting.GOLD;
+import static net.minecraft.util.Formatting.GRAY;
+import static net.minecraft.util.Formatting.GREEN;
+import static net.minecraft.util.Formatting.RED;
+import static net.minecraft.util.Formatting.YELLOW;
+
+@NoArgsConstructor
+public class WantedManager extends BaseManager implements IMessageReceiveListener {
+
+    private static final Pattern WANTED_GIVEN_POINTS_PATTERN = compile("^HQ: ([A-Za-z0-9_]+)'s momentanes WantedLevel: (\\d+)$");
+    private static final Pattern WANTED_GIVEN_REASON_PATTERN = compile("^HQ: Gesuchter: (?<playerName>[A-Za-z0-9_]+)\\. Grund: (?<reason>.+)$");
+    private static final Pattern WANTED_REASON_PATTERN = compile("^HQ: Fahndungsgrund: (?<reason>.+) \\| Fahndungszeit: (?<time>.+)\\.$");
+    private static final Pattern WANTED_DELETE_PATTERN = compile("^HQ: .+ (?<playerName>[A-Za-z0-9_]+) hat (?<targetName>[A-Za-z0-9_]+)(?:'s)* Akten gelöscht, over\\.$");
+    private static final Pattern WANTED_KILL_PATTERN = compile("^HQ: (?<targetName>[A-Za-z0-9_]+) wurde von (?<playerName>[a-zA-Z0-9_]+) getötet\\.$");
+    private static final Pattern WANTED_ARREST_PATTERN = compile("^HQ: (?<targetName>[A-Za-z0-9_]+) wurde von (?<playerName>[a-zA-Z0-9_]+) eingesperrt\\.$");
+    private static final Pattern WANTED_UNARREST_PATTERN = compile("^HQ: .+ (?<playerName>[A-Za-z0-9_]+) hat (?<targetName>[A-Za-z0-9_]+) aus dem Gefängnis entlassen\\.$");
+    private static final Pattern WANTED_LIST_HEADER_PATTERN = compile("Online Spieler mit WantedPunkten:");
+    private static final Pattern WANTED_LIST_ENTRY_PATTERN = compile("- (?<playerName>[A-Za-z0-9_]+) \\| (?<wantedPointAmount>\\d+) \\| (?<reason>.+)(?<afk> \\| AFK|)");
+    private static final Pattern GIVE_DRIVING_LICENSE_PATTERN = compile("^(Agent|Beamter) (?<playerName>[A-Za-z0-9_]+) hat (?<targetName>[a-zA-Z0-9_]+)(?:'s)* Führerschein zurückgegeben\\.$");
+    private static final Pattern TAKE_DRIVING_LICENSE_PATTERN = compile("^(Agent|Beamter) (?<playerName>[A-Za-z0-9_]+) hat (?<targetName>[a-zA-Z0-9_]+)(?:'s)* Führerschein abgenommen\\.$");
+    private static final Pattern GIVE_GUN_LICENSE_PATTERN = compile("^(Agent|Beamter) (?<playerName>[A-Za-z0-9_]+) hat (?<targetName>[a-zA-Z0-9_]+)(?:'s)* Waffenschein zurückgegeben\\.$");
+    private static final Pattern TAKE_GUN_LICENSE_PATTERN = compile("^(Agent|Beamter) (?<playerName>[A-Za-z0-9_]+) hat (?<targetName>[a-zA-Z0-9_]+)(?:'s)* Waffenschein abgenommen\\.$");
+    private static final Pattern TAKE_GUNS_PATTERN = compile("^(Beamtin|Beamter) (?<playerName>[A-Za-z0-9_]+) hat (?<targetName>[a-zA-Z0-9_]+) die Waffen abgenommen\\.$");
+    private static final Pattern TAKE_DRUGS_PATTERN = compile("^(Beamtin|Beamter) (?<playerName>[A-Za-z0-9_]+) hat (?<targetName>[a-zA-Z0-9_]+) (seine|ihre) Drogen abgenommen!$");
+    private static final Pattern TRACKER_AGENT_PATTERN = compile("^HQ: Agent (?<playerName>[A-Za-z0-9_]+) hat ein Peilsender an (?<targetName>[A-Za-z0-9_]+) befestigt, over\\.$");
+
+    @Override
+    public boolean onMessageReceive(String message) {
+        Matcher wantedGivenPointsMatcher = WANTED_GIVEN_POINTS_PATTERN.matcher(message);
+        if (wantedGivenPointsMatcher.find()) {
+            String playerName = wantedGivenPointsMatcher.group(1);
+            int wantedPoints = Integer.parseInt(wantedGivenPointsMatcher.group(2));
+
+            storage.getWantedEntries().stream()
+                    .filter(wantedEntry -> wantedEntry.getPlayerName().equals(playerName))
+                    .findFirst()
+                    .ifPresent(wantedEntry -> wantedEntry.setWantedPointAmount(wantedPoints));
+
+            empty()
+                    .append(of("➥").copy().formatted(DARK_GRAY)).append(" ")
+                    .append(of(wantedGivenPointsMatcher.group(2)).copy().formatted(BLUE)).append(" ")
+                    .append(of("Wanteds").copy().formatted(BLUE));
+
+            // TODO send
+
+            return false;
+        }
+
+        Matcher wantedGivenReasonMatcher = WANTED_GIVEN_REASON_PATTERN.matcher(message);
+        if (wantedGivenReasonMatcher.find()) {
+            String playerName = wantedGivenReasonMatcher.group("playerName");
+            String reason = wantedGivenReasonMatcher.group("reason");
+
+            storage.getWantedEntries().stream()
+                    .filter(wantedEntry -> wantedEntry.getPlayerName().equals(playerName))
+                    .findFirst()
+                    .ifPresent(wantedEntry -> wantedEntry.setReason(reason));
+
+            empty()
+                    .append(of("Gesucht").copy().formatted(RED)).append(" ")
+                    .append(of("-").copy().formatted(GRAY)).append(" ")
+                    .append(of(wantedGivenReasonMatcher.group(1)).copy().formatted(BLUE)).append(" ")
+                    .append(of("-").copy().formatted(GRAY)).append(" ")
+                    .append(of(wantedGivenReasonMatcher.group(2)).copy().formatted(BLUE));
+
+            // TODO send
+
+            return false;
+        }
+
+        Matcher wantedReasonMatcher = WANTED_REASON_PATTERN.matcher(message);
+        if (wantedReasonMatcher.find()) {
+            String reason = wantedReasonMatcher.group("reason");
+            String time = wantedReasonMatcher.group("time");
+
+            empty()
+                    .append(of("➥").copy().formatted(DARK_GRAY)).append(" ")
+                    .append(of(reason).copy().formatted(BLUE)).append(" ")
+                    .append(of("-").copy().formatted(GRAY)).append(" ")
+                    .append(of(time).copy().formatted(BLUE));
+
+            // TODO send
+
+            return false;
+        }
+
+        Matcher wantedDeleteMatcher = WANTED_DELETE_PATTERN.matcher(message);
+        if (wantedDeleteMatcher.find()) {
+            String playerName = wantedDeleteMatcher.group("playerName");
+            String targetName = wantedDeleteMatcher.group("targetName");
+
+            int wpAmount = getWpAmountAndDelete(targetName);
+
+            empty()
+                    .append(of("Gelöscht").copy().formatted(RED)).append(" ")
+                    .append(of("-").copy().formatted(GRAY)).append(" ")
+                    .append(of(targetName).copy().formatted(BLUE)).append(" ")
+                    .append(of("(").copy().formatted(GRAY)).append(" ")
+                    .append(of(valueOf(wpAmount)).copy().formatted(RED)).append(" ")
+                    .append(of(")").copy().formatted(GRAY)).append(" ")
+                    .append(of("-").copy().formatted(GRAY)).append(" ")
+                    .append(of(playerName).copy().formatted(BLUE));
+
+            // TODO send
+
+            return false;
+        }
+
+        Matcher wantedKillMatcher = WANTED_KILL_PATTERN.matcher(message);
+        if (wantedKillMatcher.find()) {
+            String targetName = wantedKillMatcher.group("targetName");
+            String playerName = wantedKillMatcher.group("playerName");
+
+            int wpAmount = getWpAmountAndDelete(targetName);
+
+            empty()
+                    .append(of("Getötet").copy().formatted(RED)).append(" ")
+                    .append(of("-").copy().formatted(GRAY)).append(" ")
+                    .append(of(targetName).copy().formatted(BLUE)).append(" ")
+                    .append(of("(").copy().formatted(GRAY)).append(" ")
+                    .append(of(valueOf(wpAmount)).copy().formatted(RED)).append(" ")
+                    .append(of(")").copy().formatted(GRAY)).append(" ")
+                    .append(of("-").copy().formatted(GRAY)).append(" ")
+                    .append(of(playerName).copy().formatted(BLUE));
+
+            // TODO send
+
+            return false;
+        }
+
+        Matcher wantedJailMatcher = WANTED_ARREST_PATTERN.matcher(message);
+        if (wantedJailMatcher.find()) {
+            String targetName = wantedJailMatcher.group("targetName");
+            String playerName = wantedJailMatcher.group("playerName");
+
+            int wpAmount = getWpAmountAndDelete(targetName);
+
+            empty()
+                    .append(of("Eingesperrt").copy().formatted(RED)).append(" ")
+                    .append(of("-").copy().formatted(GRAY)).append(" ")
+                    .append(of(targetName).copy().formatted(BLUE)).append(" ")
+                    .append(of("(").copy().formatted(GRAY)).append(" ")
+                    .append(of(valueOf(wpAmount)).copy().formatted(RED)).append(" ")
+                    .append(of(")").copy().formatted(GRAY)).append(" ")
+                    .append(of("-").copy().formatted(GRAY)).append(" ")
+                    .append(of(playerName).copy().formatted(BLUE));
+
+            // TODO send
+
+            return false;
+        }
+
+        Matcher wantedUnarrestMatcher = WANTED_UNARREST_PATTERN.matcher(message);
+        if (wantedUnarrestMatcher.find()) {
+            String playerName = wantedUnarrestMatcher.group("playerName");
+            String targetName = wantedUnarrestMatcher.group("targetName");
+
+            empty()
+                    .append(of("Entlassen").copy().formatted(RED)).append(" ")
+                    .append(of("-").copy().formatted(GRAY)).append(" ")
+                    .append(of(targetName).copy().formatted(BLUE)).append(" ")
+                    .append(of("-").copy().formatted(GRAY)).append(" ")
+                    .append(of(playerName).copy().formatted(BLUE));
+
+            // TODO send
+
+            return false;
+        }
+
+        Matcher wantedListHeaderMatcher = WANTED_LIST_HEADER_PATTERN.matcher(message);
+        if (wantedListHeaderMatcher.find()) {
+            this.activeCheck = currentTimeMillis();
+            storage.resetWantedEntries();
+            return !syncManager.gameSyncProcessActive;
+        }
+
+        Matcher wantedListEntryMatcher = WANTED_LIST_ENTRY_PATTERN.matcher(message);
+        if (wantedListEntryMatcher.find() && (currentTimeMillis() - this.activeCheck < 100)) {
+            String playerName = wantedListEntryMatcher.group("playerName");
+            int wantedPointAmount = parseInt(wantedListEntryMatcher.group("wantedPointAmount"));
+            String reason = wantedListEntryMatcher.group("reason");
+            boolean isAfk = wantedListEntryMatcher.group("afk").contains("AFK");
+
+            WantedEntry wantedEntry = new WantedEntry(playerName, wantedPointAmount, reason);
+            storage.addWantedEntry(wantedEntry);
+
+            Formatting color = getWantedPointColor(wantedPointAmount);
+
+            if (!syncManager.gameSyncProcessActive) {
+                empty()
+                        .append(of("➥").copy().formatted(DARK_GRAY)).append(" ")
+                        .append(of(playerName).copy().formatted(color)).append(" ")
+                        .append(of("-").copy().formatted(GRAY)).append(" ")
+                        .append(of(reason).copy().formatted(color)).append(" ")
+                        .append(of("(").copy().formatted(GRAY)).append(" ")
+                        .append(of(valueOf(wantedPointAmount)).copy().formatted(BLUE)).append(" ")
+                        .append(of(")").copy().formatted(GRAY)).append(" ")
+                        .append(of(isAfk ? "|" : "").copy().formatted(DARK_GRAY)).append(" ")
+                        .append(of(isAfk ? "AFK" : "").copy().formatted(GRAY));
+            }
+
+            return false;
+        }
+
+        Matcher giveDrivingLicenseMatcher = GIVE_DRIVING_LICENSE_PATTERN.matcher(message);
+        if (giveDrivingLicenseMatcher.find()) {
+            String playerName = giveDrivingLicenseMatcher.group("playerName");
+            String targetName = giveDrivingLicenseMatcher.group("targetName");
+
+            empty()
+                    .append(of("Führerscheinrückgabe").copy().formatted(RED)).append(" ")
+                    .append(of("-").copy().formatted(GRAY)).append(" ")
+                    .append(of(targetName).copy().formatted(BLUE)).append(" ")
+                    .append(of("-").copy().formatted(GRAY)).append(" ")
+                    .append(of(playerName).copy().formatted(BLUE));
+
+            // TODO send
+
+            return false;
+        }
+
+        Matcher takeDrivingLicenseMatcher = TAKE_DRIVING_LICENSE_PATTERN.matcher(message);
+        if (takeDrivingLicenseMatcher.find()) {
+            String playerName = takeDrivingLicenseMatcher.group("playerName");
+            String targetName = takeDrivingLicenseMatcher.group("targetName");
+
+            empty()
+                    .append(of("Führerscheinabnahme").copy().formatted(RED)).append(" ")
+                    .append(of("-").copy().formatted(GRAY)).append(" ")
+                    .append(of(targetName).copy().formatted(BLUE)).append(" ")
+                    .append(of("-").copy().formatted(GRAY)).append(" ")
+                    .append(of(playerName).copy().formatted(BLUE));
+
+            // TODO send
+
+            return false;
+        }
+
+        Matcher giveGunLicenseMatcher = GIVE_GUN_LICENSE_PATTERN.matcher(message);
+        if (giveGunLicenseMatcher.find()) {
+            String playerName = giveGunLicenseMatcher.group("playerName");
+            String targetName = giveGunLicenseMatcher.group("targetName");
+
+            empty()
+                    .append(of("Waffenscheinrückgabe").copy().formatted(RED)).append(" ")
+                    .append(of("-").copy().formatted(GRAY)).append(" ")
+                    .append(of(targetName).copy().formatted(BLUE)).append(" ")
+                    .append(of("-").copy().formatted(GRAY)).append(" ")
+                    .append(of(playerName).copy().formatted(BLUE));
+
+            // TODO send
+
+            return false;
+        }
+
+        Matcher takeGunLicenseMatcher = TAKE_GUN_LICENSE_PATTERN.matcher(message);
+        if (takeGunLicenseMatcher.find()) {
+            String playerName = takeGunLicenseMatcher.group("playerName");
+            String targetName = takeGunLicenseMatcher.group("targetName");
+
+            empty()
+                    .append(of("Waffenscheinabnahme").copy().formatted(RED)).append(" ")
+                    .append(of("-").copy().formatted(GRAY)).append(" ")
+                    .append(of(targetName).copy().formatted(BLUE)).append(" ")
+                    .append(of("-").copy().formatted(GRAY)).append(" ")
+                    .append(of(playerName).copy().formatted(BLUE));
+
+            // TODO send
+
+            return false;
+        }
+
+        Matcher takeGunsMatcher = TAKE_GUNS_PATTERN.matcher(message);
+        if (takeGunsMatcher.find()) {
+            String playerName = takeGunsMatcher.group("playerName");
+            String targetName = takeGunsMatcher.group("targetName");
+
+            empty()
+                    .append(of("Waffenabnahme").copy().formatted(RED)).append(" ")
+                    .append(of("-").copy().formatted(GRAY)).append(" ")
+                    .append(of(targetName).copy().formatted(BLUE)).append(" ")
+                    .append(of("-").copy().formatted(GRAY)).append(" ")
+                    .append(of(playerName).copy().formatted(BLUE));
+
+            // TODO send
+
+            return false;
+        }
+
+        Matcher takeDrugsMatcher = TAKE_DRUGS_PATTERN.matcher(message);
+        if (takeDrugsMatcher.find()) {
+            String playerName = takeDrugsMatcher.group("playerName");
+            String targetName = takeDrugsMatcher.group("targetName");
+
+            empty()
+                    .append(of("Drogenabnahme").copy().formatted(RED)).append(" ")
+                    .append(of("-").copy().formatted(GRAY)).append(" ")
+                    .append(of(targetName).copy().formatted(BLUE)).append(" ")
+                    .append(of("-").copy().formatted(GRAY)).append(" ")
+                    .append(of(playerName).copy().formatted(BLUE));
+
+            // TODO send
+
+            return false;
+        }
+
+        Matcher trackerMatcher = TRACKER_AGENT_PATTERN.matcher(message);
+        if (trackerMatcher.find()) {
+            String playerName = trackerMatcher.group("playerName");
+            String targetName = trackerMatcher.group("targetName");
+
+            empty()
+                    .append(of("Peilsender").copy().formatted(RED)).append(" ")
+                    .append(of("-").copy().formatted(GRAY)).append(" ")
+                    .append(of(playerName).copy().formatted(DARK_AQUA)).append(" ")
+                    .append(of("»").copy().formatted(GRAY)).append(" ")
+                    .append(of(targetName).copy().formatted(GOLD));
+
+            // TODO send
+
+            return false;
+        }
+
+        return true;
+    }
+
+    public @NotNull Formatting getWantedPointColor(int wantedPointAmount) {
+        Formatting color;
+
+        if (wantedPointAmount >= 60) {
+            color = DARK_RED;
+        } else if (wantedPointAmount >= 50) {
+            color = RED;
+        } else if (wantedPointAmount >= 25) {
+            color = GOLD;
+        } else if (wantedPointAmount >= 15) {
+            color = YELLOW;
+        } else if (wantedPointAmount >= 2) {
+            color = GREEN;
+        } else {
+            color = DARK_GREEN;
+        }
+        return color;
+    }
+
+    private int getWpAmountAndDelete(String targetName) {
+        Predicate<WantedEntry> predicate = wantedEntry -> wantedEntry.getPlayerName().equals(targetName);
+        int wantedPointAmount = storage.getWantedEntries().stream()
+                .filter(predicate)
+                .findAny()
+                .map(WantedEntry::getWantedPointAmount)
+                .orElse(0);
+
+        storage.getWantedEntries().removeIf(predicate);
+        return wantedPointAmount;
+    }
+}

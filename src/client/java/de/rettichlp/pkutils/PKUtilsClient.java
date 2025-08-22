@@ -9,6 +9,7 @@ import de.rettichlp.pkutils.common.manager.FactionManager;
 import de.rettichlp.pkutils.common.manager.JobFisherManager;
 import de.rettichlp.pkutils.common.manager.JobTransportManager;
 import de.rettichlp.pkutils.common.manager.SyncManager;
+import de.rettichlp.pkutils.common.manager.WantedManager;
 import de.rettichlp.pkutils.common.storage.Storage;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
@@ -35,6 +36,7 @@ public class PKUtilsClient implements ClientModInitializer {
     public static JobFisherManager jobFisherManager;
     public static JobTransportManager jobTransportManager;
     public static SyncManager syncManager;
+    public static WantedManager wantedManager;
 
     @Override
     public void onInitializeClient() {
@@ -44,6 +46,7 @@ public class PKUtilsClient implements ClientModInitializer {
         jobFisherManager = new JobFisherManager();
         jobTransportManager = new JobTransportManager();
         syncManager = new SyncManager();
+        wantedManager = new WantedManager();
 
         ClientPlayConnectionEvents.JOIN.register((handler, sender, minecraftClient) -> minecraftClient.execute(() -> {
             assert minecraftClient.player != null; // cannot be null at this point
@@ -62,8 +65,9 @@ public class PKUtilsClient implements ClientModInitializer {
             boolean showMessage1 = jobFisherManager.onMessageReceive(rawMessage);
             boolean showMessage2 = jobTransportManager.onMessageReceive(rawMessage);
             boolean showMessage3 = syncManager.onMessageReceive(rawMessage);
+            boolean showMessage4 = wantedManager.onMessageReceive(rawMessage);
 
-            return showMessage1 && showMessage2 && showMessage3;
+            return showMessage1 && showMessage2 && showMessage3 && showMessage4;
         });
 
         ClientSendMessageEvents.ALLOW_CHAT.register(message -> {
