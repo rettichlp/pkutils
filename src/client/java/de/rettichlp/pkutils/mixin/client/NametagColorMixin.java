@@ -1,7 +1,7 @@
-package de.rettichlp.mixin.client;
+package de.rettichlp.pkutils.mixin.client;
 
-import de.rettichlp.common.storage.schema.Faction;
-import de.rettichlp.common.storage.schema.WantedEntry;
+import de.rettichlp.pkutils.common.storage.schema.Faction;
+import de.rettichlp.pkutils.common.storage.schema.WantedEntry;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.state.EntityRenderState;
 import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 import java.util.Optional;
 
-import static de.rettichlp.PKUtilsClient.storage;
+import static de.rettichlp.pkutils.PKUtilsClient.storage;
 import static java.util.Objects.nonNull;
 import static net.minecraft.text.Text.empty;
 import static net.minecraft.util.Formatting.DARK_GREEN;

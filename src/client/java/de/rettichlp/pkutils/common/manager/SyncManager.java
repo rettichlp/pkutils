@@ -1,20 +1,20 @@
-package de.rettichlp.common.manager;
+package de.rettichlp.pkutils.common.manager;
 
-import de.rettichlp.common.listener.MessageListener;
-import de.rettichlp.common.storage.schema.Faction;
-import de.rettichlp.common.storage.schema.FactionMember;
-import de.rettichlp.common.storage.schema.WantedEntry;
+import de.rettichlp.pkutils.common.listener.IMessageListener;
+import de.rettichlp.pkutils.common.storage.schema.Faction;
+import de.rettichlp.pkutils.common.storage.schema.FactionMember;
+import de.rettichlp.pkutils.common.storage.schema.WantedEntry;
 import lombok.NoArgsConstructor;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static de.rettichlp.PKUtils.LOGGER;
-import static de.rettichlp.PKUtilsClient.networkHandler;
-import static de.rettichlp.PKUtilsClient.player;
-import static de.rettichlp.PKUtilsClient.storage;
-import static de.rettichlp.common.storage.schema.Faction.NULL;
-import static de.rettichlp.common.storage.schema.Faction.fromDisplayName;
+import static de.rettichlp.pkutils.PKUtils.LOGGER;
+import static de.rettichlp.pkutils.PKUtilsClient.networkHandler;
+import static de.rettichlp.pkutils.PKUtilsClient.player;
+import static de.rettichlp.pkutils.PKUtilsClient.storage;
+import static de.rettichlp.pkutils.common.storage.schema.Faction.NULL;
+import static de.rettichlp.pkutils.common.storage.schema.Faction.fromDisplayName;
 import static java.lang.Integer.parseInt;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Objects.nonNull;
@@ -22,7 +22,7 @@ import static java.util.Objects.requireNonNull;
 import static java.util.regex.Pattern.compile;
 
 @NoArgsConstructor
-public class SyncManager extends BaseManager implements MessageListener {
+public class SyncManager extends BaseManager implements IMessageListener {
 
     private static final Pattern SERVER_WELCOME_BACK_PATTERN = compile("^Willkommen zurück!$");
     private static final Pattern SERVER_PASSWORD_REQUIRED_PATTERN = compile("^Schalte deinen Account frei mit /passwort \\[Passwort]$");

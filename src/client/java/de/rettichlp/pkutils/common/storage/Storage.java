@@ -1,8 +1,8 @@
-package de.rettichlp.common.storage;
+package de.rettichlp.pkutils.common.storage;
 
-import de.rettichlp.common.storage.schema.Faction;
-import de.rettichlp.common.storage.schema.FactionMember;
-import de.rettichlp.common.storage.schema.WantedEntry;
+import de.rettichlp.pkutils.common.storage.schema.Faction;
+import de.rettichlp.pkutils.common.storage.schema.FactionMember;
+import de.rettichlp.pkutils.common.storage.schema.WantedEntry;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static de.rettichlp.PKUtils.LOGGER;
-import static de.rettichlp.common.storage.schema.Faction.NULL;
+import static de.rettichlp.pkutils.PKUtils.LOGGER;
+import static de.rettichlp.pkutils.common.storage.schema.Faction.NULL;
 
 public class Storage {
 
