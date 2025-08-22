@@ -6,6 +6,12 @@ import de.rettichlp.pkutils.common.manager.JobFisherManager;
 import de.rettichlp.pkutils.common.manager.JobTransportManager;
 import de.rettichlp.pkutils.common.manager.SyncManager;
 import de.rettichlp.pkutils.common.storage.Storage;
+import de.rettichlp.common.command.ADropMoneyCommand;
+import de.rettichlp.common.command.SyncCommand;
+import de.rettichlp.common.manager.JobFisherManager;
+import de.rettichlp.common.manager.JobTransportManager;
+import de.rettichlp.common.manager.SyncManager;
+import de.rettichlp.common.storage.Storage;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
@@ -54,10 +60,12 @@ public class PKUtilsClient implements ClientModInitializer {
             return showMessage1 && showMessage2 && showMessage3;
         });
 
+        ADropMoneyCommand aDropMoneyCommand = new ADropMoneyCommand();
         RichTaxesCommand richTaxesCommand = new RichTaxesCommand();
         SyncCommand syncCommand = new SyncCommand();
 
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
+            aDropMoneyCommand.register(dispatcher);
             richTaxesCommand.register(dispatcher);
             syncCommand.register(dispatcher);
         });
