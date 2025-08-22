@@ -1,17 +1,12 @@
 package de.rettichlp.pkutils;
 
+import de.rettichlp.pkutils.command.ADropMoneyCommand;
 import de.rettichlp.pkutils.command.RichTaxesCommand;
 import de.rettichlp.pkutils.command.SyncCommand;
 import de.rettichlp.pkutils.common.manager.JobFisherManager;
 import de.rettichlp.pkutils.common.manager.JobTransportManager;
 import de.rettichlp.pkutils.common.manager.SyncManager;
 import de.rettichlp.pkutils.common.storage.Storage;
-import de.rettichlp.common.command.ADropMoneyCommand;
-import de.rettichlp.common.command.SyncCommand;
-import de.rettichlp.common.manager.JobFisherManager;
-import de.rettichlp.common.manager.JobTransportManager;
-import de.rettichlp.common.manager.SyncManager;
-import de.rettichlp.common.storage.Storage;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;

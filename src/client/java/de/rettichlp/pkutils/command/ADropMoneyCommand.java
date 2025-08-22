@@ -1,4 +1,4 @@
-package de.rettichlp.common.command;
+package de.rettichlp.pkutils.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static de.rettichlp.PKUtilsClient.*;
+import static de.rettichlp.pkutils.PKUtilsClient.networkHandler;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
 
 public class ADropMoneyCommand {
