@@ -50,12 +50,6 @@ public enum Faction {
     private final Formatting color;
     private final String icon;
 
-    public static @NotNull Optional<Faction> fromDisplayName(String displayName) {
-        return stream(Faction.values())
-                .filter(faction -> displayName.contains(faction.getDisplayName()))
-                .findFirst();
-    }
-
     public Text getNameTagSuffix() {
         return this == NULL ? empty() : empty()
                 .append(Text.of("⌜")
@@ -67,5 +61,11 @@ public enum Faction {
                 .append(Text.of("⌟")
                         .copy()
                         .formatted(DARK_GRAY));
+    }
+
+    public static @NotNull Optional<Faction> fromDisplayName(String displayName) {
+        return stream(Faction.values())
+                .filter(faction -> displayName.contains(faction.getDisplayName()))
+                .findFirst();
     }
 }
