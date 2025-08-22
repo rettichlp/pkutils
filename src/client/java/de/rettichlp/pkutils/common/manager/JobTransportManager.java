@@ -13,7 +13,9 @@ import static java.util.regex.Pattern.compile;
 @NoArgsConstructor
 public class JobTransportManager extends BaseManager implements IMessageListener {
 
-    private static final Pattern TRANSPORT_DELIVER_PATTERN = compile("^\\[Transport] Du hast eine Kiste abgeliefert\\.$");
+    private static final Pattern TRANSPORT_DELIVER_PATTERN = compile("^\\[Transport] Du hast eine (Kiste|Waffenkiste) abgeliefert\\.$" +
+            "|^\\[Transport] Du hast ein Weizen Paket abgeliefert\\.$" +
+            "|^\\[Transport] Du hast eine Schwarzpulverkiste abgeliefert\\.$");
     private static final Pattern DRINK_TRANSPORT_DELIVER_PATTERN = compile("^\\[Bar] Du hast eine Flasche abgegeben!$");
 
     @Override
