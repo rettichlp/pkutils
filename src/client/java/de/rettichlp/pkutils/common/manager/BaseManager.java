@@ -1,6 +1,5 @@
 package de.rettichlp.pkutils.common.manager;
 
-import lombok.NoArgsConstructor;
 import net.minecraft.text.Text;
 
 import java.util.Timer;
@@ -14,8 +13,7 @@ import static net.minecraft.util.Formatting.DARK_PURPLE;
 import static net.minecraft.util.Formatting.LIGHT_PURPLE;
 import static net.minecraft.util.Formatting.WHITE;
 
-@NoArgsConstructor
-public class BaseManager {
+public abstract class BaseManager {
 
     private static final Text modMessagePrefix = Text.empty()
             .append(of("✦").copy().formatted(DARK_PURPLE))
