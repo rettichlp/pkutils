@@ -53,9 +53,9 @@ public class PKUtilsClient implements ClientModInitializer {
 
             String rawMessage = message.getString();
 
-            boolean showMessage1 = jobFisherManager.onMessage(rawMessage);
-            boolean showMessage2 = jobTransportManager.onMessage(rawMessage);
-            boolean showMessage3 = syncManager.onMessage(rawMessage);
+            boolean showMessage1 = jobFisherManager.onMessageReceive(rawMessage);
+            boolean showMessage2 = jobTransportManager.onMessageReceive(rawMessage);
+            boolean showMessage3 = syncManager.onMessageReceive(rawMessage);
 
             return showMessage1 && showMessage2 && showMessage3;
         });

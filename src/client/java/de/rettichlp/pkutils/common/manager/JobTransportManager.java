@@ -1,6 +1,6 @@
 package de.rettichlp.pkutils.common.manager;
 
-import de.rettichlp.pkutils.common.listener.IMessageListener;
+import de.rettichlp.pkutils.common.listener.IMessageReceiveListener;
 import lombok.NoArgsConstructor;
 
 import java.util.regex.Matcher;
@@ -11,7 +11,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.regex.Pattern.compile;
 
 @NoArgsConstructor
-public class JobTransportManager extends BaseManager implements IMessageListener {
+public class JobTransportManager extends BaseManager implements IMessageReceiveListener {
 
     private static final Pattern TRANSPORT_DELIVER_PATTERN = compile("^\\[Transport] Du hast eine (Kiste|Waffenkiste) abgeliefert\\.$" +
             "|^\\[Transport] Du hast ein Weizen Paket abgeliefert\\.$" +
@@ -19,7 +19,7 @@ public class JobTransportManager extends BaseManager implements IMessageListener
     private static final Pattern DRINK_TRANSPORT_DELIVER_PATTERN = compile("^\\[Bar] Du hast eine Flasche abgegeben!$");
 
     @Override
-    public boolean onMessage(String message) {
+    public boolean onMessageReceive(String message) {
         Matcher transportDeliverMatcher = TRANSPORT_DELIVER_PATTERN.matcher(message);
         if (transportDeliverMatcher.find()) {
             delayedAction(() -> networkHandler.sendChatCommand("droptransport"), SECONDS.toMillis(10));
