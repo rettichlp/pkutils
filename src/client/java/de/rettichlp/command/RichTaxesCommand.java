@@ -1,7 +1,7 @@
 package de.rettichlp.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
-import de.rettichlp.common.listener.MessageListener;
+import de.rettichlp.common.listener.IMessageListener;
 import de.rettichlp.common.manager.BaseManager;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.text.Text;
@@ -14,7 +14,7 @@ import static de.rettichlp.PKUtilsClient.player;
 import static java.util.regex.Pattern.compile;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
 
-public class RichTaxesCommand extends BaseManager implements MessageListener {
+public class RichTaxesCommand extends BaseManager implements IMessageListener {
 
     private final Pattern PLAYER_MONEY_BANK_AMOUNT = compile("^Ihr Bankguthaben beträgt: (?<moneyBankAmount>([+-])\\d+)\\$$");
     private final Pattern MONEY_ATM_AMOUNT = compile("ATM \\d+: (?<atmMoneyAmount>\\d+)/100000\\$");

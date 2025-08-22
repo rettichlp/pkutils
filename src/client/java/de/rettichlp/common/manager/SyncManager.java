@@ -1,6 +1,6 @@
 package de.rettichlp.common.manager;
 
-import de.rettichlp.common.listener.MessageListener;
+import de.rettichlp.common.listener.IMessageListener;
 import de.rettichlp.common.storage.schema.Faction;
 import de.rettichlp.common.storage.schema.FactionMember;
 import de.rettichlp.common.storage.schema.WantedEntry;
@@ -22,7 +22,7 @@ import static java.util.Objects.requireNonNull;
 import static java.util.regex.Pattern.compile;
 
 @NoArgsConstructor
-public class SyncManager extends BaseManager implements MessageListener {
+public class SyncManager extends BaseManager implements IMessageListener {
 
     private static final Pattern SERVER_WELCOME_BACK_PATTERN = compile("^Willkommen zurück!$");
     private static final Pattern SERVER_PASSWORD_REQUIRED_PATTERN = compile("^Schalte deinen Account frei mit /passwort \\[Passwort]$");

@@ -1,6 +1,6 @@
 package de.rettichlp.common.listener;
 
-public interface MessageListener {
+public interface IMessageListener {
 
     boolean onMessage(String message);
 }

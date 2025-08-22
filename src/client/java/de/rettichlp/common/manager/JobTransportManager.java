@@ -1,6 +1,6 @@
 package de.rettichlp.common.manager;
 
-import de.rettichlp.common.listener.MessageListener;
+import de.rettichlp.common.listener.IMessageListener;
 import lombok.NoArgsConstructor;
 
 import java.util.regex.Matcher;
@@ -11,7 +11,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.regex.Pattern.compile;
 
 @NoArgsConstructor
-public class JobTransportManager extends BaseManager implements MessageListener {
+public class JobTransportManager extends BaseManager implements IMessageListener {
 
     private static final Pattern TRANSPORT_DELIVER_PATTERN = compile("^\\[Transport] Du hast eine Kiste abgeliefert\\.$");
     private static final Pattern DRINK_TRANSPORT_DELIVER_PATTERN = compile("^\\[Bar] Du hast eine Flasche abgegeben!$");
