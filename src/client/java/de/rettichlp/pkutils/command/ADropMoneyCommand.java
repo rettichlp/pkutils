@@ -16,17 +16,17 @@ public class ADropMoneyCommand {
 
     public void register(@NotNull CommandDispatcher<FabricClientCommandSource> dispatcher) {
         dispatcher.register(
-                literal("sync")
+                literal("adropmoney")
                         .executes(context -> {
                             new Timer().scheduleAtFixedRate(new TimerTask() {
                                 @Override
                                 public void run() {
-                                    switch (step++) {
+                                    switch (ADropMoneyCommand.this.step++) {
                                         case 1 -> networkHandler.sendChatCommand("bank abbuchen 15000");
                                         case 2 -> networkHandler.sendChatCommand("dropmoney");
                                         case 3 -> {
                                             networkHandler.sendChatCommand("bank einzahlen 15000");
-                                            step = 0;
+                                            ADropMoneyCommand.this.step = 0;
                                             this.cancel();
                                         }
                                     }
