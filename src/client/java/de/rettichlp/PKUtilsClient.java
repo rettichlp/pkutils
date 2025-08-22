@@ -1,11 +1,12 @@
 package de.rettichlp;
 
-import de.rettichlp.common.manager.FactionManager;
+import de.rettichlp.common.command.SyncCommand;
 import de.rettichlp.common.manager.JobFisherManager;
 import de.rettichlp.common.manager.JobTransportManager;
-import de.rettichlp.common.manager.WantedManager;
+import de.rettichlp.common.manager.SyncManager;
 import de.rettichlp.common.storage.Storage;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
@@ -19,27 +20,22 @@ public class PKUtilsClient implements ClientModInitializer {
     public static Storage storage = new Storage();
 
     // managers
-    public static FactionManager factionManager;
     public static JobFisherManager jobFisherManager;
     public static JobTransportManager jobTransportManager;
-    public static WantedManager wantedManager;
+    public static SyncManager syncManager;
 
     @Override
     public void onInitializeClient() {
         // This entrypoint is suitable for setting up client-specific logic, such as rendering.
 
-        factionManager = new FactionManager();
         jobFisherManager = new JobFisherManager();
         jobTransportManager = new JobTransportManager();
-        wantedManager = new WantedManager();
+        syncManager = new SyncManager();
 
         ClientPlayConnectionEvents.JOIN.register((handler, sender, minecraftClient) -> minecraftClient.execute(() -> {
             assert minecraftClient.player != null; // cannot be null at this point
             player = minecraftClient.player;
             networkHandler = minecraftClient.player.networkHandler;
-
-            factionManager.onJoin();
-            wantedManager.onJoin();
         }));
 
         ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> {
@@ -50,12 +46,17 @@ public class PKUtilsClient implements ClientModInitializer {
 
             String rawMessage = message.getString();
 
-            boolean showMessage1 = factionManager.onMessage(rawMessage);
-            boolean showMessage2 = jobFisherManager.onMessage(rawMessage);
-            boolean showMessage3 = jobTransportManager.onMessage(rawMessage);
-            boolean showMessage4 = wantedManager.onMessage(rawMessage);
+            boolean showMessage1 = jobFisherManager.onMessage(rawMessage);
+            boolean showMessage2 = jobTransportManager.onMessage(rawMessage);
+            boolean showMessage3 = syncManager.onMessage(rawMessage);
 
-            return showMessage1 && showMessage2 && showMessage3 && showMessage4;
+            return showMessage1 && showMessage2 && showMessage3;
+        });
+
+        SyncCommand syncCommand = new SyncCommand();
+
+        ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
+            syncCommand.register(dispatcher);
         });
     }
 }
