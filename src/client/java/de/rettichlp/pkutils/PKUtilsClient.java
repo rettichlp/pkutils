@@ -1,7 +1,11 @@
 package de.rettichlp.pkutils;
 
-import de.rettichlp.pkutils.command.*;
-import de.rettichlp.pkutils.common.listener.ClientSendMessageListener;
+import de.rettichlp.pkutils.command.ADropMoneyCommand;
+import de.rettichlp.pkutils.command.RichTaxesCommand;
+import de.rettichlp.pkutils.command.SyncCommand;
+import de.rettichlp.pkutils.command.ToggleDChatCommand;
+import de.rettichlp.pkutils.command.ToggleFChatCommand;
+import de.rettichlp.pkutils.common.manager.FactionManager;
 import de.rettichlp.pkutils.common.manager.JobFisherManager;
 import de.rettichlp.pkutils.common.manager.JobTransportManager;
 import de.rettichlp.pkutils.common.manager.SyncManager;
@@ -92,15 +96,15 @@ public class PKUtilsClient implements ClientModInitializer {
         ADropMoneyCommand aDropMoneyCommand = new ADropMoneyCommand();
         RichTaxesCommand richTaxesCommand = new RichTaxesCommand();
         SyncCommand syncCommand = new SyncCommand();
-        ToggleDchatCommand toggleDchatCommand = new ToggleDchatCommand();
-        ToggleFchatCommand toggleFchatCommand = new ToggleFchatCommand();
+        ToggleDChatCommand toggleDChatCommand = new ToggleDChatCommand();
+        ToggleFChatCommand toggleFChatCommand = new ToggleFChatCommand();
 
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
             aDropMoneyCommand.register(dispatcher);
             richTaxesCommand.register(dispatcher);
             syncCommand.register(dispatcher);
-            toggleDchatCommand.register(dispatcher);
-            toggleFchatCommand.register(dispatcher);
+            toggleDChatCommand.register(dispatcher);
+            toggleFChatCommand.register(dispatcher);
         });
     }
 
