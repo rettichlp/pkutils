@@ -3,6 +3,9 @@ package de.rettichlp.pkutils;
 import de.rettichlp.pkutils.command.ADropMoneyCommand;
 import de.rettichlp.pkutils.command.RichTaxesCommand;
 import de.rettichlp.pkutils.command.SyncCommand;
+import de.rettichlp.pkutils.command.ToggleDChatCommand;
+import de.rettichlp.pkutils.command.ToggleFChatCommand;
+import de.rettichlp.pkutils.common.manager.FactionManager;
 import de.rettichlp.pkutils.common.manager.JobFisherManager;
 import de.rettichlp.pkutils.common.manager.JobTransportManager;
 import de.rettichlp.pkutils.common.manager.SyncManager;
@@ -28,6 +31,7 @@ public class PKUtilsClient implements ClientModInitializer {
     public static Storage storage = new Storage();
 
     // managers
+    public static FactionManager factionManager;
     public static JobFisherManager jobFisherManager;
     public static JobTransportManager jobTransportManager;
     public static SyncManager syncManager;
@@ -36,6 +40,7 @@ public class PKUtilsClient implements ClientModInitializer {
     public void onInitializeClient() {
         // This entrypoint is suitable for setting up client-specific logic, such as rendering.
 
+        factionManager = new FactionManager();
         jobFisherManager = new JobFisherManager();
         jobTransportManager = new JobTransportManager();
         syncManager = new SyncManager();
@@ -54,11 +59,17 @@ public class PKUtilsClient implements ClientModInitializer {
 
             String rawMessage = message.getString();
 
-            boolean showMessage1 = jobFisherManager.onMessage(rawMessage);
-            boolean showMessage2 = jobTransportManager.onMessage(rawMessage);
-            boolean showMessage3 = syncManager.onMessage(rawMessage);
+            boolean showMessage1 = jobFisherManager.onMessageReceive(rawMessage);
+            boolean showMessage2 = jobTransportManager.onMessageReceive(rawMessage);
+            boolean showMessage3 = syncManager.onMessageReceive(rawMessage);
 
             return showMessage1 && showMessage2 && showMessage3;
+        });
+
+        ClientSendMessageEvents.ALLOW_CHAT.register(message -> {
+            boolean sendMessage1 = factionManager.onMessageSend(message);
+
+            return sendMessage1;
         });
 
         ClientSendMessageEvents.ALLOW_COMMAND.register(command -> {
@@ -85,11 +96,15 @@ public class PKUtilsClient implements ClientModInitializer {
         ADropMoneyCommand aDropMoneyCommand = new ADropMoneyCommand();
         RichTaxesCommand richTaxesCommand = new RichTaxesCommand();
         SyncCommand syncCommand = new SyncCommand();
+        ToggleDChatCommand toggleDChatCommand = new ToggleDChatCommand();
+        ToggleFChatCommand toggleFChatCommand = new ToggleFChatCommand();
 
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
             aDropMoneyCommand.register(dispatcher);
             richTaxesCommand.register(dispatcher);
             syncCommand.register(dispatcher);
+            toggleDChatCommand.register(dispatcher);
+            toggleFChatCommand.register(dispatcher);
         });
     }
 

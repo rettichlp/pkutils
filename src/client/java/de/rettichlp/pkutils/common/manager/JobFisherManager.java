@@ -1,6 +1,6 @@
 package de.rettichlp.pkutils.common.manager;
 
-import de.rettichlp.pkutils.common.listener.IMessageListener;
+import de.rettichlp.pkutils.common.listener.IMessageReceiveListener;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,7 +22,7 @@ import static java.util.Arrays.stream;
 import static java.util.regex.Pattern.compile;
 
 @NoArgsConstructor
-public class JobFisherManager extends BaseManager implements IMessageListener {
+public class JobFisherManager extends BaseManager implements IMessageReceiveListener {
 
     private static final Pattern FISHER_START = compile("^\\[Fischer] Mit /findschwarm kannst du dir den nächsten Fischschwarm anzeigen lassen\\.$");
     private static final Pattern FISHER_SPOT_FOUND_PATTERN = compile("^\\[Fischer] Du hast einen Fischschwarm gefunden!$");
@@ -32,7 +32,7 @@ public class JobFisherManager extends BaseManager implements IMessageListener {
     private Collection<FisherJobSpot> currentFisherJobSpots = new ArrayList<>();
 
     @Override
-    public boolean onMessage(String message) {
+    public boolean onMessageReceive(String message) {
         Matcher fisherStartMatcher = FISHER_START.matcher(message);
         if (fisherStartMatcher.find()) {
             this.currentFisherJobSpots = new ArrayList<>();
