@@ -26,10 +26,10 @@ import static java.lang.Character.isUpperCase;
 
 public class PKUtilsClient implements ClientModInitializer {
 
+    public static final Storage storage = new Storage();
+
     public static ClientPlayerEntity player;
     public static ClientPlayNetworkHandler networkHandler;
-
-    public static final Storage storage = new Storage();
 
     // managers
     public static FactionManager factionManager;
