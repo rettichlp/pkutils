@@ -19,19 +19,19 @@ import static de.rettichlp.pkutils.common.storage.schema.Faction.NULL;
 public class Storage {
 
     @Getter
-    private final List<BlacklistEntry> blacklistEntries = new ArrayList<>();
+    private final Map<Faction, Set<FactionMember>> factionMembers = new HashMap<>();
 
     @Getter
-    private final Map<Faction, Set<FactionMember>> factionMembers = new HashMap<>();
+    private final List<BlacklistEntry> blacklistEntries = new ArrayList<>();
 
     @Getter
     private final List<WantedEntry> wantedEntries = new ArrayList<>();
 
     public void print() {
-        // blacklistEntries
-        LOGGER.info("blacklistEntries[{}]: {}", this.blacklistEntries.size(), this.blacklistEntries);
         // factionMembers
         this.factionMembers.forEach((faction, factionMembers) -> LOGGER.info("factionMembers[{}:{}]: {}", faction, factionMembers.size(), factionMembers));
+        // blacklistEntries
+        LOGGER.info("blacklistEntries[{}]: {}", this.blacklistEntries.size(), this.blacklistEntries);
         // wantedEntries
         LOGGER.info("wantedEntries[{}]: {}", this.wantedEntries.size(), this.wantedEntries);
     }
