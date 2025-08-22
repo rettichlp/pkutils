@@ -3,6 +3,7 @@ package de.rettichlp.pkutils.common.manager;
 import de.rettichlp.pkutils.common.listener.IMessageReceiveListener;
 import de.rettichlp.pkutils.common.storage.schema.WantedEntry;
 import lombok.NoArgsConstructor;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.NotNull;
 
@@ -10,6 +11,7 @@ import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static de.rettichlp.pkutils.PKUtilsClient.player;
 import static de.rettichlp.pkutils.PKUtilsClient.storage;
 import static de.rettichlp.pkutils.PKUtilsClient.syncManager;
 import static java.lang.Integer.parseInt;
@@ -63,12 +65,12 @@ public class WantedManager extends BaseManager implements IMessageReceiveListene
                     .findFirst()
                     .ifPresent(wantedEntry -> wantedEntry.setWantedPointAmount(wantedPoints));
 
-            empty()
+            Text modifiedMessage = empty()
                     .append(of("➥").copy().formatted(DARK_GRAY)).append(" ")
                     .append(of(wantedGivenPointsMatcher.group(2)).copy().formatted(BLUE)).append(" ")
                     .append(of("Wanteds").copy().formatted(BLUE));
 
-            // TODO send
+            player.sendMessage(modifiedMessage, false);
 
             return false;
         }
@@ -83,14 +85,14 @@ public class WantedManager extends BaseManager implements IMessageReceiveListene
                     .findFirst()
                     .ifPresent(wantedEntry -> wantedEntry.setReason(reason));
 
-            empty()
+            Text modifiedMessage = empty()
                     .append(of("Gesucht").copy().formatted(RED)).append(" ")
                     .append(of("-").copy().formatted(GRAY)).append(" ")
                     .append(of(wantedGivenReasonMatcher.group(1)).copy().formatted(BLUE)).append(" ")
                     .append(of("-").copy().formatted(GRAY)).append(" ")
                     .append(of(wantedGivenReasonMatcher.group(2)).copy().formatted(BLUE));
 
-            // TODO send
+            player.sendMessage(modifiedMessage, false);
 
             return false;
         }
@@ -100,13 +102,13 @@ public class WantedManager extends BaseManager implements IMessageReceiveListene
             String reason = wantedReasonMatcher.group("reason");
             String time = wantedReasonMatcher.group("time");
 
-            empty()
+            Text modifiedMessage = empty()
                     .append(of("➥").copy().formatted(DARK_GRAY)).append(" ")
                     .append(of(reason).copy().formatted(BLUE)).append(" ")
                     .append(of("-").copy().formatted(GRAY)).append(" ")
                     .append(of(time).copy().formatted(BLUE));
 
-            // TODO send
+            player.sendMessage(modifiedMessage, false);
 
             return false;
         }
@@ -118,7 +120,7 @@ public class WantedManager extends BaseManager implements IMessageReceiveListene
 
             int wpAmount = getWpAmountAndDelete(targetName);
 
-            empty()
+            Text modifiedMessage = empty()
                     .append(of("Gelöscht").copy().formatted(RED)).append(" ")
                     .append(of("-").copy().formatted(GRAY)).append(" ")
                     .append(of(targetName).copy().formatted(BLUE)).append(" ")
@@ -128,7 +130,7 @@ public class WantedManager extends BaseManager implements IMessageReceiveListene
                     .append(of("-").copy().formatted(GRAY)).append(" ")
                     .append(of(playerName).copy().formatted(BLUE));
 
-            // TODO send
+            player.sendMessage(modifiedMessage, false);
 
             return false;
         }
@@ -140,7 +142,7 @@ public class WantedManager extends BaseManager implements IMessageReceiveListene
 
             int wpAmount = getWpAmountAndDelete(targetName);
 
-            empty()
+            Text modifiedMessage = empty()
                     .append(of("Getötet").copy().formatted(RED)).append(" ")
                     .append(of("-").copy().formatted(GRAY)).append(" ")
                     .append(of(targetName).copy().formatted(BLUE)).append(" ")
@@ -150,7 +152,7 @@ public class WantedManager extends BaseManager implements IMessageReceiveListene
                     .append(of("-").copy().formatted(GRAY)).append(" ")
                     .append(of(playerName).copy().formatted(BLUE));
 
-            // TODO send
+            player.sendMessage(modifiedMessage, false);
 
             return false;
         }
@@ -162,7 +164,7 @@ public class WantedManager extends BaseManager implements IMessageReceiveListene
 
             int wpAmount = getWpAmountAndDelete(targetName);
 
-            empty()
+            Text modifiedMessage = empty()
                     .append(of("Eingesperrt").copy().formatted(RED)).append(" ")
                     .append(of("-").copy().formatted(GRAY)).append(" ")
                     .append(of(targetName).copy().formatted(BLUE)).append(" ")
@@ -172,7 +174,7 @@ public class WantedManager extends BaseManager implements IMessageReceiveListene
                     .append(of("-").copy().formatted(GRAY)).append(" ")
                     .append(of(playerName).copy().formatted(BLUE));
 
-            // TODO send
+            player.sendMessage(modifiedMessage, false);
 
             return false;
         }
@@ -182,14 +184,14 @@ public class WantedManager extends BaseManager implements IMessageReceiveListene
             String playerName = wantedUnarrestMatcher.group("playerName");
             String targetName = wantedUnarrestMatcher.group("targetName");
 
-            empty()
+            Text modifiedMessage = empty()
                     .append(of("Entlassen").copy().formatted(RED)).append(" ")
                     .append(of("-").copy().formatted(GRAY)).append(" ")
                     .append(of(targetName).copy().formatted(BLUE)).append(" ")
                     .append(of("-").copy().formatted(GRAY)).append(" ")
                     .append(of(playerName).copy().formatted(BLUE));
 
-            // TODO send
+            player.sendMessage(modifiedMessage, false);
 
             return false;
         }
@@ -213,8 +215,8 @@ public class WantedManager extends BaseManager implements IMessageReceiveListene
 
             Formatting color = getWantedPointColor(wantedPointAmount);
 
-                empty()
             if (!syncManager.isGameSyncProcessActive()) {
+                Text modifiedMessage = empty()
                         .append(of("➥").copy().formatted(DARK_GRAY)).append(" ")
                         .append(of(playerName).copy().formatted(color)).append(" ")
                         .append(of("-").copy().formatted(GRAY)).append(" ")
@@ -224,6 +226,8 @@ public class WantedManager extends BaseManager implements IMessageReceiveListene
                         .append(of(")").copy().formatted(GRAY)).append(" ")
                         .append(of(isAfk ? "|" : "").copy().formatted(DARK_GRAY)).append(" ")
                         .append(of(isAfk ? "AFK" : "").copy().formatted(GRAY));
+
+                player.sendMessage(modifiedMessage, false);
             }
 
             return false;
@@ -234,14 +238,14 @@ public class WantedManager extends BaseManager implements IMessageReceiveListene
             String playerName = giveDrivingLicenseMatcher.group("playerName");
             String targetName = giveDrivingLicenseMatcher.group("targetName");
 
-            empty()
+            Text modifiedMessage = empty()
                     .append(of("Führerscheinrückgabe").copy().formatted(RED)).append(" ")
                     .append(of("-").copy().formatted(GRAY)).append(" ")
                     .append(of(targetName).copy().formatted(BLUE)).append(" ")
                     .append(of("-").copy().formatted(GRAY)).append(" ")
                     .append(of(playerName).copy().formatted(BLUE));
 
-            // TODO send
+            player.sendMessage(modifiedMessage, false);
 
             return false;
         }
@@ -251,14 +255,14 @@ public class WantedManager extends BaseManager implements IMessageReceiveListene
             String playerName = takeDrivingLicenseMatcher.group("playerName");
             String targetName = takeDrivingLicenseMatcher.group("targetName");
 
-            empty()
+            Text modifiedMessage = empty()
                     .append(of("Führerscheinabnahme").copy().formatted(RED)).append(" ")
                     .append(of("-").copy().formatted(GRAY)).append(" ")
                     .append(of(targetName).copy().formatted(BLUE)).append(" ")
                     .append(of("-").copy().formatted(GRAY)).append(" ")
                     .append(of(playerName).copy().formatted(BLUE));
 
-            // TODO send
+            player.sendMessage(modifiedMessage, false);
 
             return false;
         }
@@ -268,14 +272,14 @@ public class WantedManager extends BaseManager implements IMessageReceiveListene
             String playerName = giveGunLicenseMatcher.group("playerName");
             String targetName = giveGunLicenseMatcher.group("targetName");
 
-            empty()
+            Text modifiedMessage = empty()
                     .append(of("Waffenscheinrückgabe").copy().formatted(RED)).append(" ")
                     .append(of("-").copy().formatted(GRAY)).append(" ")
                     .append(of(targetName).copy().formatted(BLUE)).append(" ")
                     .append(of("-").copy().formatted(GRAY)).append(" ")
                     .append(of(playerName).copy().formatted(BLUE));
 
-            // TODO send
+            player.sendMessage(modifiedMessage, false);
 
             return false;
         }
@@ -285,14 +289,14 @@ public class WantedManager extends BaseManager implements IMessageReceiveListene
             String playerName = takeGunLicenseMatcher.group("playerName");
             String targetName = takeGunLicenseMatcher.group("targetName");
 
-            empty()
+            Text modifiedMessage = empty()
                     .append(of("Waffenscheinabnahme").copy().formatted(RED)).append(" ")
                     .append(of("-").copy().formatted(GRAY)).append(" ")
                     .append(of(targetName).copy().formatted(BLUE)).append(" ")
                     .append(of("-").copy().formatted(GRAY)).append(" ")
                     .append(of(playerName).copy().formatted(BLUE));
 
-            // TODO send
+            player.sendMessage(modifiedMessage, false);
 
             return false;
         }
@@ -302,14 +306,14 @@ public class WantedManager extends BaseManager implements IMessageReceiveListene
             String playerName = takeGunsMatcher.group("playerName");
             String targetName = takeGunsMatcher.group("targetName");
 
-            empty()
+            Text modifiedMessage = empty()
                     .append(of("Waffenabnahme").copy().formatted(RED)).append(" ")
                     .append(of("-").copy().formatted(GRAY)).append(" ")
                     .append(of(targetName).copy().formatted(BLUE)).append(" ")
                     .append(of("-").copy().formatted(GRAY)).append(" ")
                     .append(of(playerName).copy().formatted(BLUE));
 
-            // TODO send
+            player.sendMessage(modifiedMessage, false);
 
             return false;
         }
@@ -319,14 +323,14 @@ public class WantedManager extends BaseManager implements IMessageReceiveListene
             String playerName = takeDrugsMatcher.group("playerName");
             String targetName = takeDrugsMatcher.group("targetName");
 
-            empty()
+            Text modifiedMessage = empty()
                     .append(of("Drogenabnahme").copy().formatted(RED)).append(" ")
                     .append(of("-").copy().formatted(GRAY)).append(" ")
                     .append(of(targetName).copy().formatted(BLUE)).append(" ")
                     .append(of("-").copy().formatted(GRAY)).append(" ")
                     .append(of(playerName).copy().formatted(BLUE));
 
-            // TODO send
+            player.sendMessage(modifiedMessage, false);
 
             return false;
         }
@@ -336,14 +340,14 @@ public class WantedManager extends BaseManager implements IMessageReceiveListene
             String playerName = trackerMatcher.group("playerName");
             String targetName = trackerMatcher.group("targetName");
 
-            empty()
+            Text modifiedMessage = empty()
                     .append(of("Peilsender").copy().formatted(RED)).append(" ")
                     .append(of("-").copy().formatted(GRAY)).append(" ")
                     .append(of(playerName).copy().formatted(DARK_AQUA)).append(" ")
                     .append(of("»").copy().formatted(GRAY)).append(" ")
                     .append(of(targetName).copy().formatted(GOLD));
 
-            // TODO send
+            player.sendMessage(modifiedMessage, false);
 
             return false;
         }
