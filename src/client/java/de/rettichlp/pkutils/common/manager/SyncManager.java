@@ -32,7 +32,7 @@ public class SyncManager extends BaseManager implements IMessageReceiveListener 
     private static final Pattern FACTION_MEMBER_ALL_ENTRY = compile("^\\s*-\\s*(?<rank>\\d)\\s*\\|\\s*(?<playerNames>.+)$");
     private static final Pattern FACTION_POLICE_WANTED_ONLINE_PLAYERS_HEADER_PATTERN = compile("Online Spieler mit WantedPunkten:");
     private static final Pattern FACTION_POLICE_WANTED_ONLINE_PLAYERS_ENTRY_PATTERN = compile("- (?<playerName>[A-Za-z0-9_]+) \\| (?<wantedPointAmount>\\d+) \\| (?<reason>.+)(?<afk> \\| AFK|)");
-    private static final Pattern BLACKLIST_HEADER_PATTERN = compile("=== Blacklist .+ ===");
+    private static final Pattern BLACKLIST_HEADER_PATTERN = compile("^==== Blacklist .+ ====$");
     private static final Pattern BLACKLIST_ENTRY_PATTERN = compile("^ » (?<playerName>[A-Za-z0-9_]+) \\| (?<reason>.+) \\| (?<dateTime>.+) \\| (?<kills>\\d+) Kills \\| (?<price>\\d+)\\$(| \\(AFK\\))$");
 
     private boolean gameSyncProcessScheduled = false;
