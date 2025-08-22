@@ -37,10 +37,10 @@ public class WantedManager extends BaseManager implements IMessageReceiveListene
     private static final Pattern WANTED_GIVEN_POINTS_PATTERN = compile("^HQ: ([A-Za-z0-9_]+)'s momentanes WantedLevel: (\\d+)$");
     private static final Pattern WANTED_GIVEN_REASON_PATTERN = compile("^HQ: Gesuchter: (?<playerName>[A-Za-z0-9_]+)\\. Grund: (?<reason>.+)$");
     private static final Pattern WANTED_REASON_PATTERN = compile("^HQ: Fahndungsgrund: (?<reason>.+) \\| Fahndungszeit: (?<time>.+)\\.$");
-    private static final Pattern WANTED_DELETE_PATTERN = compile("^HQ: .+ (?<playerName>[A-Za-z0-9_]+) hat (?<targetName>[A-Za-z0-9_]+)(?:'s)* Akten gelöscht, over\\.$");
+    private static final Pattern WANTED_DELETE_PATTERN = compile("^HQ:.+ (?<playerName>[A-Za-z0-9_]+) hat (?<targetName>[A-Za-z0-9_]+)(?:'s)* Akten gelöscht, over\\.$");
     private static final Pattern WANTED_KILL_PATTERN = compile("^HQ: (?<targetName>[A-Za-z0-9_]+) wurde von (?<playerName>[a-zA-Z0-9_]+) getötet\\.$");
     private static final Pattern WANTED_ARREST_PATTERN = compile("^HQ: (?<targetName>[A-Za-z0-9_]+) wurde von (?<playerName>[a-zA-Z0-9_]+) eingesperrt\\.$");
-    private static final Pattern WANTED_UNARREST_PATTERN = compile("^HQ: .+ (?<playerName>[A-Za-z0-9_]+) hat (?<targetName>[A-Za-z0-9_]+) aus dem Gefängnis entlassen\\.$");
+    private static final Pattern WANTED_UNARREST_PATTERN = compile("^HQ:.+ (?<playerName>[A-Za-z0-9_]+) hat (?<targetName>[A-Za-z0-9_]+) aus dem Gefängnis entlassen\\.$");
     private static final Pattern WANTED_LIST_HEADER_PATTERN = compile("Online Spieler mit WantedPunkten:");
     private static final Pattern WANTED_LIST_ENTRY_PATTERN = compile("- (?<playerName>[A-Za-z0-9_]+) \\| (?<wantedPointAmount>\\d+) \\| (?<reason>.+)(?<afk> \\| AFK|)");
     private static final Pattern GIVE_DRIVING_LICENSE_PATTERN = compile("^(Agent|Beamter) (?<playerName>[A-Za-z0-9_]+) hat (?<targetName>[a-zA-Z0-9_]+)(?:'s)* Führerschein zurückgegeben\\.$");
@@ -221,8 +221,8 @@ public class WantedManager extends BaseManager implements IMessageReceiveListene
                         .append(of(playerName).copy().formatted(color)).append(" ")
                         .append(of("-").copy().formatted(GRAY)).append(" ")
                         .append(of(reason).copy().formatted(color)).append(" ")
-                        .append(of("(").copy().formatted(GRAY)).append(" ")
-                        .append(of(valueOf(wantedPointAmount)).copy().formatted(BLUE)).append(" ")
+                        .append(of("(").copy().formatted(GRAY))
+                        .append(of(valueOf(wantedPointAmount)).copy().formatted(BLUE))
                         .append(of(")").copy().formatted(GRAY)).append(" ")
                         .append(of(isAfk ? "|" : "").copy().formatted(DARK_GRAY)).append(" ")
                         .append(of(isAfk ? "AFK" : "").copy().formatted(GRAY));
