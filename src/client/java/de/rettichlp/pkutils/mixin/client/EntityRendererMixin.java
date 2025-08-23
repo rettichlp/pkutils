@@ -15,11 +15,14 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 import java.util.Optional;
 
+import static de.rettichlp.pkutils.PKUtilsClient.player;
 import static de.rettichlp.pkutils.PKUtilsClient.storage;
 import static de.rettichlp.pkutils.PKUtilsClient.wantedManager;
 import static java.util.Objects.nonNull;
+import static java.util.Objects.requireNonNull;
 import static net.minecraft.text.Text.empty;
 import static net.minecraft.text.Text.of;
+import static net.minecraft.util.Formatting.BLUE;
 import static net.minecraft.util.Formatting.DARK_GRAY;
 import static net.minecraft.util.Formatting.DARK_RED;
 import static net.minecraft.util.Formatting.RED;
@@ -43,6 +46,11 @@ public abstract class EntityRendererMixin<S extends Entity, T extends EntityRend
             Text newTargetDisplayName = targetDisplayName.copy();
             Text newTargetDisplayNameSuffix = targetFaction.getNameTagSuffix();
             Formatting newTargetDisplayNameColor = WHITE;
+
+            // same faction -> blue name
+            if (targetFaction == storage.getFaction(requireNonNull(player.getDisplayName()).getString())) {
+                newTargetDisplayNameColor = BLUE;
+            }
 
             Optional<BlacklistEntry> optionalTargetBlacklistEntry = storage.getBlacklistEntries().stream()
                     .filter(blacklistEntry -> blacklistEntry.getPlayerName().equals(targetDisplayNameString))
