@@ -26,13 +26,11 @@ public class RichTaxesCommand extends CommandManager implements IMessageReceiveL
         dispatcher.register(
                 literal("reichensteuer")
                         .executes(context -> {
-                            // execute command to check money on bank of player
+                            // execute command to check money on the bank of player
                             networkHandler.sendChatCommand("bank info");
 
                             // execute command to check money in atm
-                            delayedAction(() -> {
-                                networkHandler.sendChatCommand("atm info");
-                            }, 1000);
+                            delayedAction(() -> networkHandler.sendChatCommand("atm info"), 1000);
 
                             // handle money withdraw
                             delayedAction(() -> {

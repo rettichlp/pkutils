@@ -1,15 +1,13 @@
 package de.rettichlp.pkutils.common.storage.schema;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.Data;
 
-@Getter
-@ToString
+@Data
 @AllArgsConstructor
 public class WantedEntry {
 
-    private final String playerName;
-    private final int wantedPointAmount;
-    private final String reason;
+    private String playerName;
+    private int wantedPointAmount;
+    private String reason;
 }
