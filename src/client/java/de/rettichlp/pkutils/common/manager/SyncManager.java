@@ -137,7 +137,7 @@ public class SyncManager extends BaseManager implements IMessageReceiveListener 
         this.gameSyncProcessActive = true;
         sendModMessage("PKUtils wird synchronisiert...", false);
 
-        // seconds 1-12: execute commands for all factions -> blocks command input for 12 * 1000 ms
+        // seconds 1-13: execute commands for all factions -> blocks command input for 13 * 1000 ms
         for (Faction faction : Faction.values()) {
             if (faction == NULL) {
                 continue;
@@ -153,12 +153,12 @@ public class SyncManager extends BaseManager implements IMessageReceiveListener 
                 case POLIZEI -> networkHandler.sendChatCommand("wanteds"); // TODO duty check
                 case CALDERON, KERZAKOV, LACOSANOSTRA, LEMILIEU, WESTSIDEBALLAS -> networkHandler.sendChatCommand("blacklist");
             }
-        }, 13000);
+        },  Faction.values().length * 1000L);
 
         // end: init commands dons
         delayedAction(() -> {
             this.gameSyncProcessActive = false;
             sendModMessage("PKUtils synchronisiert.", false);
-        }, 13200);
+        }, Faction.values().length * 1000L + 200);
     }
 }
