@@ -37,6 +37,7 @@ public enum Faction {
     LACOSANOSTRA("lacosanostra", "La Cosa Nostra", true, DARK_AQUA, "⚜"),
     LEMILIEU("le_milieu", "Le Milieu", true, DARK_AQUA, "Ⓜ"),
     // OBRIEN("obrien", "O'brien Familie", true, DARK_GREEN, "☘"),
+    TRIADEN("triaden", "Triaden", true, RED, "☯"),
     WESTSIDEBALLAS("westsideballas", "Westside Ballas", true, DARK_PURPLE, "☠"),
 
     HITMAN("hitman", "Hitman", false, AQUA, "➹"),
