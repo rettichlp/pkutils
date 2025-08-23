@@ -1,5 +1,6 @@
 package de.rettichlp.pkutils;
 
+import de.rettichlp.pkutils.command.ACallCommand;
 import de.rettichlp.pkutils.command.ADropMoneyCommand;
 import de.rettichlp.pkutils.command.RichTaxesCommand;
 import de.rettichlp.pkutils.command.SyncCommand;
@@ -97,6 +98,7 @@ public class PKUtilsClient implements ClientModInitializer {
             return true;
         });
 
+        ACallCommand aCallCommand = new ACallCommand();
         ADropMoneyCommand aDropMoneyCommand = new ADropMoneyCommand();
         RichTaxesCommand richTaxesCommand = new RichTaxesCommand();
         SyncCommand syncCommand = new SyncCommand();
@@ -104,6 +106,7 @@ public class PKUtilsClient implements ClientModInitializer {
         ToggleFChatCommand toggleFChatCommand = new ToggleFChatCommand();
 
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
+            aCallCommand.register(dispatcher);
             aDropMoneyCommand.register(dispatcher);
             richTaxesCommand.register(dispatcher);
             syncCommand.register(dispatcher);
