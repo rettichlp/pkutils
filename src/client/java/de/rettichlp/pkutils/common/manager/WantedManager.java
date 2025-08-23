@@ -63,7 +63,10 @@ public class WantedManager extends BaseManager implements IMessageReceiveListene
             storage.getWantedEntries().stream()
                     .filter(wantedEntry -> wantedEntry.getPlayerName().equals(playerName))
                     .findFirst()
-                    .ifPresent(wantedEntry -> wantedEntry.setWantedPointAmount(wantedPoints));
+                    .ifPresentOrElse(wantedEntry -> wantedEntry.setWantedPointAmount(wantedPoints), () -> {
+                        WantedEntry wantedEntry = new WantedEntry(playerName, wantedPoints, "");
+                        storage.addWantedEntry(wantedEntry);
+                    });
 
             Text modifiedMessage = empty()
                     .append(of("➥").copy().formatted(DARK_GRAY)).append(" ")
