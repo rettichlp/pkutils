@@ -1,6 +1,6 @@
-package de.rettichlp.common.manager;
+package de.rettichlp.pkutils.common.manager;
 
-import de.rettichlp.common.listener.MessageListener;
+import de.rettichlp.pkutils.common.listener.IMessageReceiveListener;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,14 +15,14 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static de.rettichlp.PKUtilsClient.networkHandler;
-import static de.rettichlp.PKUtilsClient.player;
+import static de.rettichlp.pkutils.PKUtilsClient.networkHandler;
+import static de.rettichlp.pkutils.PKUtilsClient.player;
 import static java.lang.Double.compare;
 import static java.util.Arrays.stream;
 import static java.util.regex.Pattern.compile;
 
 @NoArgsConstructor
-public class JobFisherManager extends BaseManager implements MessageListener {
+public class JobFisherManager extends BaseManager implements IMessageReceiveListener {
 
     private static final Pattern FISHER_START = compile("^\\[Fischer] Mit /findschwarm kannst du dir den nächsten Fischschwarm anzeigen lassen\\.$");
     private static final Pattern FISHER_SPOT_FOUND_PATTERN = compile("^\\[Fischer] Du hast einen Fischschwarm gefunden!$");
@@ -32,7 +32,7 @@ public class JobFisherManager extends BaseManager implements MessageListener {
     private Collection<FisherJobSpot> currentFisherJobSpots = new ArrayList<>();
 
     @Override
-    public boolean onMessage(String message) {
+    public boolean onMessageReceive(String message) {
         Matcher fisherStartMatcher = FISHER_START.matcher(message);
         if (fisherStartMatcher.find()) {
             this.currentFisherJobSpots = new ArrayList<>();
@@ -43,10 +43,10 @@ public class JobFisherManager extends BaseManager implements MessageListener {
 
         Matcher fisherSpotFoundMatcher = FISHER_SPOT_FOUND_PATTERN.matcher(message);
         if (fisherSpotFoundMatcher.find()) {
-            networkHandler.sendChatCommand("catchfish");
+            networkHandler.sendChatCommand("stoproute");
             FisherJobSpot nearestFisherJobSpot = getNearestFisherJobSpot(getNotVisitedFisherJobSpots()).orElseThrow();
             this.currentFisherJobSpots.add(nearestFisherJobSpot);
-            delayedAction(() -> networkHandler.sendChatCommand("stoproute"), 1000);
+            delayedAction(() -> networkHandler.sendChatCommand("catchfish"), 1000);
             return true;
         }
 

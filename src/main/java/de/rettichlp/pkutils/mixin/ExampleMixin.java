@@ -1,4 +1,4 @@
-package de.rettichlp.mixin;
+package de.rettichlp.pkutils.mixin;
 
 import net.minecraft.server.MinecraftServer;
 import org.spongepowered.asm.mixin.Mixin;
