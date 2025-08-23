@@ -10,19 +10,24 @@ import de.rettichlp.pkutils.common.manager.JobFisherManager;
 import de.rettichlp.pkutils.common.manager.JobTransportManager;
 import de.rettichlp.pkutils.common.manager.SyncManager;
 import de.rettichlp.pkutils.common.manager.WantedManager;
+import de.rettichlp.pkutils.common.manager.WasteManager;
 import de.rettichlp.pkutils.common.storage.Storage;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientSendMessageEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
+import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.network.ClientPlayerInteractionManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.StringJoiner;
 
 import static java.lang.Character.isUpperCase;
+import static java.util.Objects.nonNull;
 
 public class PKUtilsClient implements ClientModInitializer {
 
@@ -37,6 +42,7 @@ public class PKUtilsClient implements ClientModInitializer {
     public static JobTransportManager jobTransportManager;
     public static SyncManager syncManager;
     public static WantedManager wantedManager;
+    public static WasteManager wasteManager;
 
     @Override
     public void onInitializeClient() {
@@ -47,6 +53,7 @@ public class PKUtilsClient implements ClientModInitializer {
         jobTransportManager = new JobTransportManager();
         syncManager = new SyncManager();
         wantedManager = new WantedManager();
+        wasteManager = new WasteManager();
 
         ClientPlayConnectionEvents.JOIN.register((handler, sender, minecraftClient) -> minecraftClient.execute(() -> {
             assert minecraftClient.player != null; // cannot be null at this point
@@ -75,6 +82,14 @@ public class PKUtilsClient implements ClientModInitializer {
 
             return sendMessage1;
         });
+
+        // execute on the next tick because the screen is initialized, but the items in the slots are not
+        ScreenEvents.AFTER_INIT.register((minecraftClient, screen, scaledWidth, scaledHeight) -> minecraftClient.execute(() -> {
+            ClientPlayerInteractionManager interactionManager = minecraftClient.interactionManager;
+            if (screen instanceof HandledScreen<?> handled && nonNull(interactionManager)) {
+                wasteManager.onInventoryOpen(handled.getScreenHandler(), interactionManager);
+            }
+        }));
 
         ClientSendMessageEvents.ALLOW_COMMAND.register(command -> {
             String[] parts = command.split(" ", 2); // split the message into command label and arguments
