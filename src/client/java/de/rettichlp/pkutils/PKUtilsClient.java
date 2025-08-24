@@ -67,6 +67,9 @@ public class PKUtilsClient implements ClientModInitializer {
             boolean showMessage3 = syncManager.onMessageReceive(rawMessage);
             boolean showMessage4 = wantedManager.onMessageReceive(rawMessage);
 
+            if (rawMessage.equals("Du hast dein Ziel erreicht!")) {
+            }
+
             return showMessage1 && showMessage2 && showMessage3 && showMessage4;
         });
 
