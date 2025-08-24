@@ -18,8 +18,8 @@ public class BlacklistManager extends BaseManager implements IMessageReceiveList
 
     private static final Pattern BLACKLIST_HEADER_PATTERN = compile("^==== Blacklist .+ ====$");
     private static final Pattern BLACKLIST_ENTRY_PATTERN = compile("^ » (?<playerName>[a-zA-Z0-9_]+) \\| (?<reason>.+) \\| (?<dateTime>.+) \\| (?<kills>\\d+) Kills \\| (?<price>\\d+)\\$(| \\(AFK\\))$");
-    private static final Pattern BLACKLIST_ENTRY_ADD = compile("^\\[Blacklist] (?<targetName>[a-zA-Z0-9_]+) wurde von (?<playerName>[a-zA-Z0-9_]+) von der Blacklist gelöscht!$");
-    private static final Pattern BLACKLIST_ENTRY_REMOVE = compile("^\\[Blacklist] (?<targetName>[a-zA-Z0-9_]+) wurde von (?<playerName>[a-zA-Z0-9_]+) auf die Blacklist gesetzt!$");
+    private static final Pattern BLACKLIST_ENTRY_ADD = compile("^\\[Blacklist] (?<targetName>[a-zA-Z0-9_]+) wurde von (?<playerName>[a-zA-Z0-9_]+) auf die Blacklist gesetzt!$");
+    private static final Pattern BLACKLIST_ENTRY_REMOVE = compile("^\\[Blacklist] (?<targetName>[a-zA-Z0-9_]+) wurde von (?<playerName>[a-zA-Z0-9_]+) von der Blacklist gelöscht!$");
 
     private long activeCheck = 0;
 
