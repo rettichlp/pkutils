@@ -1,6 +1,7 @@
 package de.rettichlp.pkutils.common.manager;
 
 import de.rettichlp.pkutils.common.listener.IMessageReceiveListener;
+import de.rettichlp.pkutils.common.listener.INaviSpotReachedListener;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,7 +23,7 @@ import static java.util.Arrays.stream;
 import static java.util.regex.Pattern.compile;
 
 @NoArgsConstructor
-public class JobFisherManager extends BaseManager implements IMessageReceiveListener {
+public class JobFisherManager extends BaseManager implements IMessageReceiveListener, INaviSpotReachedListener {
 
     private static final Pattern FISHER_START = compile("^\\[Fischer] Mit /findschwarm kannst du dir den nächsten Fischschwarm anzeigen lassen\\.$");
     private static final Pattern FISHER_SPOT_FOUND_PATTERN = compile("^\\[Fischer] Du hast einen Fischschwarm gefunden!$");
@@ -67,12 +68,15 @@ public class JobFisherManager extends BaseManager implements IMessageReceiveList
             return true;
         }
 
-        if (message.equals("Du hast dein Ziel erreicht!") && this.currentFisherJobSpots.size() == 5) {
+        return true;
+    }
+
+    @Override
+    public void onNaviSpotReached() {
+        if (this.currentFisherJobSpots.size() == 5) {
             this.currentFisherJobSpots = new ArrayList<>();
             networkHandler.sendChatCommand("dropfish");
         }
-
-        return true;
     }
 
     private @NotNull Optional<FisherJobSpot> getNearestFisherJobSpot(@NotNull Collection<FisherJobSpot> fisherJobSpots) {
