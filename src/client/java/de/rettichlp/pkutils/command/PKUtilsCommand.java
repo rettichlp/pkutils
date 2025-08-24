@@ -7,7 +7,10 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.metadata.Person;
 import org.jetbrains.annotations.NotNull;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.chrono.ChronoLocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.StringJoiner;
 
@@ -32,7 +35,9 @@ public class PKUtilsCommand extends CommandManager {
                             player.sendMessage(empty(), false);
                             sendModMessage("PKUtils Version " + version, false);
                             sendModMessage("Autoren: " + authors, false);
-                            sendModMessage("Letzte Synchronisierung: " + (lastSyncTimestamp.equals(MIN) ? "Nie" : lastSyncTimestamp), false);
+                            sendModMessage("Letzte Synchronisierung: " + (lastSyncTimestamp.equals(MIN)
+                                    ? "Nie"
+                                    : timeToFriendlyString(lastSyncTimestamp)), false);
                             player.sendMessage(empty(), false);
 
                             return 1;
@@ -55,5 +60,10 @@ public class PKUtilsCommand extends CommandManager {
         authors.forEach(person -> stringJoiner.add(person.getName()));
 
         return stringJoiner.toString();
+    }
+
+    private String timeToFriendlyString(@NotNull ChronoLocalDateTime<LocalDate> dateTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
+        return dateTime.format(formatter);
     }
 }
