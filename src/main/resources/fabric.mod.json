@@ -3,15 +3,16 @@
     "id": "pkutils",
     "version": "${version}",
     "name": "PKUtils",
-    "description": "This is an example description! Tell everyone what your mod is about!",
+    "description": "Essential utilities and QoL tools for the PunicaKitty roleplay server.",
     "authors": [
-        "Me!"
+        "RettichLP",
+        "fauli681"
     ],
     "contact": {
-        "homepage": "https://fabricmc.net/",
-        "sources": "https://github.com/FabricMC/fabric-example-mod"
+        "homepage": "https://rettichlp.de/",
+        "sources": "https://github.com/rettichlp/pkutils"
     },
-    "license": "CC0-1.0",
+    "license": "Apache-2.0",
     "icon": "assets/pkutils/icon.png",
     "environment": "*",
     "entrypoints": {
