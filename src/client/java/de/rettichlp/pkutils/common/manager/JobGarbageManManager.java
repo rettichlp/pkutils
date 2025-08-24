@@ -107,7 +107,7 @@ public class JobGarbageManManager extends BaseManager implements IMessageReceive
                 .orElse(emptyList());
 
         return scoreboardEntries.stream()
-                .filter(scoreboardEntry -> scoreboardEntry.name().getString().equals(wasteDropSpot.getDisplayName() + ":"))
+                .filter(scoreboardEntry -> scoreboardEntry.name().getString().equals("§e" + wasteDropSpot.getDisplayName() + "§8:"))
                 .map(ScoreboardEntry::value)
                 .findFirst()
                 .orElse(0);
