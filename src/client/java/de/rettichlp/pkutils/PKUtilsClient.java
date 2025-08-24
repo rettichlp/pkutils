@@ -5,11 +5,7 @@ import de.rettichlp.pkutils.command.RichTaxesCommand;
 import de.rettichlp.pkutils.command.SyncCommand;
 import de.rettichlp.pkutils.command.ToggleDChatCommand;
 import de.rettichlp.pkutils.command.ToggleFChatCommand;
-import de.rettichlp.pkutils.common.manager.FactionManager;
-import de.rettichlp.pkutils.common.manager.JobFisherManager;
-import de.rettichlp.pkutils.common.manager.JobTransportManager;
-import de.rettichlp.pkutils.common.manager.SyncManager;
-import de.rettichlp.pkutils.common.manager.WantedManager;
+import de.rettichlp.pkutils.common.manager.*;
 import de.rettichlp.pkutils.common.storage.Storage;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
@@ -35,6 +31,7 @@ public class PKUtilsClient implements ClientModInitializer {
     public static FactionManager factionManager;
     public static JobFisherManager jobFisherManager;
     public static JobTransportManager jobTransportManager;
+    public static JobGarbageManManager jobGarbageManManager;
     public static SyncManager syncManager;
     public static WantedManager wantedManager;
 
@@ -45,8 +42,11 @@ public class PKUtilsClient implements ClientModInitializer {
         factionManager = new FactionManager();
         jobFisherManager = new JobFisherManager();
         jobTransportManager = new JobTransportManager();
+        jobGarbageManManager = new JobGarbageManManager();
         syncManager = new SyncManager();
         wantedManager = new WantedManager();
+
+        jobGarbageManManager.reachedPileOfWaste();
 
         ClientPlayConnectionEvents.JOIN.register((handler, sender, minecraftClient) -> minecraftClient.execute(() -> {
             assert minecraftClient.player != null; // cannot be null at this point
