@@ -26,8 +26,8 @@ public class JobTransportManager extends BaseManager implements IMessageReceiveL
             return true;
         }
 
-        Matcher drinTransportDeliverMatcher = DRINK_TRANSPORT_DELIVER_PATTERN.matcher(message);
-        if (drinTransportDeliverMatcher.find()) {
+        Matcher drinkTransportDeliverMatcher = DRINK_TRANSPORT_DELIVER_PATTERN.matcher(message);
+        if (drinkTransportDeliverMatcher.find()) {
             delayedAction(() -> networkHandler.sendChatCommand("dropdrink"), 2500);
             return true;
         }
