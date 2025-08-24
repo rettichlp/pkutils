@@ -1,7 +1,6 @@
 package de.rettichlp.pkutils.common.manager;
 
 import de.rettichlp.pkutils.common.listener.IMessageReceiveListener;
-import de.rettichlp.pkutils.common.storage.schema.BlacklistEntry;
 import de.rettichlp.pkutils.common.storage.schema.Faction;
 import de.rettichlp.pkutils.common.storage.schema.FactionMember;
 import lombok.Getter;
@@ -33,8 +32,6 @@ public class SyncManager extends BaseManager implements IMessageReceiveListener 
     private static final Pattern SERVER_PASSWORD_ACCEPTED_PATTERN = compile("^Du hast deinen Account freigeschaltet\\.$");
     private static final Pattern FACTION_MEMBER_ALL_HEADER = compile("^={4} Mitglieder von (?<factionName>.+) ={4}$");
     private static final Pattern FACTION_MEMBER_ALL_ENTRY = compile("^\\s*-\\s*(?<rank>\\d)\\s*\\|\\s*(?<playerNames>.+)$");
-    private static final Pattern BLACKLIST_HEADER_PATTERN = compile("^==== Blacklist .+ ====$");
-    private static final Pattern BLACKLIST_ENTRY_PATTERN = compile("^ » (?<playerName>[a-zA-Z0-9_]+) \\| (?<reason>.+) \\| (?<dateTime>.+) \\| (?<kills>\\d+) Kills \\| (?<price>\\d+)\\$(| \\(AFK\\))$");
 
     @Getter
     private LocalDateTime lastSyncTimestamp = MIN;
@@ -42,7 +39,6 @@ public class SyncManager extends BaseManager implements IMessageReceiveListener 
     private boolean gameSyncProcessActive = false;
     private Faction factionMemberRetrievalFaction;
     private long factionMemberRetrievalTimestamp;
-    private long activeCheck = 0;
 
     @Override
     public boolean onMessageReceive(String message) {
@@ -86,30 +82,6 @@ public class SyncManager extends BaseManager implements IMessageReceiveListener 
                 storage.addFactionMember(this.factionMemberRetrievalFaction, factionMember);
             }
 
-            return !this.gameSyncProcessActive;
-        }
-
-        // FACTION SPECIFIC INIT - POLICE - WANTED PLAYERS -> WantedManager
-
-        // FACTION SPECIFIC INIT - BAD FRAK - BLACKLIST
-
-        Matcher blacklistHeaderMatcher = BLACKLIST_HEADER_PATTERN.matcher(message);
-        if (blacklistHeaderMatcher.find()) {
-            this.activeCheck = currentTimeMillis();
-            storage.resetBlacklistEntries();
-            return !this.gameSyncProcessActive;
-        }
-
-        Matcher blacklistEntryMatcher = BLACKLIST_ENTRY_PATTERN.matcher(message);
-        if (blacklistEntryMatcher.find() && (currentTimeMillis() - this.activeCheck < 100)) {
-            String playerName = blacklistEntryMatcher.group("playerName");
-            String reason = blacklistEntryMatcher.group("reason");
-            boolean outlaw = reason.toLowerCase().contains("(vf)") || reason.toLowerCase().contains("(vogelfrei)");
-            int kills = parseInt(blacklistEntryMatcher.group("kills"));
-            int price = parseInt(blacklistEntryMatcher.group("price"));
-
-            BlacklistEntry blacklistEntry = new BlacklistEntry(playerName, reason, outlaw, kills, price);
-            storage.addBlacklistEntry(blacklistEntry);
             return !this.gameSyncProcessActive;
         }
 

@@ -6,6 +6,7 @@ import de.rettichlp.pkutils.command.RichTaxesCommand;
 import de.rettichlp.pkutils.command.SyncCommand;
 import de.rettichlp.pkutils.command.ToggleDChatCommand;
 import de.rettichlp.pkutils.command.ToggleFChatCommand;
+import de.rettichlp.pkutils.common.manager.BlacklistManager;
 import de.rettichlp.pkutils.common.manager.FactionManager;
 import de.rettichlp.pkutils.common.manager.JobFisherManager;
 import de.rettichlp.pkutils.common.manager.JobGarbageManManager;
@@ -37,6 +38,7 @@ public class PKUtilsClient implements ClientModInitializer {
     public static ClientPlayNetworkHandler networkHandler;
 
     // managers
+    public static BlacklistManager blacklistManager;
     public static FactionManager factionManager;
     public static JobFisherManager jobFisherManager;
     public static JobTransportManager jobTransportManager;
@@ -84,18 +86,19 @@ public class PKUtilsClient implements ClientModInitializer {
 
             String rawMessage = message.getString();
 
-            boolean showMessage1 = jobFisherManager.onMessageReceive(rawMessage);
-            boolean showMessage2 = jobGarbageManManager.onMessageReceive(rawMessage);
-            boolean showMessage3 = jobTransportManager.onMessageReceive(rawMessage);
-            boolean showMessage4 = syncManager.onMessageReceive(rawMessage);
-            boolean showMessage5 = wantedManager.onMessageReceive(rawMessage);
+            boolean showMessage1 = blacklistManager.onMessageReceive(rawMessage);
+            boolean showMessage2 = jobFisherManager.onMessageReceive(rawMessage);
+            boolean showMessage3 = jobGarbageManManager.onMessageReceive(rawMessage);
+            boolean showMessage4 = jobTransportManager.onMessageReceive(rawMessage);
+            boolean showMessage5 = syncManager.onMessageReceive(rawMessage);
+            boolean showMessage6 = wantedManager.onMessageReceive(rawMessage);
 
             if (rawMessage.equals("Du hast dein Ziel erreicht!")) {
                 jobFisherManager.onNaviSpotReached();
                 jobTransportManager.onNaviSpotReached();
             }
 
-            return showMessage1 && showMessage2 && showMessage3 && showMessage4 && showMessage5;
+            return showMessage1 && showMessage2 && showMessage3 && showMessage4 && showMessage5 && showMessage6;
         });
 
         ClientSendMessageEvents.ALLOW_CHAT.register(message -> {
