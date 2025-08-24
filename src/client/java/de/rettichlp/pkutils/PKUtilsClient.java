@@ -8,22 +8,26 @@ import de.rettichlp.pkutils.command.ToggleDChatCommand;
 import de.rettichlp.pkutils.command.ToggleFChatCommand;
 import de.rettichlp.pkutils.common.manager.FactionManager;
 import de.rettichlp.pkutils.common.manager.JobFisherManager;
+import de.rettichlp.pkutils.common.manager.JobGarbageManManager;
 import de.rettichlp.pkutils.common.manager.JobTransportManager;
 import de.rettichlp.pkutils.common.manager.SyncManager;
 import de.rettichlp.pkutils.common.manager.WantedManager;
 import de.rettichlp.pkutils.common.storage.Storage;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientSendMessageEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.StringJoiner;
 
 import static java.lang.Character.isUpperCase;
+import static java.util.Objects.isNull;
 
 public class PKUtilsClient implements ClientModInitializer {
 
@@ -36,8 +40,11 @@ public class PKUtilsClient implements ClientModInitializer {
     public static FactionManager factionManager;
     public static JobFisherManager jobFisherManager;
     public static JobTransportManager jobTransportManager;
+    public static JobGarbageManManager jobGarbageManManager;
     public static SyncManager syncManager;
     public static WantedManager wantedManager;
+
+    private BlockPos lastPlayerPos = null;
 
     @Override
     public void onInitializeClient() {
@@ -46,6 +53,7 @@ public class PKUtilsClient implements ClientModInitializer {
         factionManager = new FactionManager();
         jobFisherManager = new JobFisherManager();
         jobTransportManager = new JobTransportManager();
+        jobGarbageManManager = new JobGarbageManManager();
         syncManager = new SyncManager();
         wantedManager = new WantedManager();
 
@@ -54,6 +62,19 @@ public class PKUtilsClient implements ClientModInitializer {
             player = minecraftClient.player;
             networkHandler = minecraftClient.player.networkHandler;
         }));
+
+        ClientTickEvents.END_CLIENT_TICK.register((server) -> {
+            // ignore ticks until the player is initialized
+            if (player == null || networkHandler == null) {
+                return;
+            }
+
+            BlockPos blockPos = player.getBlockPos();
+            if (isNull(this.lastPlayerPos) || !this.lastPlayerPos.equals(blockPos)) {
+                this.lastPlayerPos = blockPos;
+                jobGarbageManManager.onMove(blockPos);
+            }
+        });
 
         ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> {
             // ignore messages until the player is initialized
@@ -64,16 +85,17 @@ public class PKUtilsClient implements ClientModInitializer {
             String rawMessage = message.getString();
 
             boolean showMessage1 = jobFisherManager.onMessageReceive(rawMessage);
-            boolean showMessage2 = jobTransportManager.onMessageReceive(rawMessage);
-            boolean showMessage3 = syncManager.onMessageReceive(rawMessage);
-            boolean showMessage4 = wantedManager.onMessageReceive(rawMessage);
+            boolean showMessage2 = jobGarbageManManager.onMessageReceive(rawMessage);
+            boolean showMessage3 = jobTransportManager.onMessageReceive(rawMessage);
+            boolean showMessage4 = syncManager.onMessageReceive(rawMessage);
+            boolean showMessage5 = wantedManager.onMessageReceive(rawMessage);
 
             if (rawMessage.equals("Du hast dein Ziel erreicht!")) {
                 jobFisherManager.onNaviSpotReached();
                 jobTransportManager.onNaviSpotReached();
             }
 
-            return showMessage1 && showMessage2 && showMessage3 && showMessage4;
+            return showMessage1 && showMessage2 && showMessage3 && showMessage4 && showMessage5;
         });
 
         ClientSendMessageEvents.ALLOW_CHAT.register(message -> {
