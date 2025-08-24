@@ -18,6 +18,8 @@ public class BlacklistManager extends BaseManager implements IMessageReceiveList
 
     private static final Pattern BLACKLIST_HEADER_PATTERN = compile("^==== Blacklist .+ ====$");
     private static final Pattern BLACKLIST_ENTRY_PATTERN = compile("^ » (?<playerName>[a-zA-Z0-9_]+) \\| (?<reason>.+) \\| (?<dateTime>.+) \\| (?<kills>\\d+) Kills \\| (?<price>\\d+)\\$(| \\(AFK\\))$");
+    private static final Pattern BLACKLIST_ENTRY_ADD = compile("^\\[Blacklist] (?<targetName>[a-zA-Z0-9_]+) wurde von (?<playerName>[a-zA-Z0-9_]+) von der Blacklist gelöscht!$");
+    private static final Pattern BLACKLIST_ENTRY_REMOVE = compile("^\\[Blacklist] (?<targetName>[a-zA-Z0-9_]+) wurde von (?<playerName>[a-zA-Z0-9_]+) auf die Blacklist gesetzt!$");
 
     private long activeCheck = 0;
 
@@ -41,6 +43,21 @@ public class BlacklistManager extends BaseManager implements IMessageReceiveList
             BlacklistEntry blacklistEntry = new BlacklistEntry(playerName, reason, outlaw, kills, price);
             storage.addBlacklistEntry(blacklistEntry);
             return !syncManager.isGameSyncProcessActive();
+        }
+
+        Matcher blacklistEntryAddMatcher = BLACKLIST_ENTRY_ADD.matcher(message);
+        if (blacklistEntryAddMatcher.find()) {
+            String targetName = blacklistEntryAddMatcher.group("targetName");
+            BlacklistEntry blacklistEntry = new BlacklistEntry(targetName, "Unbekannt", false, 0, 0);
+            storage.addBlacklistEntry(blacklistEntry);
+            return true;
+        }
+
+        Matcher blacklistEntryRemoveMatcher = BLACKLIST_ENTRY_REMOVE.matcher(message);
+        if (blacklistEntryRemoveMatcher.find()) {
+            String targetName = blacklistEntryRemoveMatcher.group("targetName");
+            storage.getBlacklistEntries().removeIf(blacklistEntry -> blacklistEntry.getPlayerName().equals(targetName));
+            return true;
         }
 
         return true;
