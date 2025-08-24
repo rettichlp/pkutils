@@ -52,6 +52,7 @@ public class PKUtilsClient implements ClientModInitializer {
     public void onInitializeClient() {
         // This entrypoint is suitable for setting up client-specific logic, such as rendering.
 
+        blacklistManager = new BlacklistManager();
         factionManager = new FactionManager();
         jobFisherManager = new JobFisherManager();
         jobTransportManager = new JobTransportManager();
