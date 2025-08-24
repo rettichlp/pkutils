@@ -29,7 +29,7 @@ import static net.minecraft.scoreboard.ScoreboardDisplaySlot.SIDEBAR;
 
 public class JobGarbageManManager extends BaseManager implements IMessageReceiveListener, IMoveListener {
 
-    private static final Pattern GARBAGE_MAN_DROP_START = compile("^\\[Müllmann] Bring nun den Müll zurück zur Müllhalde und sortier den Müll\\.$");
+    private static final Pattern GARBAGE_MAN_DROP_START = compile("^\\[Müllmann] Hier kannst du auf den Haufen mit /dropwaste dein Müll sortieren!$");
     private static final Pattern GARBAGE_MAN_FINISHED = compile("^\\[Müllmann] Du hast den Job beendet\\.$");
 
     private final Timer timer = new Timer();
@@ -50,39 +50,41 @@ public class JobGarbageManManager extends BaseManager implements IMessageReceive
             return true;
         }
 
-        return false;
+        return true;
     }
 
     @Override
     public void onMove(BlockPos blockPos) {
         if (!this.isDropStep) {
-            System.out.println("JGMM: Job not active");
             return;
         }
 
-        System.out.println("JGMM: Job active");
+        // not dropping waste currently check
+        if (this.isTimerActive) {
+            System.out.println("JGMM: Timer active");
+            return;
+        }
 
+        // in range check
         WasteDropSpot nearestWasteDropSpot = getNearestWasteDropSpot();
-        System.out.println("JGMM: Nearest Waste Drop Spot: " + nearestWasteDropSpot);
-        if (!player.getBlockPos().isWithinDistance(nearestWasteDropSpot.getDropSpot(), 3) || this.isTimerActive) {
-            System.out.println("JGMM: Not in range or timer active: " + player.getBlockPos().isWithinDistance(nearestWasteDropSpot.getDropSpot(), 3) + " / " + this.isTimerActive);
+        if (!player.getBlockPos().isWithinDistance(nearestWasteDropSpot.getDropSpot(), 3)) {
+            System.out.println("JGMM: Not in range");
             return;
         }
 
-        System.out.println("JGMM: In range and timer not active");
-
+        // start drop timer
+        this.isTimerActive = true;
         this.timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                networkHandler.sendChatCommand("dropwaste");
-
-                System.out.println("JGMM: dropwaste command sent");
-
                 if (getWasteLeft(nearestWasteDropSpot) <= 0) {
                     System.out.println("JGMM: No waste left for " + nearestWasteDropSpot.getDisplayName());
-                    JobGarbageManManager.this.isTimerActive = false;
                     cancel();
+                    JobGarbageManManager.this.isTimerActive = false;
+                    return;
                 }
+
+                networkHandler.sendChatCommand("dropwaste");
             }
         }, 0, 5000);
     }
