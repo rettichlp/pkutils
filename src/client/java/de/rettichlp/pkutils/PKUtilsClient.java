@@ -8,6 +8,7 @@ import de.rettichlp.pkutils.command.ToggleFChatCommand;
 import de.rettichlp.pkutils.common.manager.FactionManager;
 import de.rettichlp.pkutils.common.manager.JobFisherManager;
 import de.rettichlp.pkutils.common.manager.JobTransportManager;
+import de.rettichlp.pkutils.common.manager.ReinforcementManager;
 import de.rettichlp.pkutils.common.manager.SyncManager;
 import de.rettichlp.pkutils.common.manager.WantedManager;
 import de.rettichlp.pkutils.common.storage.Storage;
@@ -18,6 +19,8 @@ import net.fabricmc.fabric.api.client.message.v1.ClientSendMessageEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.StringJoiner;
@@ -35,6 +38,7 @@ public class PKUtilsClient implements ClientModInitializer {
     public static FactionManager factionManager;
     public static JobFisherManager jobFisherManager;
     public static JobTransportManager jobTransportManager;
+    public static ReinforcementManager reinforcementManager;
     public static SyncManager syncManager;
     public static WantedManager wantedManager;
 
@@ -45,6 +49,7 @@ public class PKUtilsClient implements ClientModInitializer {
         factionManager = new FactionManager();
         jobFisherManager = new JobFisherManager();
         jobTransportManager = new JobTransportManager();
+        reinforcementManager = new ReinforcementManager();
         syncManager = new SyncManager();
         wantedManager = new WantedManager();
 
@@ -98,6 +103,8 @@ public class PKUtilsClient implements ClientModInitializer {
                 networkHandler.sendChatCommand(stringJoiner.toString());
                 return false;
             }
+
+            reinforcementManager.onCommandSend(command);
 
             return true;
         });
