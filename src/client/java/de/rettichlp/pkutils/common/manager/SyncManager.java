@@ -7,6 +7,7 @@ import de.rettichlp.pkutils.common.storage.schema.FactionMember;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,6 +19,8 @@ import static de.rettichlp.pkutils.common.storage.schema.Faction.NULL;
 import static de.rettichlp.pkutils.common.storage.schema.Faction.fromDisplayName;
 import static java.lang.Integer.parseInt;
 import static java.lang.System.currentTimeMillis;
+import static java.time.LocalDateTime.MIN;
+import static java.time.LocalDateTime.now;
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 import static java.util.regex.Pattern.compile;
@@ -33,6 +36,8 @@ public class SyncManager extends BaseManager implements IMessageReceiveListener 
     private static final Pattern BLACKLIST_HEADER_PATTERN = compile("^==== Blacklist .+ ====$");
     private static final Pattern BLACKLIST_ENTRY_PATTERN = compile("^ » (?<playerName>[a-zA-Z0-9_]+) \\| (?<reason>.+) \\| (?<dateTime>.+) \\| (?<kills>\\d+) Kills \\| (?<price>\\d+)\\$(| \\(AFK\\))$");
 
+    @Getter
+    private LocalDateTime lastSyncTimestamp = MIN;
     @Getter
     private boolean gameSyncProcessActive = false;
     private boolean gameSyncProcessScheduled = false;
@@ -159,6 +164,7 @@ public class SyncManager extends BaseManager implements IMessageReceiveListener 
         delayedAction(() -> {
             this.gameSyncProcessActive = false;
             sendModMessage("PKUtils synchronisiert.", false);
+            this.lastSyncTimestamp = now();
         }, Faction.values().length * 1000L + 200);
     }
 }
