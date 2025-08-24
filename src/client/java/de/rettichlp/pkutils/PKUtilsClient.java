@@ -68,6 +68,7 @@ public class PKUtilsClient implements ClientModInitializer {
             boolean showMessage4 = wantedManager.onMessageReceive(rawMessage);
 
             if (rawMessage.equals("Du hast dein Ziel erreicht!")) {
+                jobFisherManager.onNaviSpotReached();
             }
 
             return showMessage1 && showMessage2 && showMessage3 && showMessage4;
