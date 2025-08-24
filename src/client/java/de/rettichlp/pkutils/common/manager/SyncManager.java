@@ -15,7 +15,9 @@ import static de.rettichlp.pkutils.PKUtils.LOGGER;
 import static de.rettichlp.pkutils.PKUtilsClient.networkHandler;
 import static de.rettichlp.pkutils.PKUtilsClient.player;
 import static de.rettichlp.pkutils.PKUtilsClient.storage;
+import static de.rettichlp.pkutils.common.storage.schema.Faction.FBI;
 import static de.rettichlp.pkutils.common.storage.schema.Faction.NULL;
+import static de.rettichlp.pkutils.common.storage.schema.Faction.POLIZEI;
 import static de.rettichlp.pkutils.common.storage.schema.Faction.fromDisplayName;
 import static java.lang.Integer.parseInt;
 import static java.lang.System.currentTimeMillis;
@@ -28,8 +30,7 @@ import static java.util.regex.Pattern.compile;
 @NoArgsConstructor
 public class SyncManager extends BaseManager implements IMessageReceiveListener {
 
-    private static final Pattern SERVER_WELCOME_BACK_PATTERN = compile("^Willkommen zurück!$");
-    private static final Pattern SERVER_PASSWORD_REQUIRED_PATTERN = compile("^Schalte deinen Account frei mit /passwort \\[Passwort]$");
+    private static final Pattern SERVER_PASSWORD_MISSING_PATTERN = compile("^» Schütze deinen Account mit /passwort new \\[Passwort]$");
     private static final Pattern SERVER_PASSWORD_ACCEPTED_PATTERN = compile("^Du hast deinen Account freigeschaltet\\.$");
     private static final Pattern FACTION_MEMBER_ALL_HEADER = compile("^={4} Mitglieder von (?<factionName>.+) ={4}$");
     private static final Pattern FACTION_MEMBER_ALL_ENTRY = compile("^\\s*-\\s*(?<rank>\\d)\\s*\\|\\s*(?<playerNames>.+)$");
@@ -40,7 +41,6 @@ public class SyncManager extends BaseManager implements IMessageReceiveListener 
     private LocalDateTime lastSyncTimestamp = MIN;
     @Getter
     private boolean gameSyncProcessActive = false;
-    private boolean gameSyncProcessScheduled = false;
     private Faction factionMemberRetrievalFaction;
     private long factionMemberRetrievalTimestamp;
     private long activeCheck = 0;
@@ -49,28 +49,17 @@ public class SyncManager extends BaseManager implements IMessageReceiveListener 
     public boolean onMessageReceive(String message) {
         // SERVER INIT
 
-        // schedule the game sync process if a join message is received
-        Matcher welcomeBackMatcher = SERVER_WELCOME_BACK_PATTERN.matcher(message);
-        if (welcomeBackMatcher.find()) {
-            this.gameSyncProcessScheduled = true;
-            // execute the sync process after a delay to stop it if a password is required
-            delayedAction(this::executeSyncCommands, 1000);
+        // if a password is not set, start the game sync process
+        Matcher passwordMissingMatcher = SERVER_PASSWORD_MISSING_PATTERN.matcher(message);
+        if (passwordMissingMatcher.find()) {
+            executeSync();
             return true;
         }
 
-        // if a password is required, stop the game sync process
-        Matcher passwordRequiredMatcher = SERVER_PASSWORD_REQUIRED_PATTERN.matcher(message);
-        if (passwordRequiredMatcher.find()) {
-            // stop the game sync process
-            this.gameSyncProcessScheduled = false;
-            return true;
-        }
-
-        // if a password is accepted, start the game sync process again (without delay)
+        // if a password is accepted, start the game sync process
         Matcher passwordAcceptedMatcher = SERVER_PASSWORD_ACCEPTED_PATTERN.matcher(message);
         if (passwordAcceptedMatcher.find()) {
-            this.gameSyncProcessScheduled = true;
-            executeSyncCommands();
+            executeSync();
             return true;
         }
 
@@ -129,16 +118,6 @@ public class SyncManager extends BaseManager implements IMessageReceiveListener 
     }
 
     public void executeSync() {
-        this.gameSyncProcessScheduled = true;
-        executeSyncCommands();
-    }
-
-    private void executeSyncCommands() {
-        if (!this.gameSyncProcessScheduled) {
-            LOGGER.info("Game sync process is not scheduled, skipping...");
-            return;
-        }
-
         this.gameSyncProcessActive = true;
         sendModMessage("PKUtils wird synchronisiert...", false);
 
