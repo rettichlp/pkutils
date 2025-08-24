@@ -20,6 +20,10 @@ import static de.rettichlp.pkutils.PKUtilsClient.syncManager;
 import static java.time.LocalDateTime.MIN;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
 import static net.minecraft.text.Text.empty;
+import static net.minecraft.text.Text.of;
+import static net.minecraft.util.Formatting.DARK_GRAY;
+import static net.minecraft.util.Formatting.GRAY;
+import static net.minecraft.util.Formatting.WHITE;
 
 public class PKUtilsCommand extends CommandManager {
 
@@ -33,11 +37,31 @@ public class PKUtilsCommand extends CommandManager {
                             LocalDateTime lastSyncTimestamp = syncManager.getLastSyncTimestamp();
 
                             player.sendMessage(empty(), false);
+
                             sendModMessage("PKUtils Version " + version, false);
-                            sendModMessage("Autoren: " + authors, false);
-                            sendModMessage("Letzte Synchronisierung: " + (lastSyncTimestamp.equals(MIN)
-                                    ? "Nie"
-                                    : timeToFriendlyString(lastSyncTimestamp)), false);
+
+                            sendModMessage(empty()
+                                    .append(of("Autoren").copy().formatted(GRAY))
+                                    .append(of(":").copy().formatted(DARK_GRAY)).append(" ")
+                                    .append(of(authors).copy().formatted(WHITE)), false);
+
+                            sendModMessage(empty()
+                                    .append(of("Discord").copy().formatted(GRAY))
+                                    .append(of(":").copy().formatted(DARK_GRAY)).append(" ")
+                                    .append(of("https://discord.gg/mZGAAwhPHu").copy().formatted(WHITE)), false);
+
+                            sendModMessage(empty()
+                                    .append(of("GitHub").copy().formatted(GRAY))
+                                    .append(of(":").copy().formatted(DARK_GRAY)).append(" ")
+                                    .append(of("https://github.com/rettichlp/pkutils").copy().formatted(WHITE)), false);
+
+                            sendModMessage(empty()
+                                    .append(of("Letzte Synchronisierung").copy().formatted(GRAY))
+                                    .append(of(":").copy().formatted(DARK_GRAY)).append(" ")
+                                    .append(of(lastSyncTimestamp.equals(MIN)
+                                            ? "Nie"
+                                            : timeToFriendlyString(lastSyncTimestamp)).copy().formatted(WHITE)), false);
+
                             player.sendMessage(empty(), false);
 
                             return 1;
