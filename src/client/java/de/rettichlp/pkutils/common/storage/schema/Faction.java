@@ -15,6 +15,7 @@ import static net.minecraft.util.Formatting.BLUE;
 import static net.minecraft.util.Formatting.DARK_AQUA;
 import static net.minecraft.util.Formatting.DARK_BLUE;
 import static net.minecraft.util.Formatting.DARK_GRAY;
+import static net.minecraft.util.Formatting.DARK_GREEN;
 import static net.minecraft.util.Formatting.DARK_PURPLE;
 import static net.minecraft.util.Formatting.DARK_RED;
 import static net.minecraft.util.Formatting.GOLD;
@@ -36,7 +37,7 @@ public enum Faction {
     KERZAKOV("kerzakov", "Kerzakov Familie", true, RED, "✮"),
     LACOSANOSTRA("lacosanostra", "La Cosa Nostra", true, DARK_AQUA, "⚜"),
     LEMILIEU("le_milieu", "Le Milieu", true, DARK_AQUA, "Ⓜ"),
-    // OBRIEN("obrien", "O'brien Familie", true, DARK_GREEN, "☘"),
+    OBRIEN("obrien", "O'Brien Familie", true, DARK_GREEN, "☘"),
     TRIADEN("triaden", "Triaden", true, RED, "☯"),
     WESTSIDEBALLAS("westsideballas", "Westside Ballas", true, DARK_PURPLE, "☠"),
 
@@ -62,6 +63,10 @@ public enum Faction {
                 .append(Text.of("⌟")
                         .copy()
                         .formatted(DARK_GRAY));
+    }
+
+    public String getMemberInfoCommandName() {
+        return this == OBRIEN ? "Obrien" : this.displayName;
     }
 
     public static @NotNull Optional<Faction> fromDisplayName(String displayName) {
