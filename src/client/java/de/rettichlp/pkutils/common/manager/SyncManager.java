@@ -143,7 +143,7 @@ public class SyncManager extends BaseManager implements IMessageReceiveListener 
                 continue;
             }
 
-            delayedAction(() -> networkHandler.sendChatCommand("memberinfoall " + faction.getDisplayName()), 1000 * faction.ordinal());
+            delayedAction(() -> networkHandler.sendChatCommand("memberinfoall " + faction.getMemberInfoCommandName()), 1000 * faction.ordinal());
         }
 
         // second 13: faction-related init commands
