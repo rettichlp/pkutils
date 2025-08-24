@@ -24,9 +24,11 @@ public abstract class BaseManager {
             .append(of(" "));
 
     public void sendModMessage(String message, boolean inActionbar) {
-        Text messageText = modMessagePrefix.copy()
-                .append(of(message).copy().formatted(WHITE));
+        sendModMessage(of(message).copy().formatted(WHITE), inActionbar);
+    }
 
+    public void sendModMessage(Text message, boolean inActionbar) {
+        Text messageText = modMessagePrefix.copy().append(message);
         player.sendMessage(messageText, inActionbar);
     }
 

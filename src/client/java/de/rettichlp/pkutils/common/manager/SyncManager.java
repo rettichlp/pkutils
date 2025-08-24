@@ -132,11 +132,13 @@ public class SyncManager extends BaseManager implements IMessageReceiveListener 
         // second 13: faction-related init commands
         delayedAction(() -> {
             Faction faction = storage.getFaction(requireNonNull(player.getDisplayName()).getString());
-            switch (faction) {
-                case POLIZEI -> networkHandler.sendChatCommand("wanteds"); // TODO duty check
-                case CALDERON, KERZAKOV, LACOSANOSTRA, LEMILIEU, WESTSIDEBALLAS -> networkHandler.sendChatCommand("blacklist");
+
+            if (faction.isBadFaction()) {
+                networkHandler.sendChatCommand("blacklist");
+            } else if (faction == FBI || faction == POLIZEI) {
+                networkHandler.sendChatCommand("wanteds");
             }
-        },  Faction.values().length * 1000L);
+        }, Faction.values().length * 1000L);
 
         // end: init commands dons
         delayedAction(() -> {
