@@ -111,7 +111,7 @@ public class SyncManager extends BaseManager implements IMessageReceiveListener 
         if (blacklistEntryMatcher.find() && (currentTimeMillis() - this.activeCheck < 100)) {
             String playerName = blacklistEntryMatcher.group("playerName");
             String reason = blacklistEntryMatcher.group("reason");
-            boolean outlaw = reason.contains("(VF)");
+            boolean outlaw = reason.toLowerCase().contains("(vf)") || reason.toLowerCase().contains("(vogelfrei)");
             int kills = parseInt(blacklistEntryMatcher.group("kills"));
             int price = parseInt(blacklistEntryMatcher.group("price"));
 
