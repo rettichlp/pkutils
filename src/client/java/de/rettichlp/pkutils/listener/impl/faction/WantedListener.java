@@ -1,8 +1,9 @@
-package de.rettichlp.pkutils.common.manager;
+package de.rettichlp.pkutils.listener.impl.faction;
 
-import de.rettichlp.pkutils.common.listener.IMessageReceiveListener;
+import de.rettichlp.pkutils.listener.IMessageReceiveListener;
+import de.rettichlp.pkutils.common.manager.PKUtilsBase;
+import de.rettichlp.pkutils.common.registry.PKUtilsListener;
 import de.rettichlp.pkutils.common.storage.schema.WantedEntry;
-import lombok.NoArgsConstructor;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.NotNull;
@@ -11,9 +12,10 @@ import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static de.rettichlp.pkutils.PKUtilsClient.factionService;
 import static de.rettichlp.pkutils.PKUtilsClient.player;
 import static de.rettichlp.pkutils.PKUtilsClient.storage;
-import static de.rettichlp.pkutils.PKUtilsClient.syncManager;
+import static de.rettichlp.pkutils.PKUtilsClient.syncService;
 import static java.lang.Integer.parseInt;
 import static java.lang.String.valueOf;
 import static java.lang.System.currentTimeMillis;
@@ -31,8 +33,8 @@ import static net.minecraft.util.Formatting.GREEN;
 import static net.minecraft.util.Formatting.RED;
 import static net.minecraft.util.Formatting.YELLOW;
 
-@NoArgsConstructor
-public class WantedManager extends BaseManager implements IMessageReceiveListener {
+@PKUtilsListener
+public class WantedListener extends PKUtilsBase implements IMessageReceiveListener {
 
     private static final Pattern WANTED_GIVEN_POINTS_PATTERN = compile("^HQ: ([a-zA-Z0-9_]+)'s momentanes WantedLevel: (\\d+)$");
     private static final Pattern WANTED_GIVEN_REASON_PATTERN = compile("^HQ: Gesuchter: (?<playerName>[a-zA-Z0-9_]+)\\. Grund: (?<reason>.+)$");
@@ -203,7 +205,7 @@ public class WantedManager extends BaseManager implements IMessageReceiveListene
         if (wantedListHeaderMatcher.find()) {
             this.activeCheck = currentTimeMillis();
             storage.resetWantedEntries();
-            return !syncManager.isGameSyncProcessActive();
+            return !syncService.isGameSyncProcessActive();
         }
 
         Matcher wantedListEntryMatcher = WANTED_LIST_ENTRY_PATTERN.matcher(message);
@@ -216,9 +218,9 @@ public class WantedManager extends BaseManager implements IMessageReceiveListene
             WantedEntry wantedEntry = new WantedEntry(playerName, wantedPointAmount, reason);
             storage.addWantedEntry(wantedEntry);
 
-            Formatting color = getWantedPointColor(wantedPointAmount);
+            Formatting color = factionService.getWantedPointColor(wantedPointAmount);
 
-            if (!syncManager.isGameSyncProcessActive()) {
+            if (!syncService.isGameSyncProcessActive()) {
                 Text modifiedMessage = empty()
                         .append(of("➥").copy().formatted(DARK_GRAY)).append(" ")
                         .append(of(playerName).copy().formatted(color)).append(" ")
@@ -356,25 +358,6 @@ public class WantedManager extends BaseManager implements IMessageReceiveListene
         }
 
         return true;
-    }
-
-    public @NotNull Formatting getWantedPointColor(int wantedPointAmount) {
-        Formatting color;
-
-        if (wantedPointAmount >= 60) {
-            color = DARK_RED;
-        } else if (wantedPointAmount >= 50) {
-            color = RED;
-        } else if (wantedPointAmount >= 25) {
-            color = GOLD;
-        } else if (wantedPointAmount >= 15) {
-            color = YELLOW;
-        } else if (wantedPointAmount >= 2) {
-            color = GREEN;
-        } else {
-            color = DARK_GREEN;
-        }
-        return color;
     }
 
     private int getWpAmountAndDelete(String targetName) {

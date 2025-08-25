@@ -1,7 +1,9 @@
-package de.rettichlp.pkutils.common.manager;
+package de.rettichlp.pkutils.listener.impl.job;
 
-import de.rettichlp.pkutils.common.listener.IMessageReceiveListener;
-import de.rettichlp.pkutils.common.listener.IMoveListener;
+import de.rettichlp.pkutils.listener.IMessageReceiveListener;
+import de.rettichlp.pkutils.listener.IMoveListener;
+import de.rettichlp.pkutils.common.manager.PKUtilsBase;
+import de.rettichlp.pkutils.common.registry.PKUtilsListener;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.minecraft.client.MinecraftClient;
@@ -27,7 +29,8 @@ import static java.util.Optional.empty;
 import static java.util.regex.Pattern.compile;
 import static net.minecraft.scoreboard.ScoreboardDisplaySlot.SIDEBAR;
 
-public class JobGarbageManManager extends BaseManager implements IMessageReceiveListener, IMoveListener {
+@PKUtilsListener
+public class GarbageManListener extends PKUtilsBase implements IMessageReceiveListener, IMoveListener {
 
     private static final Pattern GARBAGE_MAN_DROP_START = compile("^\\[Müllmann] Hier kannst du auf den Haufen mit /dropwaste dein Müll sortieren!$");
     private static final Pattern GARBAGE_MAN_FINISHED = compile("^\\[Müllmann] Du hast den Job beendet\\.$");
@@ -80,7 +83,7 @@ public class JobGarbageManManager extends BaseManager implements IMessageReceive
                 if (getWasteLeft(nearestWasteDropSpot) <= 0) {
                     System.out.println("JGMM: No waste left for " + nearestWasteDropSpot.getDisplayName());
                     cancel();
-                    JobGarbageManManager.this.isTimerActive = false;
+                    GarbageManListener.this.isTimerActive = false;
                     return;
                 }
 

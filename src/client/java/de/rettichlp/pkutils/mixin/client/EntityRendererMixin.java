@@ -15,9 +15,9 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 import java.util.Optional;
 
+import static de.rettichlp.pkutils.PKUtilsClient.factionService;
 import static de.rettichlp.pkutils.PKUtilsClient.player;
 import static de.rettichlp.pkutils.PKUtilsClient.storage;
-import static de.rettichlp.pkutils.PKUtilsClient.wantedManager;
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 import static net.minecraft.text.Text.empty;
@@ -69,7 +69,7 @@ public abstract class EntityRendererMixin<S extends Entity, T extends EntityRend
                     .findAny();
 
             if (optionalTargetWantedEntry.isPresent()) {
-                newTargetDisplayNameColor = wantedManager.getWantedPointColor(optionalTargetWantedEntry.get().getWantedPointAmount());
+                newTargetDisplayNameColor = factionService.getWantedPointColor(optionalTargetWantedEntry.get().getWantedPointAmount());
             }
 
             return empty()

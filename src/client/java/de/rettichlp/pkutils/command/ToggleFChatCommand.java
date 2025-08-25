@@ -1,24 +1,24 @@
 package de.rettichlp.pkutils.command;
 
-import com.mojang.brigadier.CommandDispatcher;
-import de.rettichlp.pkutils.common.manager.CommandManager;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import de.rettichlp.pkutils.common.manager.CommandBase;
+import de.rettichlp.pkutils.common.registry.PKUtilsCommand;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import org.jetbrains.annotations.NotNull;
 
-import static de.rettichlp.pkutils.PKUtilsClient.factionManager;
-import static de.rettichlp.pkutils.common.manager.FactionManager.ToggledChat.F_CHAT;
-import static de.rettichlp.pkutils.common.manager.FactionManager.ToggledChat.NONE;
-import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
+import static de.rettichlp.pkutils.PKUtilsClient.storage;
+import static de.rettichlp.pkutils.common.storage.Storage.ToggledChat.F_CHAT;
+import static de.rettichlp.pkutils.common.storage.Storage.ToggledChat.NONE;
 
-public class ToggleFChatCommand extends CommandManager {
+@PKUtilsCommand(label = "ff")
+public class ToggleFChatCommand extends CommandBase {
 
-    public void register(@NotNull CommandDispatcher<FabricClientCommandSource> dispatcher) {
-        dispatcher.register(
-                literal("ff")
-                        .executes(context -> {
-                            factionManager.setToggledChat(factionManager.getToggledChat() == F_CHAT ? NONE : F_CHAT);
-                            return 1;
-                        })
-        );
+    @Override
+    public LiteralArgumentBuilder<FabricClientCommandSource> execute(@NotNull LiteralArgumentBuilder<FabricClientCommandSource> node) {
+        return node
+                .executes(context -> {
+                    storage.setToggledChat(storage.getToggledChat() == F_CHAT ? NONE : F_CHAT);
+                    return 1;
+                });
     }
 }
