@@ -18,6 +18,7 @@ import java.util.Optional;
 import static de.rettichlp.pkutils.PKUtilsClient.factionService;
 import static de.rettichlp.pkutils.PKUtilsClient.player;
 import static de.rettichlp.pkutils.PKUtilsClient.storage;
+import static de.rettichlp.pkutils.common.storage.schema.Faction.NULL;
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 import static net.minecraft.text.Text.empty;
@@ -48,7 +49,7 @@ public abstract class EntityRendererMixin<S extends Entity, T extends EntityRend
             Formatting newTargetDisplayNameColor = WHITE;
 
             // same faction -> blue name
-            if (targetFaction == storage.getFaction(requireNonNull(player.getDisplayName()).getString())) {
+            if (targetFaction != NULL && targetFaction == storage.getFaction(requireNonNull(player.getDisplayName()).getString())) {
                 newTargetDisplayNameColor = BLUE;
             }
 
