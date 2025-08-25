@@ -81,6 +81,7 @@ public class GarbageManListener extends PKUtilsBase implements IMessageReceiveLi
                 if (getWasteLeft(nearestWasteDropSpot) <= 0) {
                     cancel();
                     GarbageManListener.this.isTimerActive = false;
+                    sendModMessage("Kein " + nearestWasteDropSpot.getDisplayName() + " übrig.", false);
                     return;
                 }
 
