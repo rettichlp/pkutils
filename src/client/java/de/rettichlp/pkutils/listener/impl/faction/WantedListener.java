@@ -1,12 +1,11 @@
 package de.rettichlp.pkutils.listener.impl.faction;
 
-import de.rettichlp.pkutils.listener.IMessageReceiveListener;
 import de.rettichlp.pkutils.common.manager.PKUtilsBase;
 import de.rettichlp.pkutils.common.registry.PKUtilsListener;
 import de.rettichlp.pkutils.common.storage.schema.WantedEntry;
+import de.rettichlp.pkutils.listener.IMessageReceiveListener;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
@@ -25,13 +24,9 @@ import static net.minecraft.text.Text.of;
 import static net.minecraft.util.Formatting.BLUE;
 import static net.minecraft.util.Formatting.DARK_AQUA;
 import static net.minecraft.util.Formatting.DARK_GRAY;
-import static net.minecraft.util.Formatting.DARK_GREEN;
-import static net.minecraft.util.Formatting.DARK_RED;
 import static net.minecraft.util.Formatting.GOLD;
 import static net.minecraft.util.Formatting.GRAY;
-import static net.minecraft.util.Formatting.GREEN;
 import static net.minecraft.util.Formatting.RED;
-import static net.minecraft.util.Formatting.YELLOW;
 
 @PKUtilsListener
 public class WantedListener extends PKUtilsBase implements IMessageReceiveListener {
