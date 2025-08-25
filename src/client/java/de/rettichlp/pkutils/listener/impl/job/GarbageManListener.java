@@ -89,7 +89,7 @@ public class GarbageManListener extends PKUtilsBase implements IMessageReceiveLi
 
                 networkHandler.sendChatCommand("dropwaste");
             }
-        }, 0, 5000);
+        }, 0, 5200);
     }
 
     private WasteDropSpot getNearestWasteDropSpot() {
