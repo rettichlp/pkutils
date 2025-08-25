@@ -12,6 +12,7 @@ import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static de.rettichlp.pkutils.PKUtilsClient.factionService;
 import static de.rettichlp.pkutils.PKUtilsClient.player;
 import static de.rettichlp.pkutils.PKUtilsClient.storage;
 import static de.rettichlp.pkutils.PKUtilsClient.syncService;
@@ -217,7 +218,7 @@ public class WantedListener extends PKUtilsBase implements IMessageReceiveListen
             WantedEntry wantedEntry = new WantedEntry(playerName, wantedPointAmount, reason);
             storage.addWantedEntry(wantedEntry);
 
-            Formatting color = getWantedPointColor(wantedPointAmount);
+            Formatting color = factionService.getWantedPointColor(wantedPointAmount);
 
             if (!syncService.isGameSyncProcessActive()) {
                 Text modifiedMessage = empty()
@@ -357,25 +358,6 @@ public class WantedListener extends PKUtilsBase implements IMessageReceiveListen
         }
 
         return true;
-    }
-
-    public @NotNull Formatting getWantedPointColor(int wantedPointAmount) {
-        Formatting color;
-
-        if (wantedPointAmount >= 60) {
-            color = DARK_RED;
-        } else if (wantedPointAmount >= 50) {
-            color = RED;
-        } else if (wantedPointAmount >= 25) {
-            color = GOLD;
-        } else if (wantedPointAmount >= 15) {
-            color = YELLOW;
-        } else if (wantedPointAmount >= 2) {
-            color = GREEN;
-        } else {
-            color = DARK_GREEN;
-        }
-        return color;
     }
 
     private int getWpAmountAndDelete(String targetName) {
