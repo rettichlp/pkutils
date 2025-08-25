@@ -2,6 +2,12 @@ package de.rettichlp.pkutils.common.registry;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import de.rettichlp.pkutils.command.ADropMoneyCommand;
+import de.rettichlp.pkutils.command.ModCommand;
+import de.rettichlp.pkutils.command.RichTaxesCommand;
+import de.rettichlp.pkutils.command.SyncCommand;
+import de.rettichlp.pkutils.command.ToggleDChatCommand;
+import de.rettichlp.pkutils.command.ToggleFChatCommand;
 import de.rettichlp.pkutils.listener.ICommandSendListener;
 import de.rettichlp.pkutils.listener.IMessageReceiveListener;
 import de.rettichlp.pkutils.listener.IMessageSendListener;
@@ -9,6 +15,13 @@ import de.rettichlp.pkutils.listener.IMoveListener;
 import de.rettichlp.pkutils.listener.INaviSpotReachedListener;
 import de.rettichlp.pkutils.common.manager.CommandBase;
 import de.rettichlp.pkutils.common.manager.PKUtilsBase;
+import de.rettichlp.pkutils.listener.impl.CommandSendListener;
+import de.rettichlp.pkutils.listener.impl.faction.BlacklistListener;
+import de.rettichlp.pkutils.listener.impl.faction.FactionChatListener;
+import de.rettichlp.pkutils.listener.impl.faction.WantedListener;
+import de.rettichlp.pkutils.listener.impl.job.FisherListener;
+import de.rettichlp.pkutils.listener.impl.job.GarbageManListener;
+import de.rettichlp.pkutils.listener.impl.job.TransportListener;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
@@ -18,6 +31,8 @@ import org.atteo.classindex.ClassIndex;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashSet;
+import java.util.Set;
 
 import static com.mojang.text2speech.Narrator.LOGGER;
 import static de.rettichlp.pkutils.PKUtilsClient.networkHandler;
@@ -29,8 +44,30 @@ public class Registry {
 
     private BlockPos lastPlayerPos = null;
 
+    private final Set<Class<?>> commands = Set.of(
+            ADropMoneyCommand.class,
+            ModCommand.class,
+            RichTaxesCommand.class,
+            SyncCommand.class,
+            ToggleDChatCommand.class,
+            ToggleFChatCommand.class
+    );
+
+    private final Set<Class<?>> listeners = Set.of(
+            // faction
+            BlacklistListener.class,
+            FactionChatListener.class,
+            WantedListener.class,
+            // job
+            FisherListener.class,
+            GarbageManListener.class,
+            TransportListener.class,
+            // other
+            CommandSendListener.class
+    );
+
     public void registerCommands(@NotNull CommandDispatcher<FabricClientCommandSource> dispatcher) {
-        for (Class<?> commandClass : ClassIndex.getAnnotated(PKUtilsCommand.class)) {
+        for (Class<?> commandClass : this.commands /*ClassIndex.getAnnotated(PKUtilsCommand.class)*/) {
             try {
                 String label = commandClass.getAnnotation(PKUtilsCommand.class).label();
                 CommandBase commandInstance = (CommandBase) commandClass.getConstructor().newInstance();
@@ -51,7 +88,7 @@ public class Registry {
             return;
         }
 
-        for (Class<?> listenerClass : ClassIndex.getAnnotated(PKUtilsListener.class)) {
+        for (Class<?> listenerClass : this.listeners /*ClassIndex.getAnnotated(PKUtilsListener.class)*/) {
             try {
                 PKUtilsBase listenerInstance = (PKUtilsBase) listenerClass.getConstructor().newInstance();
 
