@@ -1,16 +1,16 @@
 package de.rettichlp.pkutils.common.listener.impl.faction;
 
 import de.rettichlp.pkutils.common.listener.IMessageSendListener;
-import de.rettichlp.pkutils.common.manager.ManagerBase;
+import de.rettichlp.pkutils.common.manager.PKUtilsBase;
+import de.rettichlp.pkutils.common.registry.PKUtilsListener;
 import de.rettichlp.pkutils.common.storage.Storage;
-import lombok.NoArgsConstructor;
 
 import static de.rettichlp.pkutils.PKUtilsClient.networkHandler;
 import static de.rettichlp.pkutils.PKUtilsClient.storage;
 import static de.rettichlp.pkutils.common.storage.Storage.ToggledChat.NONE;
 
-@NoArgsConstructor
-public class FactionChatListener extends ManagerBase implements IMessageSendListener {
+@PKUtilsListener
+public class FactionChatListener extends PKUtilsBase implements IMessageSendListener {
 
     @Override
     public boolean onMessageSend(String message) {

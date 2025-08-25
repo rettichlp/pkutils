@@ -1,9 +1,9 @@
 package de.rettichlp.pkutils.common.listener.impl.faction;
 
 import de.rettichlp.pkutils.common.listener.IMessageReceiveListener;
-import de.rettichlp.pkutils.common.manager.ManagerBase;
+import de.rettichlp.pkutils.common.manager.PKUtilsBase;
+import de.rettichlp.pkutils.common.registry.PKUtilsListener;
 import de.rettichlp.pkutils.common.storage.schema.WantedEntry;
-import lombok.NoArgsConstructor;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.NotNull;
@@ -32,8 +32,8 @@ import static net.minecraft.util.Formatting.GREEN;
 import static net.minecraft.util.Formatting.RED;
 import static net.minecraft.util.Formatting.YELLOW;
 
-@NoArgsConstructor
-public class WantedListener extends ManagerBase implements IMessageReceiveListener {
+@PKUtilsListener
+public class WantedListener extends PKUtilsBase implements IMessageReceiveListener {
 
     private static final Pattern WANTED_GIVEN_POINTS_PATTERN = compile("^HQ: ([a-zA-Z0-9_]+)'s momentanes WantedLevel: (\\d+)$");
     private static final Pattern WANTED_GIVEN_REASON_PATTERN = compile("^HQ: Gesuchter: (?<playerName>[a-zA-Z0-9_]+)\\. Grund: (?<reason>.+)$");
