@@ -27,7 +27,7 @@ import static java.util.Optional.empty;
 import static java.util.regex.Pattern.compile;
 import static net.minecraft.scoreboard.ScoreboardDisplaySlot.SIDEBAR;
 
-public class JobGarbageManManager extends BaseManager implements IMessageReceiveListener, IMoveListener {
+public class JobGarbageManManager extends ManagerBase implements IMessageReceiveListener, IMoveListener {
 
     private static final Pattern GARBAGE_MAN_DROP_START = compile("^\\[Müllmann] Hier kannst du auf den Haufen mit /dropwaste dein Müll sortieren!$");
     private static final Pattern GARBAGE_MAN_FINISHED = compile("^\\[Müllmann] Du hast den Job beendet\\.$");

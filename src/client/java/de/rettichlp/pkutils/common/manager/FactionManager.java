@@ -9,7 +9,7 @@ import static de.rettichlp.pkutils.PKUtilsClient.networkHandler;
 import static de.rettichlp.pkutils.common.manager.FactionManager.ToggledChat.NONE;
 
 @NoArgsConstructor
-public class FactionManager extends BaseManager implements IMessageSendListener {
+public class FactionManager extends ManagerBase implements IMessageSendListener {
 
     @Getter
     private ToggledChat toggledChat = NONE;

@@ -26,7 +26,7 @@ import static java.util.Objects.requireNonNull;
 import static java.util.regex.Pattern.compile;
 
 @NoArgsConstructor
-public class SyncManager extends BaseManager implements IMessageReceiveListener {
+public class SyncManager extends ManagerBase implements IMessageReceiveListener {
 
     private static final Pattern SERVER_PASSWORD_MISSING_PATTERN = compile("^» Schütze deinen Account mit /passwort new \\[Passwort]$");
     private static final Pattern SERVER_PASSWORD_ACCEPTED_PATTERN = compile("^Du hast deinen Account freigeschaltet\\.$");

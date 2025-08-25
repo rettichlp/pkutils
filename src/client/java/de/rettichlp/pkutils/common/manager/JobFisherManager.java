@@ -23,7 +23,7 @@ import static java.util.Arrays.stream;
 import static java.util.regex.Pattern.compile;
 
 @NoArgsConstructor
-public class JobFisherManager extends BaseManager implements IMessageReceiveListener, INaviSpotReachedListener {
+public class JobFisherManager extends ManagerBase implements IMessageReceiveListener, INaviSpotReachedListener {
 
     private static final Pattern FISHER_START = compile("^\\[Fischer] Mit /findschwarm kannst du dir den nächsten Fischschwarm anzeigen lassen\\.$");
     private static final Pattern FISHER_SPOT_FOUND_PATTERN = compile("^\\[Fischer] Du hast einen Fischschwarm gefunden!$");

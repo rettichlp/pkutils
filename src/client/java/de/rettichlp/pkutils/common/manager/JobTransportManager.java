@@ -14,7 +14,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.regex.Pattern.compile;
 
 @NoArgsConstructor
-public class JobTransportManager extends BaseManager implements IMessageReceiveListener, INaviSpotReachedListener {
+public class JobTransportManager extends ManagerBase implements IMessageReceiveListener, INaviSpotReachedListener {
 
     private static final Pattern TRANSPORT_DELIVER_PATTERN = compile("^\\[Transport] Du hast eine (Kiste|Waffenkiste) abgeliefert\\.$" +
             "|^\\[Transport] Du hast ein Weizen Paket abgeliefert\\.$" +
