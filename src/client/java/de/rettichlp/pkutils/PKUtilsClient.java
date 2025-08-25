@@ -1,11 +1,5 @@
 package de.rettichlp.pkutils;
 
-import de.rettichlp.pkutils.command.ADropMoneyCommand;
-import de.rettichlp.pkutils.command.PKUtilsCommand;
-import de.rettichlp.pkutils.command.RichTaxesCommand;
-import de.rettichlp.pkutils.command.SyncCommand;
-import de.rettichlp.pkutils.command.ToggleDChatCommand;
-import de.rettichlp.pkutils.command.ToggleFChatCommand;
 import de.rettichlp.pkutils.common.manager.BlacklistManager;
 import de.rettichlp.pkutils.common.manager.FactionManager;
 import de.rettichlp.pkutils.common.manager.JobFisherManager;
@@ -27,6 +21,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.StringJoiner;
 
+import static de.rettichlp.pkutils.common.registry.Registry.registerCommands;
 import static java.lang.Character.isUpperCase;
 import static java.util.Objects.isNull;
 
@@ -129,20 +124,8 @@ public class PKUtilsClient implements ClientModInitializer {
             return true;
         });
 
-        ADropMoneyCommand aDropMoneyCommand = new ADropMoneyCommand();
-        PKUtilsCommand pkUtilsCommand = new PKUtilsCommand();
-        RichTaxesCommand richTaxesCommand = new RichTaxesCommand();
-        SyncCommand syncCommand = new SyncCommand();
-        ToggleDChatCommand toggleDChatCommand = new ToggleDChatCommand();
-        ToggleFChatCommand toggleFChatCommand = new ToggleFChatCommand();
-
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
-            aDropMoneyCommand.register(dispatcher);
-            pkUtilsCommand.register(dispatcher);
-            richTaxesCommand.register(dispatcher);
-            syncCommand.register(dispatcher);
-            toggleDChatCommand.register(dispatcher);
-            toggleFChatCommand.register(dispatcher);
+            registerCommands(dispatcher);
         });
     }
 
