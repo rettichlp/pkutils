@@ -32,7 +32,7 @@ public class CommandSendListener extends PKUtilsBase implements ICommandSendList
             return false;
         }
 
-        return false;
+        return true;
     }
 
     private boolean containsUppercase(@NotNull String input) {
