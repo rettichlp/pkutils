@@ -1,5 +1,7 @@
-package de.rettichlp.pkutils.common.manager;
+package de.rettichlp.pkutils.listener.impl;
 
+import de.rettichlp.pkutils.common.manager.PKUtilsBase;
+import de.rettichlp.pkutils.common.registry.PKUtilsListener;
 import de.rettichlp.pkutils.common.storage.schema.Faction;
 import de.rettichlp.pkutils.common.storage.schema.FactionMember;
 import de.rettichlp.pkutils.listener.IMessageReceiveListener;
@@ -16,8 +18,8 @@ import static java.lang.System.currentTimeMillis;
 import static java.util.Objects.nonNull;
 import static java.util.regex.Pattern.compile;
 
-@NoArgsConstructor
-public class SyncManager extends PKUtilsBase implements IMessageReceiveListener {
+@PKUtilsListener
+public class SyncListener extends PKUtilsBase implements IMessageReceiveListener {
 
     private static final Pattern SERVER_PASSWORD_MISSING_PATTERN = compile("^» Schütze deinen Account mit /passwort new \\[Passwort]$");
     private static final Pattern SERVER_PASSWORD_ACCEPTED_PATTERN = compile("^Du hast deinen Account freigeschaltet\\.$");
