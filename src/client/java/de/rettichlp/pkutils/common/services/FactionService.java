@@ -6,9 +6,6 @@ import lombok.Setter;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.NotNull;
 
-import java.time.LocalDateTime;
-
-import static java.time.LocalDateTime.MIN;
 import static net.minecraft.util.Formatting.DARK_GREEN;
 import static net.minecraft.util.Formatting.DARK_RED;
 import static net.minecraft.util.Formatting.GOLD;

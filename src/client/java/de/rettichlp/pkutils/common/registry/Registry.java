@@ -8,14 +8,15 @@ import de.rettichlp.pkutils.command.RichTaxesCommand;
 import de.rettichlp.pkutils.command.SyncCommand;
 import de.rettichlp.pkutils.command.ToggleDChatCommand;
 import de.rettichlp.pkutils.command.ToggleFChatCommand;
+import de.rettichlp.pkutils.common.manager.CommandBase;
+import de.rettichlp.pkutils.common.manager.PKUtilsBase;
 import de.rettichlp.pkutils.listener.ICommandSendListener;
 import de.rettichlp.pkutils.listener.IMessageReceiveListener;
 import de.rettichlp.pkutils.listener.IMessageSendListener;
 import de.rettichlp.pkutils.listener.IMoveListener;
 import de.rettichlp.pkutils.listener.INaviSpotReachedListener;
-import de.rettichlp.pkutils.common.manager.CommandBase;
-import de.rettichlp.pkutils.common.manager.PKUtilsBase;
 import de.rettichlp.pkutils.listener.impl.CommandSendListener;
+import de.rettichlp.pkutils.listener.impl.SyncListener;
 import de.rettichlp.pkutils.listener.impl.faction.BlacklistListener;
 import de.rettichlp.pkutils.listener.impl.faction.FactionChatListener;
 import de.rettichlp.pkutils.listener.impl.faction.WantedListener;
@@ -27,11 +28,9 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientSendMessageEvents;
 import net.minecraft.util.math.BlockPos;
-import org.atteo.classindex.ClassIndex;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashSet;
 import java.util.Set;
 
 import static com.mojang.text2speech.Narrator.LOGGER;
@@ -41,8 +40,6 @@ import static java.util.Objects.isNull;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
 
 public class Registry {
-
-    private BlockPos lastPlayerPos = null;
 
     private final Set<Class<?>> commands = Set.of(
             ADropMoneyCommand.class,
@@ -63,8 +60,12 @@ public class Registry {
             GarbageManListener.class,
             TransportListener.class,
             // other
-            CommandSendListener.class
+            CommandSendListener.class,
+            RichTaxesCommand.class, // TODO find better solution for this
+            SyncListener.class
     );
+
+    private BlockPos lastPlayerPos = null;
 
     public void registerCommands(@NotNull CommandDispatcher<FabricClientCommandSource> dispatcher) {
         for (Class<?> commandClass : this.commands /*ClassIndex.getAnnotated(PKUtilsCommand.class)*/) {

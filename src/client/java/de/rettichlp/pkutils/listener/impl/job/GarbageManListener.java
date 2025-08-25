@@ -1,9 +1,9 @@
 package de.rettichlp.pkutils.listener.impl.job;
 
-import de.rettichlp.pkutils.listener.IMessageReceiveListener;
-import de.rettichlp.pkutils.listener.IMoveListener;
 import de.rettichlp.pkutils.common.manager.PKUtilsBase;
 import de.rettichlp.pkutils.common.registry.PKUtilsListener;
+import de.rettichlp.pkutils.listener.IMessageReceiveListener;
+import de.rettichlp.pkutils.listener.IMoveListener;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.minecraft.client.MinecraftClient;
@@ -78,20 +78,22 @@ public class GarbageManListener extends PKUtilsBase implements IMessageReceiveLi
         this.timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                if (getWasteLeft(nearestWasteDropSpot) <= 0) {
+                int wasteLeft = getWasteLeft(nearestWasteDropSpot);
+                if (wasteLeft >= 1) {
+                    networkHandler.sendChatCommand("dropwaste");
+
+                    delayedAction(() -> sendModMessage("5", true), 200);
+                    delayedAction(() -> sendModMessage("4", true), 1200);
+                    delayedAction(() -> sendModMessage("3", true), 2200);
+                    delayedAction(() -> sendModMessage("2", true), 3200);
+                    delayedAction(() -> sendModMessage("1", true), 4200);
+                }
+
+                if (wasteLeft <= 1) {
                     cancel();
                     GarbageManListener.this.isTimerActive = false;
                     sendModMessage("Kein " + nearestWasteDropSpot.getDisplayName() + " übrig.", false);
-                    return;
                 }
-
-                networkHandler.sendChatCommand("dropwaste");
-
-                delayedAction(() -> sendModMessage("5", true), 200);
-                delayedAction(() -> sendModMessage("4", true), 1200);
-                delayedAction(() -> sendModMessage("3", true), 2200);
-                delayedAction(() -> sendModMessage("2", true), 3200);
-                delayedAction(() -> sendModMessage("1", true), 4200);
             }
         }, 0, 5200);
     }
