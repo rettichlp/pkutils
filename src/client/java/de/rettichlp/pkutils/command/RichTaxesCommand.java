@@ -3,6 +3,7 @@ package de.rettichlp.pkutils.command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import de.rettichlp.pkutils.common.manager.CommandBase;
 import de.rettichlp.pkutils.common.registry.PKUtilsCommand;
+import de.rettichlp.pkutils.common.registry.PKUtilsListener;
 import de.rettichlp.pkutils.listener.IMessageReceiveListener;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import org.jetbrains.annotations.NotNull;
@@ -14,6 +15,7 @@ import static de.rettichlp.pkutils.PKUtilsClient.networkHandler;
 import static java.util.regex.Pattern.compile;
 
 @PKUtilsCommand(label = "reichensteuer")
+@PKUtilsListener
 public class RichTaxesCommand extends CommandBase implements IMessageReceiveListener {
 
     private static final Pattern PLAYER_MONEY_BANK_AMOUNT = compile("^Ihr Bankguthaben beträgt: (?<moneyBankAmount>([+-])\\d+)\\$$");

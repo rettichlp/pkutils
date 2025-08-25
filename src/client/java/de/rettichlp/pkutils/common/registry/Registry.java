@@ -59,7 +59,8 @@ public class Registry {
             GarbageManListener.class,
             TransportListener.class,
             // other
-            CommandSendListener.class
+            CommandSendListener.class,
+            RichTaxesCommand.class // TODO find better solution for this
     );
 
     private BlockPos lastPlayerPos = null;
