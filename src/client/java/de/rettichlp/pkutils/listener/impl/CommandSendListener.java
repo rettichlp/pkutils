@@ -1,6 +1,6 @@
-package de.rettichlp.pkutils.common.listener.impl;
+package de.rettichlp.pkutils.listener.impl;
 
-import de.rettichlp.pkutils.common.listener.ICommandSendListener;
+import de.rettichlp.pkutils.listener.ICommandSendListener;
 import de.rettichlp.pkutils.common.manager.PKUtilsBase;
 import de.rettichlp.pkutils.common.registry.PKUtilsListener;
 import org.jetbrains.annotations.NotNull;

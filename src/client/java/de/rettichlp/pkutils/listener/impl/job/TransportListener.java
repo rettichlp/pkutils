@@ -1,7 +1,7 @@
-package de.rettichlp.pkutils.common.listener.impl.job;
+package de.rettichlp.pkutils.listener.impl.job;
 
-import de.rettichlp.pkutils.common.listener.IMessageReceiveListener;
-import de.rettichlp.pkutils.common.listener.INaviSpotReachedListener;
+import de.rettichlp.pkutils.listener.IMessageReceiveListener;
+import de.rettichlp.pkutils.listener.INaviSpotReachedListener;
 import de.rettichlp.pkutils.common.manager.PKUtilsBase;
 import de.rettichlp.pkutils.common.registry.PKUtilsListener;
 import net.minecraft.util.math.BlockPos;

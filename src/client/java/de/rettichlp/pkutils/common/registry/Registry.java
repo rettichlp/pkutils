@@ -2,11 +2,11 @@ package de.rettichlp.pkutils.common.registry;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import de.rettichlp.pkutils.common.listener.ICommandSendListener;
-import de.rettichlp.pkutils.common.listener.IMessageReceiveListener;
-import de.rettichlp.pkutils.common.listener.IMessageSendListener;
-import de.rettichlp.pkutils.common.listener.IMoveListener;
-import de.rettichlp.pkutils.common.listener.INaviSpotReachedListener;
+import de.rettichlp.pkutils.listener.ICommandSendListener;
+import de.rettichlp.pkutils.listener.IMessageReceiveListener;
+import de.rettichlp.pkutils.listener.IMessageSendListener;
+import de.rettichlp.pkutils.listener.IMoveListener;
+import de.rettichlp.pkutils.listener.INaviSpotReachedListener;
 import de.rettichlp.pkutils.common.manager.CommandBase;
 import de.rettichlp.pkutils.common.manager.PKUtilsBase;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;

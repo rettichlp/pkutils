@@ -1,6 +1,6 @@
-package de.rettichlp.pkutils.common.listener.impl.faction;
+package de.rettichlp.pkutils.listener.impl.faction;
 
-import de.rettichlp.pkutils.common.listener.IMessageReceiveListener;
+import de.rettichlp.pkutils.listener.IMessageReceiveListener;
 import de.rettichlp.pkutils.common.manager.PKUtilsBase;
 import de.rettichlp.pkutils.common.registry.PKUtilsListener;
 import de.rettichlp.pkutils.common.storage.schema.WantedEntry;
