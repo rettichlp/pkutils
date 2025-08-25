@@ -64,14 +64,12 @@ public class GarbageManListener extends PKUtilsBase implements IMessageReceiveLi
 
         // not dropping waste currently check
         if (this.isTimerActive) {
-            System.out.println("JGMM: Timer active");
             return;
         }
 
         // in range check
         WasteDropSpot nearestWasteDropSpot = getNearestWasteDropSpot();
         if (!player.getBlockPos().isWithinDistance(nearestWasteDropSpot.getDropSpot(), 3)) {
-            System.out.println("JGMM: Not in range");
             return;
         }
 
@@ -81,7 +79,6 @@ public class GarbageManListener extends PKUtilsBase implements IMessageReceiveLi
             @Override
             public void run() {
                 if (getWasteLeft(nearestWasteDropSpot) <= 0) {
-                    System.out.println("JGMM: No waste left for " + nearestWasteDropSpot.getDisplayName());
                     cancel();
                     GarbageManListener.this.isTimerActive = false;
                     return;
