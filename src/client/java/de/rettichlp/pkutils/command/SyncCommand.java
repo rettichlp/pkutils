@@ -6,7 +6,7 @@ import de.rettichlp.pkutils.common.registry.PKUtilsCommand;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import org.jetbrains.annotations.NotNull;
 
-import static de.rettichlp.pkutils.PKUtilsClient.syncManager;
+import static de.rettichlp.pkutils.PKUtilsClient.syncService;
 
 @PKUtilsCommand(label = "sync")
 public class SyncCommand extends CommandBase {
@@ -15,7 +15,7 @@ public class SyncCommand extends CommandBase {
     public LiteralArgumentBuilder<FabricClientCommandSource> execute(@NotNull LiteralArgumentBuilder<FabricClientCommandSource> node) {
         return node
                 .executes(context -> {
-                    syncManager.executeSync();
+                    syncService.executeSync();
                     return 1;
                 });
     }

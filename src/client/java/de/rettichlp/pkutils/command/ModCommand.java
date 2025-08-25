@@ -17,7 +17,7 @@ import java.util.StringJoiner;
 
 import static de.rettichlp.pkutils.PKUtils.MOD_ID;
 import static de.rettichlp.pkutils.PKUtilsClient.player;
-import static de.rettichlp.pkutils.PKUtilsClient.syncManager;
+import static de.rettichlp.pkutils.PKUtilsClient.syncService;
 import static java.time.LocalDateTime.MIN;
 import static net.minecraft.text.Text.empty;
 import static net.minecraft.text.Text.of;
@@ -34,7 +34,7 @@ public class ModCommand extends CommandBase {
                 .executes(context -> {
                     String version = getVersion();
                     String authors = getAuthors();
-                    LocalDateTime lastSyncTimestamp = syncManager.getLastSyncTimestamp();
+                    LocalDateTime lastSyncTimestamp = syncService.getLastSyncTimestamp();
 
                     player.sendMessage(empty(), false);
 

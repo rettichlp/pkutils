@@ -9,7 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static de.rettichlp.pkutils.PKUtilsClient.storage;
-import static de.rettichlp.pkutils.PKUtilsClient.syncManager;
+import static de.rettichlp.pkutils.PKUtilsClient.syncService;
 import static java.lang.Integer.parseInt;
 import static java.lang.System.currentTimeMillis;
 import static java.util.regex.Pattern.compile;
@@ -30,7 +30,7 @@ public class BlacklistListener extends PKUtilsBase implements IMessageReceiveLis
         if (blacklistHeaderMatcher.find()) {
             this.activeCheck = currentTimeMillis();
             storage.resetBlacklistEntries();
-            return !syncManager.isGameSyncProcessActive();
+            return !syncService.isGameSyncProcessActive();
         }
 
         Matcher blacklistEntryMatcher = BLACKLIST_ENTRY_PATTERN.matcher(message);
@@ -43,7 +43,7 @@ public class BlacklistListener extends PKUtilsBase implements IMessageReceiveLis
 
             BlacklistEntry blacklistEntry = new BlacklistEntry(playerName, reason, outlaw, kills, price);
             storage.addBlacklistEntry(blacklistEntry);
-            return !syncManager.isGameSyncProcessActive();
+            return !syncService.isGameSyncProcessActive();
         }
 
         Matcher blacklistEntryAddMatcher = BLACKLIST_ENTRY_ADD.matcher(message);

@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 
 import static de.rettichlp.pkutils.PKUtilsClient.player;
 import static de.rettichlp.pkutils.PKUtilsClient.storage;
-import static de.rettichlp.pkutils.PKUtilsClient.syncManager;
+import static de.rettichlp.pkutils.PKUtilsClient.syncService;
 import static java.lang.Integer.parseInt;
 import static java.lang.String.valueOf;
 import static java.lang.System.currentTimeMillis;
@@ -204,7 +204,7 @@ public class WantedListener extends PKUtilsBase implements IMessageReceiveListen
         if (wantedListHeaderMatcher.find()) {
             this.activeCheck = currentTimeMillis();
             storage.resetWantedEntries();
-            return !syncManager.isGameSyncProcessActive();
+            return !syncService.isGameSyncProcessActive();
         }
 
         Matcher wantedListEntryMatcher = WANTED_LIST_ENTRY_PATTERN.matcher(message);
@@ -219,7 +219,7 @@ public class WantedListener extends PKUtilsBase implements IMessageReceiveListen
 
             Formatting color = getWantedPointColor(wantedPointAmount);
 
-            if (!syncManager.isGameSyncProcessActive()) {
+            if (!syncService.isGameSyncProcessActive()) {
                 Text modifiedMessage = empty()
                         .append(of("➥").copy().formatted(DARK_GRAY)).append(" ")
                         .append(of(playerName).copy().formatted(color)).append(" ")
