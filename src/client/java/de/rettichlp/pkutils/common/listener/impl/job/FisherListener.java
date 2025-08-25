@@ -1,7 +1,8 @@
-package de.rettichlp.pkutils.common.manager;
+package de.rettichlp.pkutils.common.listener.impl.job;
 
 import de.rettichlp.pkutils.common.listener.IMessageReceiveListener;
 import de.rettichlp.pkutils.common.listener.INaviSpotReachedListener;
+import de.rettichlp.pkutils.common.manager.ManagerBase;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,7 +24,7 @@ import static java.util.Arrays.stream;
 import static java.util.regex.Pattern.compile;
 
 @NoArgsConstructor
-public class JobFisherManager extends ManagerBase implements IMessageReceiveListener, INaviSpotReachedListener {
+public class FisherListener extends ManagerBase implements IMessageReceiveListener, INaviSpotReachedListener {
 
     private static final Pattern FISHER_START = compile("^\\[Fischer] Mit /findschwarm kannst du dir den nächsten Fischschwarm anzeigen lassen\\.$");
     private static final Pattern FISHER_SPOT_FOUND_PATTERN = compile("^\\[Fischer] Du hast einen Fischschwarm gefunden!$");

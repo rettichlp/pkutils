@@ -1,6 +1,7 @@
-package de.rettichlp.pkutils.common.manager;
+package de.rettichlp.pkutils.common.listener.impl.faction;
 
 import de.rettichlp.pkutils.common.listener.IMessageReceiveListener;
+import de.rettichlp.pkutils.common.manager.ManagerBase;
 import de.rettichlp.pkutils.common.storage.schema.WantedEntry;
 import lombok.NoArgsConstructor;
 import net.minecraft.text.Text;
@@ -32,7 +33,7 @@ import static net.minecraft.util.Formatting.RED;
 import static net.minecraft.util.Formatting.YELLOW;
 
 @NoArgsConstructor
-public class WantedManager extends ManagerBase implements IMessageReceiveListener {
+public class WantedListener extends ManagerBase implements IMessageReceiveListener {
 
     private static final Pattern WANTED_GIVEN_POINTS_PATTERN = compile("^HQ: ([a-zA-Z0-9_]+)'s momentanes WantedLevel: (\\d+)$");
     private static final Pattern WANTED_GIVEN_REASON_PATTERN = compile("^HQ: Gesuchter: (?<playerName>[a-zA-Z0-9_]+)\\. Grund: (?<reason>.+)$");

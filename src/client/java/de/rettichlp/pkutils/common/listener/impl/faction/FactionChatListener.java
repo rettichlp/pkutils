@@ -1,15 +1,16 @@
-package de.rettichlp.pkutils.common.manager;
+package de.rettichlp.pkutils.common.listener.impl.faction;
 
 import de.rettichlp.pkutils.common.listener.IMessageSendListener;
+import de.rettichlp.pkutils.common.manager.ManagerBase;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import static de.rettichlp.pkutils.PKUtilsClient.networkHandler;
-import static de.rettichlp.pkutils.common.manager.FactionManager.ToggledChat.NONE;
+import static de.rettichlp.pkutils.common.listener.impl.faction.FactionChatListener.ToggledChat.NONE;
 
 @NoArgsConstructor
-public class FactionManager extends ManagerBase implements IMessageSendListener {
+public class FactionChatListener extends ManagerBase implements IMessageSendListener {
 
     @Getter
     private ToggledChat toggledChat = NONE;

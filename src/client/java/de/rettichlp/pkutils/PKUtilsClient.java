@@ -1,12 +1,12 @@
 package de.rettichlp.pkutils;
 
-import de.rettichlp.pkutils.common.manager.BlacklistManager;
-import de.rettichlp.pkutils.common.manager.FactionManager;
-import de.rettichlp.pkutils.common.manager.JobFisherManager;
-import de.rettichlp.pkutils.common.manager.JobGarbageManManager;
-import de.rettichlp.pkutils.common.manager.JobTransportManager;
+import de.rettichlp.pkutils.common.listener.impl.faction.BlacklistListener;
+import de.rettichlp.pkutils.common.listener.impl.faction.FactionChatListener;
+import de.rettichlp.pkutils.common.listener.impl.job.FisherListener;
+import de.rettichlp.pkutils.common.listener.impl.job.GarbageManListener;
+import de.rettichlp.pkutils.common.listener.impl.job.TransportListener;
 import de.rettichlp.pkutils.common.manager.SyncManager;
-import de.rettichlp.pkutils.common.manager.WantedManager;
+import de.rettichlp.pkutils.common.listener.impl.faction.WantedListener;
 import de.rettichlp.pkutils.common.storage.Storage;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
@@ -33,13 +33,13 @@ public class PKUtilsClient implements ClientModInitializer {
     public static ClientPlayNetworkHandler networkHandler;
 
     // managers
-    public static BlacklistManager blacklistManager;
-    public static FactionManager factionManager;
-    public static JobFisherManager jobFisherManager;
-    public static JobTransportManager jobTransportManager;
-    public static JobGarbageManManager jobGarbageManManager;
+    public static BlacklistListener blacklistListener;
+    public static FactionChatListener factionChatListener;
+    public static FisherListener fisherListener;
+    public static TransportListener transportListener;
+    public static GarbageManListener garbageManListener;
     public static SyncManager syncManager;
-    public static WantedManager wantedManager;
+    public static WantedListener wantedListener;
 
     private BlockPos lastPlayerPos = null;
 
@@ -47,13 +47,13 @@ public class PKUtilsClient implements ClientModInitializer {
     public void onInitializeClient() {
         // This entrypoint is suitable for setting up client-specific logic, such as rendering.
 
-        blacklistManager = new BlacklistManager();
-        factionManager = new FactionManager();
-        jobFisherManager = new JobFisherManager();
-        jobTransportManager = new JobTransportManager();
-        jobGarbageManManager = new JobGarbageManManager();
+        blacklistListener = new BlacklistListener();
+        factionChatListener = new FactionChatListener();
+        fisherListener = new FisherListener();
+        transportListener = new TransportListener();
+        garbageManListener = new GarbageManListener();
         syncManager = new SyncManager();
-        wantedManager = new WantedManager();
+        wantedListener = new WantedListener();
 
         ClientPlayConnectionEvents.JOIN.register((handler, sender, minecraftClient) -> minecraftClient.execute(() -> {
             assert minecraftClient.player != null; // cannot be null at this point
@@ -70,7 +70,7 @@ public class PKUtilsClient implements ClientModInitializer {
             BlockPos blockPos = player.getBlockPos();
             if (isNull(this.lastPlayerPos) || !this.lastPlayerPos.equals(blockPos)) {
                 this.lastPlayerPos = blockPos;
-                jobGarbageManManager.onMove(blockPos);
+                garbageManListener.onMove(blockPos);
             }
         });
 
@@ -82,23 +82,23 @@ public class PKUtilsClient implements ClientModInitializer {
 
             String rawMessage = message.getString();
 
-            boolean showMessage1 = blacklistManager.onMessageReceive(rawMessage);
-            boolean showMessage2 = jobFisherManager.onMessageReceive(rawMessage);
-            boolean showMessage3 = jobGarbageManManager.onMessageReceive(rawMessage);
-            boolean showMessage4 = jobTransportManager.onMessageReceive(rawMessage);
+            boolean showMessage1 = blacklistListener.onMessageReceive(rawMessage);
+            boolean showMessage2 = fisherListener.onMessageReceive(rawMessage);
+            boolean showMessage3 = garbageManListener.onMessageReceive(rawMessage);
+            boolean showMessage4 = transportListener.onMessageReceive(rawMessage);
             boolean showMessage5 = syncManager.onMessageReceive(rawMessage);
-            boolean showMessage6 = wantedManager.onMessageReceive(rawMessage);
+            boolean showMessage6 = wantedListener.onMessageReceive(rawMessage);
 
             if (rawMessage.equals("Du hast dein Ziel erreicht!")) {
-                jobFisherManager.onNaviSpotReached();
-                jobTransportManager.onNaviSpotReached();
+                fisherListener.onNaviSpotReached();
+                transportListener.onNaviSpotReached();
             }
 
             return showMessage1 && showMessage2 && showMessage3 && showMessage4 && showMessage5 && showMessage6;
         });
 
         ClientSendMessageEvents.ALLOW_CHAT.register(message -> {
-            boolean sendMessage1 = factionManager.onMessageSend(message);
+            boolean sendMessage1 = factionChatListener.onMessageSend(message);
 
             return sendMessage1;
         });

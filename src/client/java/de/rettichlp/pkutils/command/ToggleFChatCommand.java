@@ -6,9 +6,9 @@ import de.rettichlp.pkutils.common.registry.PKUtilsCommand;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import org.jetbrains.annotations.NotNull;
 
-import static de.rettichlp.pkutils.PKUtilsClient.factionManager;
-import static de.rettichlp.pkutils.common.manager.FactionManager.ToggledChat.F_CHAT;
-import static de.rettichlp.pkutils.common.manager.FactionManager.ToggledChat.NONE;
+import static de.rettichlp.pkutils.PKUtilsClient.factionChatListener;
+import static de.rettichlp.pkutils.common.listener.impl.faction.FactionChatListener.ToggledChat.F_CHAT;
+import static de.rettichlp.pkutils.common.listener.impl.faction.FactionChatListener.ToggledChat.NONE;
 
 @PKUtilsCommand(label = "ff")
 public class ToggleFChatCommand extends CommandBase {
@@ -17,7 +17,7 @@ public class ToggleFChatCommand extends CommandBase {
     public LiteralArgumentBuilder<FabricClientCommandSource> execute(@NotNull LiteralArgumentBuilder<FabricClientCommandSource> node) {
         return node
                 .executes(context -> {
-                    factionManager.setToggledChat(factionManager.getToggledChat() == F_CHAT ? NONE : F_CHAT);
+                    factionChatListener.setToggledChat(factionChatListener.getToggledChat() == F_CHAT ? NONE : F_CHAT);
                     return 1;
                 });
     }

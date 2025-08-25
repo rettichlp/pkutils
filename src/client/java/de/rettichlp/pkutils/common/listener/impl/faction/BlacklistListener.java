@@ -1,6 +1,7 @@
-package de.rettichlp.pkutils.common.manager;
+package de.rettichlp.pkutils.common.listener.impl.faction;
 
 import de.rettichlp.pkutils.common.listener.IMessageReceiveListener;
+import de.rettichlp.pkutils.common.manager.ManagerBase;
 import de.rettichlp.pkutils.common.storage.schema.BlacklistEntry;
 import lombok.NoArgsConstructor;
 
@@ -14,7 +15,7 @@ import static java.lang.System.currentTimeMillis;
 import static java.util.regex.Pattern.compile;
 
 @NoArgsConstructor
-public class BlacklistManager extends ManagerBase implements IMessageReceiveListener {
+public class BlacklistListener extends ManagerBase implements IMessageReceiveListener {
 
     private static final Pattern BLACKLIST_HEADER_PATTERN = compile("^==== Blacklist .+ ====$");
     private static final Pattern BLACKLIST_ENTRY_PATTERN = compile("^ » (?<playerName>[a-zA-Z0-9_]+) \\| (?<reason>.+) \\| (?<dateTime>.+) \\| (?<kills>\\d+) Kills \\| (?<price>\\d+)\\$(| \\(AFK\\))$");

@@ -1,7 +1,8 @@
-package de.rettichlp.pkutils.common.manager;
+package de.rettichlp.pkutils.common.listener.impl.job;
 
 import de.rettichlp.pkutils.common.listener.IMessageReceiveListener;
 import de.rettichlp.pkutils.common.listener.INaviSpotReachedListener;
+import de.rettichlp.pkutils.common.manager.ManagerBase;
 import lombok.NoArgsConstructor;
 import net.minecraft.util.math.BlockPos;
 
@@ -14,7 +15,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.regex.Pattern.compile;
 
 @NoArgsConstructor
-public class JobTransportManager extends ManagerBase implements IMessageReceiveListener, INaviSpotReachedListener {
+public class TransportListener extends ManagerBase implements IMessageReceiveListener, INaviSpotReachedListener {
 
     private static final Pattern TRANSPORT_DELIVER_PATTERN = compile("^\\[Transport] Du hast eine (Kiste|Waffenkiste) abgeliefert\\.$" +
             "|^\\[Transport] Du hast ein Weizen Paket abgeliefert\\.$" +
