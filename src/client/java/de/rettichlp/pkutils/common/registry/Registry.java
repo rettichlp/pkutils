@@ -16,6 +16,7 @@ import de.rettichlp.pkutils.listener.IMessageSendListener;
 import de.rettichlp.pkutils.listener.IMoveListener;
 import de.rettichlp.pkutils.listener.INaviSpotReachedListener;
 import de.rettichlp.pkutils.listener.impl.CommandSendListener;
+import de.rettichlp.pkutils.listener.impl.SyncListener;
 import de.rettichlp.pkutils.listener.impl.faction.BlacklistListener;
 import de.rettichlp.pkutils.listener.impl.faction.FactionChatListener;
 import de.rettichlp.pkutils.listener.impl.faction.WantedListener;
@@ -60,7 +61,8 @@ public class Registry {
             TransportListener.class,
             // other
             CommandSendListener.class,
-            RichTaxesCommand.class // TODO find better solution for this
+            RichTaxesCommand.class, // TODO find better solution for this
+            SyncListener.class
     );
 
     private BlockPos lastPlayerPos = null;
