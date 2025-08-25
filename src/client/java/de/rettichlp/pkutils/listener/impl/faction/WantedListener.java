@@ -1,37 +1,24 @@
 package de.rettichlp.pkutils.listener.impl.faction;
 
-import de.rettichlp.pkutils.listener.IMessageReceiveListener;
 import de.rettichlp.pkutils.common.manager.PKUtilsBase;
 import de.rettichlp.pkutils.common.registry.PKUtilsListener;
 import de.rettichlp.pkutils.common.storage.schema.WantedEntry;
+import de.rettichlp.pkutils.listener.IMessageReceiveListener;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static de.rettichlp.pkutils.PKUtilsClient.factionService;
-import static de.rettichlp.pkutils.PKUtilsClient.player;
-import static de.rettichlp.pkutils.PKUtilsClient.storage;
-import static de.rettichlp.pkutils.PKUtilsClient.syncService;
+import static de.rettichlp.pkutils.PKUtilsClient.*;
 import static java.lang.Integer.parseInt;
 import static java.lang.String.valueOf;
 import static java.lang.System.currentTimeMillis;
 import static java.util.regex.Pattern.compile;
 import static net.minecraft.text.Text.empty;
 import static net.minecraft.text.Text.of;
-import static net.minecraft.util.Formatting.BLUE;
-import static net.minecraft.util.Formatting.DARK_AQUA;
-import static net.minecraft.util.Formatting.DARK_GRAY;
-import static net.minecraft.util.Formatting.DARK_GREEN;
-import static net.minecraft.util.Formatting.DARK_RED;
-import static net.minecraft.util.Formatting.GOLD;
-import static net.minecraft.util.Formatting.GRAY;
-import static net.minecraft.util.Formatting.GREEN;
-import static net.minecraft.util.Formatting.RED;
-import static net.minecraft.util.Formatting.YELLOW;
+import static net.minecraft.util.Formatting.*;
 
 @PKUtilsListener
 public class WantedListener extends PKUtilsBase implements IMessageReceiveListener {
@@ -41,6 +28,7 @@ public class WantedListener extends PKUtilsBase implements IMessageReceiveListen
     private static final Pattern WANTED_REASON_PATTERN = compile("^HQ: Fahndungsgrund: (?<reason>.+) \\| Fahndungszeit: (?<time>.+)$");
     private static final Pattern WANTED_DELETE_PATTERN = compile("^HQ: (?<playerName>[a-zA-Z0-9_]+) hat (?<targetName>[a-zA-Z0-9_]+)(?:'s)* Akten gelöscht, over\\.$");
     private static final Pattern WANTED_KILL_PATTERN = compile("^HQ: (?<targetName>[a-zA-Z0-9_]+) wurde von (?<playerName>[a-zA-Z0-9_]+) getötet\\.$");
+    private static final Pattern STRAFZETTEL_PATTERN = compile("^HQ: (?<playerName>[a-zA-Z0-9_]+) hat ein Strafzettel an das Fahrzeug [A-Z0-9-]+ vergeben\\.$");
     private static final Pattern WANTED_ARREST_PATTERN = compile("^HQ: (?<targetName>[a-zA-Z0-9_]+) wurde von (?<playerName>[a-zA-Z0-9_]+) eingesperrt\\.$");
     private static final Pattern WANTED_UNARREST_PATTERN = compile("^HQ: (?<playerName>[a-zA-Z0-9_]+) hat (?<targetName>[a-zA-Z0-9_]+) aus dem Gefängnis entlassen\\.$");
     private static final Pattern WANTED_LIST_HEADER_PATTERN = compile("Online Spieler mit WantedPunkten:");
@@ -143,9 +131,13 @@ public class WantedListener extends PKUtilsBase implements IMessageReceiveListen
         Matcher wantedKillMatcher = WANTED_KILL_PATTERN.matcher(message);
         if (wantedKillMatcher.find()) {
             String targetName = wantedKillMatcher.group("targetName");
-            String playerName = wantedKillMatcher.group("playerName");
+            String killerName = wantedKillMatcher.group("playerName");
 
             int wpAmount = getWpAmountAndDelete(targetName);
+
+            if (player != null && player.getName().getString().equals(killerName)) {
+                activityService.trackActivity("arrest", "Aktivität 'Verhaftung' +1");
+            }
 
             Text modifiedMessage = empty()
                     .append(of("Getötet").copy().formatted(RED)).append(" ")
@@ -155,19 +147,40 @@ public class WantedListener extends PKUtilsBase implements IMessageReceiveListen
                     .append(of(valueOf(wpAmount)).copy().formatted(RED)).append(" ")
                     .append(of(")").copy().formatted(GRAY)).append(" ")
                     .append(of("-").copy().formatted(GRAY)).append(" ")
-                    .append(of(playerName).copy().formatted(BLUE));
+                    .append(of(killerName).copy().formatted(BLUE));
 
             player.sendMessage(modifiedMessage, false);
 
             return false;
         }
 
+        Matcher strafzettelMatcher = STRAFZETTEL_PATTERN.matcher(message);
+        if (strafzettelMatcher.find()) {
+            String officerName = strafzettelMatcher.group("playerName");
+
+            if (player != null && player.getName().getString().equals(officerName)) {
+                activityService.trackActivity("ticket", "Aktivität 'Strafzettel' +1");
+            }
+
+            Text modifiedMessage = empty()
+                    .append(of("Strafzettel").copy().formatted(GOLD)).append(" ")
+                    .append(of("-").copy().formatted(GRAY)).append(" ")
+                    .append(of(officerName).copy().formatted(BLUE));
+
+            player.sendMessage(modifiedMessage, false);
+            return false;
+        }
+
         Matcher wantedJailMatcher = WANTED_ARREST_PATTERN.matcher(message);
         if (wantedJailMatcher.find()) {
             String targetName = wantedJailMatcher.group("targetName");
-            String playerName = wantedJailMatcher.group("playerName");
+            String officerName = wantedJailMatcher.group("playerName");
 
             int wpAmount = getWpAmountAndDelete(targetName);
+
+            if (player != null && player.getName().getString().equals(officerName)) {
+                activityService.trackActivity("arrest", "Aktivität 'Verhaftung' +1");
+            }
 
             Text modifiedMessage = empty()
                     .append(of("Eingesperrt").copy().formatted(RED)).append(" ")
@@ -177,7 +190,7 @@ public class WantedListener extends PKUtilsBase implements IMessageReceiveListen
                     .append(of(valueOf(wpAmount)).copy().formatted(RED)).append(" ")
                     .append(of(")").copy().formatted(GRAY)).append(" ")
                     .append(of("-").copy().formatted(GRAY)).append(" ")
-                    .append(of(playerName).copy().formatted(BLUE));
+                    .append(of(officerName).copy().formatted(BLUE));
 
             player.sendMessage(modifiedMessage, false);
 
