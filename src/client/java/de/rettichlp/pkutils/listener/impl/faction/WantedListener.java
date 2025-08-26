@@ -6,6 +6,7 @@ import de.rettichlp.pkutils.common.storage.schema.WantedEntry;
 import de.rettichlp.pkutils.listener.IMessageReceiveListener;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
@@ -28,8 +29,8 @@ public class WantedListener extends PKUtilsBase implements IMessageReceiveListen
     private static final Pattern WANTED_REASON_PATTERN = compile("^HQ: Fahndungsgrund: (?<reason>.+) \\| Fahndungszeit: (?<time>.+)$");
     private static final Pattern WANTED_DELETE_PATTERN = compile("^HQ: (?<playerName>[a-zA-Z0-9_]+) hat (?<targetName>[a-zA-Z0-9_]+)(?:'s)* Akten gelöscht, over\\.$");
     private static final Pattern WANTED_KILL_PATTERN = compile("^HQ: (?<targetName>[a-zA-Z0-9_]+) wurde von (?<playerName>[a-zA-Z0-9_]+) getötet\\.$");
-    private static final Pattern STRAFZETTEL_PATTERN = compile("^HQ: (?<playerName>[a-zA-Z0-9_]+) hat ein Strafzettel an das Fahrzeug [A-Z0-9-]+ vergeben\\.$");
     private static final Pattern WANTED_ARREST_PATTERN = compile("^HQ: (?<targetName>[a-zA-Z0-9_]+) wurde von (?<playerName>[a-zA-Z0-9_]+) eingesperrt\\.$");
+    private static final Pattern STRAFZETTEL_PATTERN = compile("^HQ: (?<playerName>[a-zA-Z0-9_]+) hat ein Strafzettel an das Fahrzeug [A-Z0-9-]+ vergeben\\.$");
     private static final Pattern WANTED_UNARREST_PATTERN = compile("^HQ: (?<playerName>[a-zA-Z0-9_]+) hat (?<targetName>[a-zA-Z0-9_]+) aus dem Gefängnis entlassen\\.$");
     private static final Pattern WANTED_LIST_HEADER_PATTERN = compile("Online Spieler mit WantedPunkten:");
     private static final Pattern WANTED_LIST_ENTRY_PATTERN = compile("- (?<playerName>[a-zA-Z0-9_]+) \\| (?<wantedPointAmount>\\d+) \\| (?<reason>.+)(?<afk> \\| AFK|)");
@@ -154,23 +155,6 @@ public class WantedListener extends PKUtilsBase implements IMessageReceiveListen
             return false;
         }
 
-        Matcher strafzettelMatcher = STRAFZETTEL_PATTERN.matcher(message);
-        if (strafzettelMatcher.find()) {
-            String officerName = strafzettelMatcher.group("playerName");
-
-            if (player != null && player.getName().getString().equals(officerName)) {
-                activityService.trackActivity("ticket", "Aktivität 'Strafzettel' +1");
-            }
-
-            Text modifiedMessage = empty()
-                    .append(of("Strafzettel").copy().formatted(GOLD)).append(" ")
-                    .append(of("-").copy().formatted(GRAY)).append(" ")
-                    .append(of(officerName).copy().formatted(BLUE));
-
-            player.sendMessage(modifiedMessage, false);
-            return false;
-        }
-
         Matcher wantedJailMatcher = WANTED_ARREST_PATTERN.matcher(message);
         if (wantedJailMatcher.find()) {
             String targetName = wantedJailMatcher.group("targetName");
@@ -194,6 +178,18 @@ public class WantedListener extends PKUtilsBase implements IMessageReceiveListen
 
             player.sendMessage(modifiedMessage, false);
 
+            return false;
+        }
+
+        Matcher strafzettelMatcher = STRAFZETTEL_PATTERN.matcher(message);
+        if (strafzettelMatcher.find()) {
+            String officerName = strafzettelMatcher.group("playerName");
+
+            if (player != null && player.getName().getString().equals(officerName)) {
+                activityService.trackActivity("ticket", "Aktivität 'Strafzettel' +1");
+            }
+
+            // Wir verhindern, dass die Originalnachricht angezeigt wird, da sie redundant ist.
             return false;
         }
 

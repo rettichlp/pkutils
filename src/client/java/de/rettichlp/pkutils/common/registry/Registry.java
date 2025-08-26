@@ -29,7 +29,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Set;
 
 import static com.mojang.text2speech.Narrator.LOGGER;
-import static de.rettichlp.pkutils.PKUtilsClient.*;
+import static de.rettichlp.pkutils.PKUtilsClient.networkHandler;
+import static de.rettichlp.pkutils.PKUtilsClient.player;
 import static java.util.Objects.isNull;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
 
@@ -83,12 +84,9 @@ public class Registry {
             return;
         }
 
-        getListeners().clear(); // Wichtig: Liste bei jedem Join leeren, um Duplikate zu vermeiden
-
         for (Class<?> listenerClass : this.listeners) {
             try {
                 PKUtilsBase listenerInstance = (PKUtilsBase) listenerClass.getConstructor().newInstance();
-                getListeners().add(listenerInstance);
 
                 if (listenerInstance instanceof ICommandSendListener iCommandSendListener) {
                     ClientSendMessageEvents.ALLOW_COMMAND.register(iCommandSendListener::onCommandSend);

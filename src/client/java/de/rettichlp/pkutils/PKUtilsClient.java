@@ -1,6 +1,5 @@
 package de.rettichlp.pkutils;
 
-import de.rettichlp.pkutils.common.manager.PKUtilsBase;
 import de.rettichlp.pkutils.common.registry.Registry;
 import de.rettichlp.pkutils.common.services.ActivityService;
 import de.rettichlp.pkutils.common.services.FactionService;
@@ -11,15 +10,10 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallba
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
-import org.atteo.classindex.ClassIndex;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class PKUtilsClient implements ClientModInitializer {
 
     public static final Storage storage = new Storage();
-    private static final List<PKUtilsBase> listeners = new ArrayList<>();
 
     public static ClientPlayerEntity player;
     public static ClientPlayNetworkHandler networkHandler;
@@ -45,9 +39,5 @@ public class PKUtilsClient implements ClientModInitializer {
         }));
 
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> this.registry.registerCommands(dispatcher));
-    }
-
-    public static List<PKUtilsBase> getListeners() {
-        return listeners;
     }
 }

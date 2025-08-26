@@ -31,20 +31,22 @@ public class SyncManager extends PKUtilsBase implements IMessageReceiveListener 
 
     @Override
     public boolean onMessageReceive(String message) {
+        // SERVER INIT
 
+        // if a password is not set, start the game sync process
         Matcher passwordMissingMatcher = SERVER_PASSWORD_MISSING_PATTERN.matcher(message);
         if (passwordMissingMatcher.find()) {
             syncService.executeSync();
             return true;
         }
-
+        // if a password is accepted, start the game sync process
         Matcher passwordAcceptedMatcher = SERVER_PASSWORD_ACCEPTED_PATTERN.matcher(message);
         if (passwordAcceptedMatcher.find()) {
             syncService.executeSync();
             return true;
         }
 
-
+        // FACTION ALL INIT
         Matcher factionMemberAllHeaderMatcher = FACTION_MEMBER_ALL_HEADER.matcher(message);
         if (factionMemberAllHeaderMatcher.find()) {
             String factionName = factionMemberAllHeaderMatcher.group("factionName");
