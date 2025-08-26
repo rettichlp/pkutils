@@ -16,9 +16,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
 import static com.mojang.brigadier.arguments.StringArgumentType.word;
 import static de.rettichlp.pkutils.PKUtilsClient.networkHandler;
+import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument;
 import static net.minecraft.command.CommandSource.suggestMatching;
 
 @PKUtilsCommand(label = "wsu", aliases = "wp")
@@ -27,7 +29,7 @@ public class WSUCommand extends CommandBase {
     @Override
     public LiteralArgumentBuilder<FabricClientCommandSource> execute(@NotNull LiteralArgumentBuilder<FabricClientCommandSource> node) {
         return node
-                .then(ClientCommandManager.argument("player", word())
+                .then(argument("player", word())
                         .suggests((context, builder) -> {
                             List<String> list = networkHandler.getPlayerList().stream()
                                     .map(PlayerListEntry::getProfile)
@@ -35,7 +37,7 @@ public class WSUCommand extends CommandBase {
                                     .toList();
                             return suggestMatching(list, builder);
                         })
-                        .then(ClientCommandManager.argument("value", greedyString())
+                        .then(argument("value", greedyString())
                                 .suggests((context, builder) -> {
                                     CommandDispatcher<CommandSource> commandDispatcher = networkHandler.getCommandDispatcher();
                                     // parse output of real asu command, because tab-completion is working for the reason argument
@@ -50,8 +52,8 @@ public class WSUCommand extends CommandBase {
                                     });
                                 })
                                 .executes(context -> {
-                                    String playerName = StringArgumentType.getString(context, "player");
-                                    String value = StringArgumentType.getString(context, "value");
+                                    String playerName = getString(context, "player");
+                                    String value = getString(context, "value");
                                     networkHandler.sendChatCommand("asu " + playerName + " " + value);
                                     return 1;
                                 })));
