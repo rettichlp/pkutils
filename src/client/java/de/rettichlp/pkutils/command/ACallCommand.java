@@ -9,22 +9,17 @@ import net.minecraft.client.network.PlayerListEntry;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.word;
 import static de.rettichlp.pkutils.PKUtilsClient.networkHandler;
-import static java.util.regex.Pattern.compile;
+import static de.rettichlp.pkutils.PKUtilsClient.storage;
+import static de.rettichlp.pkutils.PKUtilsClient.syncService;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument;
 import static net.minecraft.command.CommandSource.suggestMatching;
 
 @PKUtilsCommand(label = "acall")
-public class ACallCommand extends CommandBase implements de.rettichlp.pkutils.listener.IMessageReceiveListener {
-
-    private static final Pattern NUMBER_PATTERN = compile("^[a-zA-Z0-9_]+ gehört die Nummer (?<number>\\d+)\\.$");
-
-    private String lastRetrievedNumber;
+public class ACallCommand extends CommandBase {
 
     @Override
     public LiteralArgumentBuilder<FabricClientCommandSource> execute(@NotNull LiteralArgumentBuilder<FabricClientCommandSource> node) {
@@ -39,24 +34,20 @@ public class ACallCommand extends CommandBase implements de.rettichlp.pkutils.li
                         })
                         .executes(context -> {
                             String playerName = getString(context, "player");
-                            this.lastRetrievedNumber = "";
-                            networkHandler.sendChatCommand("nummer " + playerName);
-                            delayedAction(() -> {
-                                if (!this.lastRetrievedNumber.isEmpty()) {
-                                    networkHandler.sendChatCommand("call " + this.lastRetrievedNumber);
-                                }
-                            }, 1000);
+
+                            boolean numberAlreadyRetrieved = storage.getRetrievedNumbers().containsKey(playerName);
+                            if (numberAlreadyRetrieved) {
+                                int number = storage.getRetrievedNumbers().get(playerName);
+                                call(number);
+                            } else {
+                                syncService.retrieveNumberAndRun(playerName, this::call);
+                            }
+
                             return 1;
                         }));
     }
 
-    @Override
-    public boolean onMessageReceive(String message) {
-        Matcher numberMatcher = NUMBER_PATTERN.matcher(message);
-        if (numberMatcher.matches()) {
-            this.lastRetrievedNumber = numberMatcher.group("number");
-        }
-
-        return true;
+    private void call(int number) {
+        networkHandler.sendChatCommand("call " + number);
     }
 }
