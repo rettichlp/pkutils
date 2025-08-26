@@ -1,6 +1,6 @@
 package de.rettichlp.pkutils.common.services;
 
-import de.rettichlp.pkutils.common.manager.PKUtilsBase;
+import de.rettichlp.pkutils.common.registry.PKUtilsBase;
 import de.rettichlp.pkutils.common.storage.schema.Faction;
 import lombok.Getter;
 import lombok.Setter;

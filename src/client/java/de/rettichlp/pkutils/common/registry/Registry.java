@@ -11,13 +11,12 @@ import de.rettichlp.pkutils.command.SyncCommand;
 import de.rettichlp.pkutils.command.ToggleDChatCommand;
 import de.rettichlp.pkutils.command.ToggleFChatCommand;
 import de.rettichlp.pkutils.command.WSUCommand;
-import de.rettichlp.pkutils.common.manager.CommandBase;
-import de.rettichlp.pkutils.common.manager.PKUtilsBase;
 import de.rettichlp.pkutils.listener.ICommandSendListener;
 import de.rettichlp.pkutils.listener.IMessageReceiveListener;
 import de.rettichlp.pkutils.listener.IMessageSendListener;
 import de.rettichlp.pkutils.listener.IMoveListener;
 import de.rettichlp.pkutils.listener.INaviSpotReachedListener;
+import de.rettichlp.pkutils.listener.ITickListener;
 import de.rettichlp.pkutils.listener.impl.CommandSendListener;
 import de.rettichlp.pkutils.listener.impl.SyncListener;
 import de.rettichlp.pkutils.listener.impl.faction.BlacklistListener;
@@ -140,6 +139,12 @@ public class Registry {
                         }
 
                         return true;
+                    });
+                }
+
+                if (listenerInstance instanceof ITickListener iTickListener) {
+                    ClientTickEvents.END_CLIENT_TICK.register((server) -> {
+                        iTickListener.onTick();
                     });
                 }
             } catch (InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException e) {

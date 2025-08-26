@@ -1,4 +1,4 @@
-package de.rettichlp.pkutils.common.manager;
+package de.rettichlp.pkutils.common.registry;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
