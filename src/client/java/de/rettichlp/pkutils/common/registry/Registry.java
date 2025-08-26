@@ -8,6 +8,7 @@ import de.rettichlp.pkutils.command.RichTaxesCommand;
 import de.rettichlp.pkutils.command.SyncCommand;
 import de.rettichlp.pkutils.command.ToggleDChatCommand;
 import de.rettichlp.pkutils.command.ToggleFChatCommand;
+import de.rettichlp.pkutils.command.WSUCommand;
 import de.rettichlp.pkutils.common.manager.CommandBase;
 import de.rettichlp.pkutils.common.manager.PKUtilsBase;
 import de.rettichlp.pkutils.listener.ICommandSendListener;
@@ -43,6 +44,7 @@ public class Registry {
 
     private final Set<Class<?>> commands = Set.of(
             ADropMoneyCommand.class,
+            WSUCommand.class,
             ModCommand.class,
             RichTaxesCommand.class,
             SyncCommand.class,
