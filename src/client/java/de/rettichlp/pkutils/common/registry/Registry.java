@@ -8,6 +8,7 @@ import de.rettichlp.pkutils.command.RichTaxesCommand;
 import de.rettichlp.pkutils.command.SyncCommand;
 import de.rettichlp.pkutils.command.ToggleDChatCommand;
 import de.rettichlp.pkutils.command.ToggleFChatCommand;
+import de.rettichlp.pkutils.command.WSUCommand;
 import de.rettichlp.pkutils.common.manager.CommandBase;
 import de.rettichlp.pkutils.common.manager.PKUtilsBase;
 import de.rettichlp.pkutils.listener.ICommandSendListener;
@@ -43,6 +44,7 @@ public class Registry {
 
     private final Set<Class<?>> commands = Set.of(
             ADropMoneyCommand.class,
+            WSUCommand.class,
             ModCommand.class,
             RichTaxesCommand.class,
             SyncCommand.class,
@@ -70,13 +72,20 @@ public class Registry {
     public void registerCommands(@NotNull CommandDispatcher<FabricClientCommandSource> dispatcher) {
         for (Class<?> commandClass : this.commands /*ClassIndex.getAnnotated(PKUtilsCommand.class)*/) {
             try {
-                String label = commandClass.getAnnotation(PKUtilsCommand.class).label();
+                PKUtilsCommand annotation = commandClass.getAnnotation(PKUtilsCommand.class);
+                String label = annotation.label();
                 CommandBase commandInstance = (CommandBase) commandClass.getConstructor().newInstance();
 
                 LiteralArgumentBuilder<FabricClientCommandSource> node = literal(label);
                 LiteralArgumentBuilder<FabricClientCommandSource> enrichedNode = commandInstance.execute(node);
-
                 dispatcher.register(enrichedNode);
+
+                // alias handling
+                for (String alias : annotation.aliases()) {
+                    LiteralArgumentBuilder<FabricClientCommandSource> aliasNode = literal(alias);
+                    LiteralArgumentBuilder<FabricClientCommandSource> enrichedAliasNode = commandInstance.execute(aliasNode);
+                    dispatcher.register(enrichedAliasNode);
+                }
             } catch (InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException e) {
                 LOGGER.error("Error while registering command: {}", commandClass.getName(), e.getCause());
             }
