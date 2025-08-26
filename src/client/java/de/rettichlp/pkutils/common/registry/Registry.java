@@ -16,6 +16,7 @@ import de.rettichlp.pkutils.listener.IMessageReceiveListener;
 import de.rettichlp.pkutils.listener.IMessageSendListener;
 import de.rettichlp.pkutils.listener.IMoveListener;
 import de.rettichlp.pkutils.listener.INaviSpotReachedListener;
+import de.rettichlp.pkutils.listener.ITickListener;
 import de.rettichlp.pkutils.listener.impl.CommandSendListener;
 import de.rettichlp.pkutils.listener.impl.SyncListener;
 import de.rettichlp.pkutils.listener.impl.faction.BlacklistListener;
@@ -138,6 +139,12 @@ public class Registry {
                         }
 
                         return true;
+                    });
+                }
+
+                if (listenerInstance instanceof ITickListener iTickListener) {
+                    ClientTickEvents.END_CLIENT_TICK.register((server) -> {
+                        iTickListener.onTick();
                     });
                 }
             } catch (InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException e) {
