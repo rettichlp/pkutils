@@ -3,13 +3,14 @@ package de.rettichlp.pkutils.common.registry;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import de.rettichlp.pkutils.command.*;
+import de.rettichlp.pkutils.common.manager.CommandBase;
+import de.rettichlp.pkutils.common.manager.PKUtilsBase;
+import de.rettichlp.pkutils.common.manager.SyncManager;
 import de.rettichlp.pkutils.listener.ICommandSendListener;
 import de.rettichlp.pkutils.listener.IMessageReceiveListener;
 import de.rettichlp.pkutils.listener.IMessageSendListener;
 import de.rettichlp.pkutils.listener.IMoveListener;
 import de.rettichlp.pkutils.listener.INaviSpotReachedListener;
-import de.rettichlp.pkutils.common.manager.CommandBase;
-import de.rettichlp.pkutils.common.manager.PKUtilsBase;
 import de.rettichlp.pkutils.listener.impl.CommandSendListener;
 import de.rettichlp.pkutils.listener.impl.faction.BlacklistListener;
 import de.rettichlp.pkutils.listener.impl.faction.FactionChatListener;
@@ -39,6 +40,7 @@ public class Registry {
     private final Set<Class<?>> commands = Set.of(
             ADropMoneyCommand.class,
             CheckActivityCommand.class,
+            ClearActivityCommand.class,
             ModCommand.class,
             RichTaxesCommand.class,
             SyncCommand.class,
@@ -47,13 +49,17 @@ public class Registry {
     );
 
     private final Set<Class<?>> listeners = Set.of(
+            // faction
             BlacklistListener.class,
             FactionChatListener.class,
             WantedListener.class,
+            // job
             FisherListener.class,
             GarbageManListener.class,
             TransportListener.class,
-            CommandSendListener.class
+            // other
+            CommandSendListener.class,
+            SyncManager.class
     );
 
     public void registerCommands(@NotNull CommandDispatcher<FabricClientCommandSource> dispatcher) {
@@ -77,6 +83,8 @@ public class Registry {
             return;
         }
 
+        getListeners().clear(); // Wichtig: Liste bei jedem Join leeren, um Duplikate zu vermeiden
+
         for (Class<?> listenerClass : this.listeners) {
             try {
                 PKUtilsBase listenerInstance = (PKUtilsBase) listenerClass.getConstructor().newInstance();
@@ -96,10 +104,12 @@ public class Registry {
 
                 if (listenerInstance instanceof IMoveListener iMoveListener) {
                     ClientTickEvents.END_CLIENT_TICK.register((server) -> {
-                        BlockPos blockPos = player.getBlockPos();
-                        if (isNull(this.lastPlayerPos) || !this.lastPlayerPos.equals(blockPos)) {
-                            this.lastPlayerPos = blockPos;
-                            iMoveListener.onMove(blockPos);
+                        if (player != null) {
+                            BlockPos blockPos = player.getBlockPos();
+                            if (isNull(this.lastPlayerPos) || !this.lastPlayerPos.equals(blockPos)) {
+                                this.lastPlayerPos = blockPos;
+                                iMoveListener.onMove(blockPos);
+                            }
                         }
                     });
                 }

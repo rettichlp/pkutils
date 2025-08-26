@@ -1,5 +1,6 @@
 package de.rettichlp.pkutils.common.manager;
 
+import de.rettichlp.pkutils.common.registry.PKUtilsListener; // NEUER IMPORT
 import de.rettichlp.pkutils.common.storage.schema.Faction;
 import de.rettichlp.pkutils.common.storage.schema.FactionMember;
 import de.rettichlp.pkutils.listener.IMessageReceiveListener;
@@ -17,6 +18,7 @@ import static java.util.Objects.nonNull;
 import static java.util.regex.Pattern.compile;
 
 @NoArgsConstructor
+@PKUtilsListener
 public class SyncManager extends PKUtilsBase implements IMessageReceiveListener {
 
     private static final Pattern SERVER_PASSWORD_MISSING_PATTERN = compile("^» Schütze deinen Account mit /passwort new \\[Passwort]$");
@@ -29,23 +31,19 @@ public class SyncManager extends PKUtilsBase implements IMessageReceiveListener 
 
     @Override
     public boolean onMessageReceive(String message) {
-        // SERVER INIT
 
-        // if a password is not set, start the game sync process
         Matcher passwordMissingMatcher = SERVER_PASSWORD_MISSING_PATTERN.matcher(message);
         if (passwordMissingMatcher.find()) {
             syncService.executeSync();
             return true;
         }
 
-        // if a password is accepted, start the game sync process
         Matcher passwordAcceptedMatcher = SERVER_PASSWORD_ACCEPTED_PATTERN.matcher(message);
         if (passwordAcceptedMatcher.find()) {
             syncService.executeSync();
             return true;
         }
 
-        // FACTION ALL INIT
 
         Matcher factionMemberAllHeaderMatcher = FACTION_MEMBER_ALL_HEADER.matcher(message);
         if (factionMemberAllHeaderMatcher.find()) {
