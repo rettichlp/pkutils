@@ -1,4 +1,4 @@
-package de.rettichlp.pkutils.common.manager;
+package de.rettichlp.pkutils.common.registry;
 
 import net.minecraft.text.Text;
 
