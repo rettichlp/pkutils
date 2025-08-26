@@ -45,6 +45,9 @@ dependencies {
 
     testCompileOnly("org.projectlombok:lombok:1.18.38")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.38")
+
+    // https://mvnrepository.com/artifact/org.atteo.classindex/classindex
+    modImplementation("org.atteo.classindex:classindex:3.13")
 }
 
 processResources {

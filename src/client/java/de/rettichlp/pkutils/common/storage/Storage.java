@@ -4,7 +4,9 @@ import de.rettichlp.pkutils.common.storage.schema.BlacklistEntry;
 import de.rettichlp.pkutils.common.storage.schema.Faction;
 import de.rettichlp.pkutils.common.storage.schema.FactionMember;
 import de.rettichlp.pkutils.common.storage.schema.WantedEntry;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,6 +16,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static de.rettichlp.pkutils.PKUtils.LOGGER;
+import static de.rettichlp.pkutils.common.storage.Storage.ToggledChat.NONE;
 import static de.rettichlp.pkutils.common.storage.schema.Faction.NULL;
 
 public class Storage {
@@ -26,6 +29,13 @@ public class Storage {
 
     @Getter
     private final List<WantedEntry> wantedEntries = new ArrayList<>();
+
+    @Getter
+    private final Map<String, Integer> retrievedNumbers = new HashMap<>();
+
+    @Getter
+    @Setter
+    private ToggledChat toggledChat = NONE;
 
     public void print() {
         // factionMembers
@@ -72,5 +82,17 @@ public class Storage {
 
     public void resetWantedEntries() {
         this.wantedEntries.clear();
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public enum ToggledChat {
+
+        NONE("", "Dauerhafter Fraktionschat deaktiviert."),
+        D_CHAT("d", "Dauerhafter D-Chat aktiviert."),
+        F_CHAT("f", "Dauerhafter F-Chat aktiviert.");
+
+        private final String command;
+        private final String toggleMessage;
     }
 }
