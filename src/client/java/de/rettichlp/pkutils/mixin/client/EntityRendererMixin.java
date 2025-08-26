@@ -49,7 +49,7 @@ public abstract class EntityRendererMixin<S extends Entity, T extends EntityRend
             Formatting newTargetDisplayNameColor = WHITE;
 
             // same faction -> blue name
-            Faction playerFaction = storage.getFaction(requireNonNull(player.getDisplayName()).getString());
+            Faction playerFaction = storage.getFaction(player.getName().getString());
             if (playerFaction == targetFaction && playerFaction != NULL) {
                 newTargetDisplayNameColor = BLUE;
             }
