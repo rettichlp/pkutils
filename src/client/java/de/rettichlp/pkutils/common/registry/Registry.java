@@ -2,7 +2,9 @@ package de.rettichlp.pkutils.common.registry;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import de.rettichlp.pkutils.command.ACallCommand;
 import de.rettichlp.pkutils.command.ADropMoneyCommand;
+import de.rettichlp.pkutils.command.ASMSCommand;
 import de.rettichlp.pkutils.command.ModCommand;
 import de.rettichlp.pkutils.command.RichTaxesCommand;
 import de.rettichlp.pkutils.command.SyncCommand;
@@ -43,7 +45,9 @@ import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.lit
 public class Registry {
 
     private final Set<Class<?>> commands = Set.of(
+            ACallCommand.class,
             ADropMoneyCommand.class,
+            ASMSCommand.class,
             WSUCommand.class,
             ModCommand.class,
             RichTaxesCommand.class,
