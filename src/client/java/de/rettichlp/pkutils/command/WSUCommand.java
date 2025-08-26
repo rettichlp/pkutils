@@ -21,7 +21,7 @@ import static com.mojang.brigadier.arguments.StringArgumentType.word;
 import static de.rettichlp.pkutils.PKUtilsClient.networkHandler;
 import static net.minecraft.command.CommandSource.suggestMatching;
 
-@PKUtilsCommand(label = "wsu")
+@PKUtilsCommand(label = "wsu", aliases = "wp")
 public class WSUCommand extends CommandBase {
 
     @Override
