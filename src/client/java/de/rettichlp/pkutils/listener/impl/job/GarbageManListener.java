@@ -3,7 +3,7 @@ package de.rettichlp.pkutils.listener.impl.job;
 import de.rettichlp.pkutils.common.registry.PKUtilsBase;
 import de.rettichlp.pkutils.common.registry.PKUtilsListener;
 import de.rettichlp.pkutils.listener.IMessageReceiveListener;
-import de.rettichlp.pkutils.listener.IMoveListener;
+import de.rettichlp.pkutils.listener.ITickListener;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.minecraft.client.MinecraftClient;
@@ -14,14 +14,13 @@ import net.minecraft.util.math.BlockPos;
 
 import java.util.Collection;
 import java.util.Optional;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static de.rettichlp.pkutils.PKUtilsClient.networkHandler;
 import static de.rettichlp.pkutils.PKUtilsClient.player;
 import static java.lang.Double.compare;
+import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.nonNull;
@@ -30,14 +29,13 @@ import static java.util.regex.Pattern.compile;
 import static net.minecraft.scoreboard.ScoreboardDisplaySlot.SIDEBAR;
 
 @PKUtilsListener
-public class GarbageManListener extends PKUtilsBase implements IMessageReceiveListener, IMoveListener {
+public class GarbageManListener extends PKUtilsBase implements IMessageReceiveListener, ITickListener {
 
     private static final Pattern GARBAGE_MAN_DROP_START = compile("^\\[Müllmann] Hier kannst du auf den Haufen mit /dropwaste dein Müll sortieren!$");
     private static final Pattern GARBAGE_MAN_FINISHED = compile("^\\[Müllmann] Du hast den Job beendet\\.$");
 
-    private final Timer timer = new Timer();
-    private boolean isTimerActive = false;
     private boolean isDropStep = false;
+    private long lastCommandExecution = 0;
 
     @Override
     public boolean onMessageReceive(String message) {
@@ -57,45 +55,38 @@ public class GarbageManListener extends PKUtilsBase implements IMessageReceiveLi
     }
 
     @Override
-    public void onMove(BlockPos blockPos) {
+    public void onTick() {
+        // check if drop step
         if (!this.isDropStep) {
             return;
         }
 
-        // not dropping waste currently check
-        if (this.isTimerActive) {
-            return;
-        }
-
-        // in range check
+        // check if in drop spot range
         WasteDropSpot nearestWasteDropSpot = getNearestWasteDropSpot();
         if (!player.getBlockPos().isWithinDistance(nearestWasteDropSpot.getDropSpot(), 3)) {
             return;
         }
 
-        // start drop timer
-        this.isTimerActive = true;
-        this.timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                int wasteLeft = getWasteLeft(nearestWasteDropSpot);
-                if (wasteLeft >= 1) {
-                    networkHandler.sendChatCommand("dropwaste");
+        // check if waste left
+        int wasteLeft = getWasteLeft(nearestWasteDropSpot);
+        if (wasteLeft <= 0) {
+            return;
+        }
 
-                    delayedAction(() -> sendModMessage("5", true), 200);
-                    delayedAction(() -> sendModMessage("4", true), 1200);
-                    delayedAction(() -> sendModMessage("3", true), 2200);
-                    delayedAction(() -> sendModMessage("2", true), 3200);
-                    delayedAction(() -> sendModMessage("1", true), 4200);
-                }
+        // check dropwaste command cooldown
+        long now = currentTimeMillis();
+        if (now - this.lastCommandExecution < 5200) {
+            return;
+        }
 
-                if (wasteLeft <= 1) {
-                    cancel();
-                    GarbageManListener.this.isTimerActive = false;
-                    sendModMessage("Kein " + nearestWasteDropSpot.getDisplayName() + " übrig.", false);
-                }
-            }
-        }, 0, 5200);
+        this.lastCommandExecution = now;
+        networkHandler.sendChatCommand("dropwaste");
+
+        delayedAction(() -> sendModMessage("5", true), 200);
+        delayedAction(() -> sendModMessage("4", true), 1200);
+        delayedAction(() -> sendModMessage("3", true), 2200);
+        delayedAction(() -> sendModMessage("2", true), 3200);
+        delayedAction(() -> sendModMessage("1", true), 4200);
     }
 
     private WasteDropSpot getNearestWasteDropSpot() {
