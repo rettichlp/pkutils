@@ -24,6 +24,7 @@ public class SyncListener extends PKUtilsBase implements IMessageReceiveListener
     private static final Pattern SERVER_PASSWORD_ACCEPTED_PATTERN = compile("^Du hast deinen Account freigeschaltet\\.$");
     private static final Pattern FACTION_MEMBER_ALL_HEADER = compile("^={4} Mitglieder von (?<factionName>.+) ={4}$");
     private static final Pattern FACTION_MEMBER_ALL_ENTRY = compile("^\\s*-\\s*(?<rank>\\d)\\s*\\|\\s*(?<playerNames>.+)$");
+    private static final Pattern NUMBER_PATTERN = compile("^(?<playerName>[a-zA-Z0-9_]+) gehört die Nummer (?<number>\\d+)\\.$");
 
     private Faction factionMemberRetrievalFaction;
     private long factionMemberRetrievalTimestamp;
@@ -71,6 +72,13 @@ public class SyncListener extends PKUtilsBase implements IMessageReceiveListener
             }
 
             return !syncService.isGameSyncProcessActive();
+        }
+
+        Matcher numberMatcher = NUMBER_PATTERN.matcher(message);
+        if (numberMatcher.find()) {
+            String playerName = numberMatcher.group("playerName");
+            int number = parseInt(numberMatcher.group("number"));
+            storage.getRetrievedNumbers().put(playerName, number);
         }
 
         return true;
