@@ -68,6 +68,7 @@ public class Registry {
     );
 
     private BlockPos lastPlayerPos = null;
+    private boolean initialized = false;
 
     public void registerCommands(@NotNull CommandDispatcher<FabricClientCommandSource> dispatcher) {
         for (Class<?> commandClass : this.commands /*ClassIndex.getAnnotated(PKUtilsCommand.class)*/) {
@@ -94,7 +95,7 @@ public class Registry {
 
     public void registerListeners() {
         // ignore messages until the player is initialized
-        if (player == null || networkHandler == null) {
+        if (player == null || networkHandler == null || this.initialized) {
             return;
         }
 
@@ -141,5 +142,8 @@ public class Registry {
                 LOGGER.error("Error while registering listener: {}", listenerClass.getName(), e.getCause());
             }
         }
+
+        // prevent multiple registrations of listeners
+        this.initialized = true;
     }
 }
