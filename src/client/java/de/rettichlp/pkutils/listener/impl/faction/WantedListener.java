@@ -171,10 +171,10 @@ public class WantedListener extends PKUtilsBase implements IMessageReceiveListen
         Matcher wantedJailMatcher = WANTED_ARREST_PATTERN.matcher(message);
         if (wantedJailMatcher.find()) {
             String targetName = wantedJailMatcher.group("targetName");
-            String officerName = wantedJailMatcher.group("playerName");
+            String playerName = wantedJailMatcher.group("playerName");
             int wpAmount = getWpAmountAndDelete(targetName);
 
-            if (player != null && player.getName().getString().equals(officerName)) {
+            if (player != null && player.getName().getString().equals(playerName)) {
                 activityService.trackActivity("arrest", "Aktivität 'Verhaftung' +1");
             }
 
@@ -186,7 +186,7 @@ public class WantedListener extends PKUtilsBase implements IMessageReceiveListen
                     .append(of(valueOf(wpAmount)).copy().formatted(RED)).append(" ")
                     .append(of(")").copy().formatted(GRAY)).append(" ")
                     .append(of("-").copy().formatted(GRAY)).append(" ")
-                    .append(of(officerName).copy().formatted(BLUE));
+                    .append(of(playerName).copy().formatted(BLUE));
 
             player.sendMessage(modifiedMessage, false);
 
