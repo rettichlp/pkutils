@@ -26,12 +26,13 @@ public class PKUtilsClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        // This entrypoint is suitable for setting up client-specific logic, such as rendering.
         activityService = new ActivityService();
         factionService = new FactionService();
         syncService = new SyncService();
 
         ClientPlayConnectionEvents.JOIN.register((handler, sender, minecraftClient) -> minecraftClient.execute(() -> {
-            assert minecraftClient.player != null;
+            assert minecraftClient.player != null; // cannot be null at this point
             player = minecraftClient.player;
             networkHandler = minecraftClient.player.networkHandler;
 
