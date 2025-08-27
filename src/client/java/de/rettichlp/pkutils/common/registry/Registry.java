@@ -13,7 +13,6 @@ import de.rettichlp.pkutils.command.SyncCommand;
 import de.rettichlp.pkutils.command.ToggleDChatCommand;
 import de.rettichlp.pkutils.command.ToggleFChatCommand;
 import de.rettichlp.pkutils.command.WSUCommand;
-import de.rettichlp.pkutils.common.manager.SyncManager;
 import de.rettichlp.pkutils.listener.ICommandSendListener;
 import de.rettichlp.pkutils.listener.IMessageReceiveListener;
 import de.rettichlp.pkutils.listener.IMessageSendListener;
@@ -72,8 +71,7 @@ public class Registry {
             // other
             CommandSendListener.class,
             RichTaxesCommand.class, // TODO find better solution for this
-            SyncListener.class,
-            SyncManager.class
+            SyncListener.class
     );
 
     private BlockPos lastPlayerPos = null;
