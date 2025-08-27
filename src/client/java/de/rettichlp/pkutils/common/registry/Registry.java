@@ -49,15 +49,15 @@ public class Registry {
     private final Set<Class<?>> commands = Set.of(
             ACallCommand.class,
             ADropMoneyCommand.class,
+            ASMSCommand.class,
             CheckActivityCommand.class,
             ClearActivityCommand.class,
-            ASMSCommand.class,
-            WSUCommand.class,
             ModCommand.class,
             RichTaxesCommand.class,
             SyncCommand.class,
             ToggleDChatCommand.class,
-            ToggleFChatCommand.class
+            ToggleFChatCommand.class,
+            WSUCommand.class
     );
 
     private final Set<Class<?>> listeners = Set.of(
