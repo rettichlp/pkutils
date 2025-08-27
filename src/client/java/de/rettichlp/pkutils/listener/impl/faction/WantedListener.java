@@ -11,14 +11,28 @@ import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static de.rettichlp.pkutils.PKUtilsClient.*;
+import static de.rettichlp.pkutils.PKUtilsClient.factionService;
+import static de.rettichlp.pkutils.PKUtilsClient.player;
+import static de.rettichlp.pkutils.PKUtilsClient.storage;
+import static de.rettichlp.pkutils.PKUtilsClient.syncService;
+import static de.rettichlp.pkutils.PKUtilsClient.activityService;
+
 import static java.lang.Integer.parseInt;
 import static java.lang.String.valueOf;
 import static java.lang.System.currentTimeMillis;
 import static java.util.regex.Pattern.compile;
 import static net.minecraft.text.Text.empty;
 import static net.minecraft.text.Text.of;
-import static net.minecraft.util.Formatting.*;
+import static net.minecraft.util.Formatting.BLUE;
+import static net.minecraft.util.Formatting.DARK_AQUA;
+import static net.minecraft.util.Formatting.DARK_GRAY;
+import static net.minecraft.util.Formatting.DARK_GREEN;
+import static net.minecraft.util.Formatting.DARK_RED;
+import static net.minecraft.util.Formatting.GOLD;
+import static net.minecraft.util.Formatting.GRAY;
+import static net.minecraft.util.Formatting.GREEN;
+import static net.minecraft.util.Formatting.RED;
+import static net.minecraft.util.Formatting.YELLOW;
 
 @PKUtilsListener
 public class WantedListener extends PKUtilsBase implements IMessageReceiveListener {
@@ -132,10 +146,10 @@ public class WantedListener extends PKUtilsBase implements IMessageReceiveListen
         Matcher wantedKillMatcher = WANTED_KILL_PATTERN.matcher(message);
         if (wantedKillMatcher.find()) {
             String targetName = wantedKillMatcher.group("targetName");
-            String killerName = wantedKillMatcher.group("playerName");
+            String playerName = wantedKillMatcher.group("playerName");
             int wpAmount = getWpAmountAndDelete(targetName);
 
-            if (player != null && player.getName().getString().equals(killerName)) {
+            if (player != null && player.getName().getString().equals(playerName)) {
                 activityService.trackActivity("arrest", "Aktivität 'Verhaftung' +1");
             }
 
@@ -147,7 +161,7 @@ public class WantedListener extends PKUtilsBase implements IMessageReceiveListen
                     .append(of(valueOf(wpAmount)).copy().formatted(RED)).append(" ")
                     .append(of(")").copy().formatted(GRAY)).append(" ")
                     .append(of("-").copy().formatted(GRAY)).append(" ")
-                    .append(of(killerName).copy().formatted(BLUE));
+                    .append(of(playerName).copy().formatted(BLUE));
 
             player.sendMessage(modifiedMessage, false);
 
