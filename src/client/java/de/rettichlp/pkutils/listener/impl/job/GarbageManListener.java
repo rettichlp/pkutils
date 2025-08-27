@@ -14,7 +14,6 @@ import net.minecraft.util.math.BlockPos;
 
 import java.util.Collection;
 import java.util.Optional;
-import java.util.Timer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
