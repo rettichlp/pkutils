@@ -2,23 +2,23 @@ package de.rettichlp.pkutils.common.registry;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import de.rettichlp.pkutils.command.ACallCommand;
 import de.rettichlp.pkutils.command.ADropMoneyCommand;
-import de.rettichlp.pkutils.command.ASMSCommand;
-import de.rettichlp.pkutils.command.ModCommand;
+import de.rettichlp.pkutils.command.CheckActivityCommand;
+import de.rettichlp.pkutils.command.ClearActivityCommand;
 import de.rettichlp.pkutils.command.RichTaxesCommand;
 import de.rettichlp.pkutils.command.SyncCommand;
 import de.rettichlp.pkutils.command.ToggleDChatCommand;
 import de.rettichlp.pkutils.command.ToggleFChatCommand;
-import de.rettichlp.pkutils.command.WSUCommand;
+import de.rettichlp.pkutils.command.ModCommand;
+import de.rettichlp.pkutils.common.manager.CommandBase;
+import de.rettichlp.pkutils.common.manager.PKUtilsBase;
+import de.rettichlp.pkutils.common.manager.SyncManager;
 import de.rettichlp.pkutils.listener.ICommandSendListener;
 import de.rettichlp.pkutils.listener.IMessageReceiveListener;
 import de.rettichlp.pkutils.listener.IMessageSendListener;
 import de.rettichlp.pkutils.listener.IMoveListener;
 import de.rettichlp.pkutils.listener.INaviSpotReachedListener;
-import de.rettichlp.pkutils.listener.ITickListener;
 import de.rettichlp.pkutils.listener.impl.CommandSendListener;
-import de.rettichlp.pkutils.listener.impl.SyncListener;
 import de.rettichlp.pkutils.listener.impl.faction.BlacklistListener;
 import de.rettichlp.pkutils.listener.impl.faction.FactionChatListener;
 import de.rettichlp.pkutils.listener.impl.faction.WantedListener;
@@ -43,11 +43,12 @@ import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.lit
 
 public class Registry {
 
+    private BlockPos lastPlayerPos = null;
+
     private final Set<Class<?>> commands = Set.of(
-            ACallCommand.class,
             ADropMoneyCommand.class,
-            ASMSCommand.class,
-            WSUCommand.class,
+            CheckActivityCommand.class,
+            ClearActivityCommand.class,
             ModCommand.class,
             RichTaxesCommand.class,
             SyncCommand.class,
@@ -66,29 +67,18 @@ public class Registry {
             TransportListener.class,
             // other
             CommandSendListener.class,
-            RichTaxesCommand.class, // TODO find better solution for this
-            SyncListener.class
+            SyncManager.class
     );
 
-    private BlockPos lastPlayerPos = null;
-    private boolean initialized = false;
-
     public void registerCommands(@NotNull CommandDispatcher<FabricClientCommandSource> dispatcher) {
-        for (Class<?> commandClass : this.commands /*ClassIndex.getAnnotated(PKUtilsCommand.class)*/) {
+        for (Class<?> commandClass : this.commands) {
             try {
-                PKUtilsCommand annotation = commandClass.getAnnotation(PKUtilsCommand.class);
-                String label = annotation.label();
-                CommandBase commandInstance = (CommandBase) commandClass.getConstructor().newInstance();
-
-                LiteralArgumentBuilder<FabricClientCommandSource> node = literal(label);
-                LiteralArgumentBuilder<FabricClientCommandSource> enrichedNode = commandInstance.execute(node);
-                dispatcher.register(enrichedNode);
-
-                // alias handling
-                for (String alias : annotation.aliases()) {
-                    LiteralArgumentBuilder<FabricClientCommandSource> aliasNode = literal(alias);
-                    LiteralArgumentBuilder<FabricClientCommandSource> enrichedAliasNode = commandInstance.execute(aliasNode);
-                    dispatcher.register(enrichedAliasNode);
+                if (commandClass.isAnnotationPresent(PKUtilsCommand.class)) {
+                    String label = commandClass.getAnnotation(PKUtilsCommand.class).label();
+                    CommandBase commandInstance = (CommandBase) commandClass.getConstructor().newInstance();
+                    LiteralArgumentBuilder<FabricClientCommandSource> node = literal(label);
+                    LiteralArgumentBuilder<FabricClientCommandSource> enrichedNode = commandInstance.execute(node);
+                    dispatcher.register(enrichedNode);
                 }
             } catch (InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException e) {
                 LOGGER.error("Error while registering command: {}", commandClass.getName(), e.getCause());
@@ -97,12 +87,11 @@ public class Registry {
     }
 
     public void registerListeners() {
-        // ignore messages until the player is initialized
-        if (player == null || networkHandler == null || this.initialized) {
+        if (player == null || networkHandler == null) {
             return;
         }
 
-        for (Class<?> listenerClass : this.listeners /*ClassIndex.getAnnotated(PKUtilsListener.class)*/) {
+        for (Class<?> listenerClass : this.listeners) {
             try {
                 PKUtilsBase listenerInstance = (PKUtilsBase) listenerClass.getConstructor().newInstance();
 
@@ -111,10 +100,7 @@ public class Registry {
                 }
 
                 if (listenerInstance instanceof IMessageReceiveListener iMessageReceiveListener) {
-                    ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> {
-                        String rawMessage = message.getString();
-                        return iMessageReceiveListener.onMessageReceive(rawMessage);
-                    });
+                    ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> iMessageReceiveListener.onMessageReceive(message.getString()));
                 }
 
                 if (listenerInstance instanceof IMessageSendListener iMessageSendListener) {
@@ -123,36 +109,27 @@ public class Registry {
 
                 if (listenerInstance instanceof IMoveListener iMoveListener) {
                     ClientTickEvents.END_CLIENT_TICK.register((server) -> {
-                        BlockPos blockPos = player.getBlockPos();
-                        if (isNull(this.lastPlayerPos) || !this.lastPlayerPos.equals(blockPos)) {
-                            this.lastPlayerPos = blockPos;
-                            iMoveListener.onMove(blockPos);
+                        if (player != null) {
+                            BlockPos blockPos = player.getBlockPos();
+                            if (isNull(this.lastPlayerPos) || !this.lastPlayerPos.equals(blockPos)) {
+                                this.lastPlayerPos = blockPos;
+                                iMoveListener.onMove(blockPos);
+                            }
                         }
                     });
                 }
 
                 if (listenerInstance instanceof INaviSpotReachedListener iNaviSpotReachedListener) {
                     ClientReceiveMessageEvents.ALLOW_GAME.register((message, overlay) -> {
-                        String rawMessage = message.getString();
-                        if (rawMessage.equals("Du hast dein Ziel erreicht!")) {
+                        if (message.getString().equals("Du hast dein Ziel erreicht!")) {
                             iNaviSpotReachedListener.onNaviSpotReached();
                         }
-
                         return true;
-                    });
-                }
-
-                if (listenerInstance instanceof ITickListener iTickListener) {
-                    ClientTickEvents.END_CLIENT_TICK.register((server) -> {
-                        iTickListener.onTick();
                     });
                 }
             } catch (InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException e) {
                 LOGGER.error("Error while registering listener: {}", listenerClass.getName(), e.getCause());
             }
         }
-
-        // prevent multiple registrations of listeners
-        this.initialized = true;
     }
 }

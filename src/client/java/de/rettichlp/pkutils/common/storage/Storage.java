@@ -31,9 +31,6 @@ public class Storage {
     private final List<WantedEntry> wantedEntries = new ArrayList<>();
 
     @Getter
-    private final Map<String, Integer> retrievedNumbers = new HashMap<>();
-
-    @Getter
     @Setter
     private ToggledChat toggledChat = NONE;
 

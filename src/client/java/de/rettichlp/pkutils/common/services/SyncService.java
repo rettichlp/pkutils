@@ -1,12 +1,11 @@
 package de.rettichlp.pkutils.common.services;
 
-import de.rettichlp.pkutils.common.registry.PKUtilsBase;
+import de.rettichlp.pkutils.common.manager.PKUtilsBase;
 import de.rettichlp.pkutils.common.storage.schema.Faction;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.function.Consumer;
 
 import static de.rettichlp.pkutils.PKUtilsClient.networkHandler;
 import static de.rettichlp.pkutils.PKUtilsClient.player;
@@ -17,7 +16,6 @@ import static de.rettichlp.pkutils.common.storage.schema.Faction.POLIZEI;
 import static java.time.LocalDateTime.MIN;
 import static java.time.LocalDateTime.now;
 import static java.util.Objects.requireNonNull;
-import static java.util.Optional.ofNullable;
 
 @Getter
 @Setter
@@ -56,15 +54,5 @@ public class SyncService extends PKUtilsBase {
             sendModMessage("PKUtils synchronisiert.", false);
             this.lastSyncTimestamp = now();
         }, Faction.values().length * 1000L + 200);
-    }
-
-    public void retrieveNumberAndRun(String playerName, Consumer<Integer> runWithNumber) {
-        networkHandler.sendChatCommand("nummer " + playerName);
-
-        delayedAction(() -> {
-            ofNullable(storage.getRetrievedNumbers().get(playerName)).ifPresentOrElse(runWithNumber, () -> {
-                sendModMessage("Die Nummer von " + playerName + " konnte nicht abgerufen werden.", false);
-            });
-        }, 1000);
     }
 }

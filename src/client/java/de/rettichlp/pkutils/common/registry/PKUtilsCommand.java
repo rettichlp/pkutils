@@ -10,6 +10,4 @@ import java.lang.annotation.RetentionPolicy;
 public @interface PKUtilsCommand {
 
     String label();
-
-    String[] aliases() default {};
 }
