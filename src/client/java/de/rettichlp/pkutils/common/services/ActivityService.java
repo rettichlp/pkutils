@@ -2,7 +2,7 @@ package de.rettichlp.pkutils.common.services;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import de.rettichlp.pkutils.common.manager.PKUtilsBase;
+import de.rettichlp.pkutils.common.registry.PKUtilsBase;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ServerInfo;
 

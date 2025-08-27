@@ -27,6 +27,7 @@ public class PKUtilsClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         // This entrypoint is suitable for setting up client-specific logic, such as rendering.
+
         activityService = new ActivityService();
         factionService = new FactionService();
         syncService = new SyncService();
@@ -39,6 +40,8 @@ public class PKUtilsClient implements ClientModInitializer {
             this.registry.registerListeners();
         }));
 
-        ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> this.registry.registerCommands(dispatcher));
+        ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
+            this.registry.registerCommands(dispatcher);
+        });
     }
 }

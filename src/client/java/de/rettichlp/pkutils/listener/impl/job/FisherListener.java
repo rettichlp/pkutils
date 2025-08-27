@@ -1,9 +1,9 @@
 package de.rettichlp.pkutils.listener.impl.job;
 
+import de.rettichlp.pkutils.common.registry.PKUtilsBase;
+import de.rettichlp.pkutils.common.registry.PKUtilsListener;
 import de.rettichlp.pkutils.listener.IMessageReceiveListener;
 import de.rettichlp.pkutils.listener.INaviSpotReachedListener;
-import de.rettichlp.pkutils.common.manager.PKUtilsBase;
-import de.rettichlp.pkutils.common.registry.PKUtilsListener;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.minecraft.util.math.BlockPos;

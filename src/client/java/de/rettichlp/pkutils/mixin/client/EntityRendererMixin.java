@@ -39,9 +39,9 @@ public abstract class EntityRendererMixin<S extends Entity, T extends EntityRend
     )
     private Text renderLabelIfPresent(Text original, EntityRenderState state) {
         if (state instanceof PlayerEntityRenderState playerState && nonNull(playerState.displayName)) {
+            String targetName = playerState.name;
             Text targetDisplayName = playerState.displayName;
-            String targetDisplayNameString = targetDisplayName.getString();
-            Faction targetFaction = storage.getFaction(targetDisplayNameString);
+            Faction targetFaction = storage.getFaction(targetName);
 
             Text newTargetDisplayNamePrefix = empty();
             Text newTargetDisplayName = targetDisplayName.copy();
@@ -49,12 +49,13 @@ public abstract class EntityRendererMixin<S extends Entity, T extends EntityRend
             Formatting newTargetDisplayNameColor = WHITE;
 
             // same faction -> blue name
-            if (targetFaction != NULL && targetFaction == storage.getFaction(requireNonNull(player.getDisplayName()).getString())) {
+            Faction playerFaction = storage.getFaction(player.getName().getString());
+            if (playerFaction == targetFaction && playerFaction != NULL) {
                 newTargetDisplayNameColor = BLUE;
             }
 
             Optional<BlacklistEntry> optionalTargetBlacklistEntry = storage.getBlacklistEntries().stream()
-                    .filter(blacklistEntry -> blacklistEntry.getPlayerName().equals(targetDisplayNameString))
+                    .filter(blacklistEntry -> blacklistEntry.getPlayerName().equals(targetName))
                     .findAny();
 
             if (optionalTargetBlacklistEntry.isPresent()) {
@@ -66,7 +67,7 @@ public abstract class EntityRendererMixin<S extends Entity, T extends EntityRend
             }
 
             Optional<WantedEntry> optionalTargetWantedEntry = storage.getWantedEntries().stream()
-                    .filter(wantedEntry -> wantedEntry.getPlayerName().equals(targetDisplayNameString))
+                    .filter(wantedEntry -> wantedEntry.getPlayerName().equals(targetName))
                     .findAny();
 
             if (optionalTargetWantedEntry.isPresent()) {

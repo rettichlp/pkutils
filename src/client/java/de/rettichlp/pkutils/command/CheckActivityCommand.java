@@ -1,10 +1,10 @@
 package de.rettichlp.pkutils.command;
 
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import de.rettichlp.pkutils.common.manager.CommandBase;
+import de.rettichlp.pkutils.common.registry.CommandBase;
 import de.rettichlp.pkutils.common.registry.PKUtilsCommand;
 import de.rettichlp.pkutils.common.storage.schema.Faction;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;

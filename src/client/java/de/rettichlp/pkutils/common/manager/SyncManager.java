@@ -1,6 +1,7 @@
 package de.rettichlp.pkutils.common.manager;
 
-import de.rettichlp.pkutils.common.registry.PKUtilsListener; // NEUER IMPORT
+import de.rettichlp.pkutils.common.registry.PKUtilsBase;
+import de.rettichlp.pkutils.common.registry.PKUtilsListener;
 import de.rettichlp.pkutils.common.storage.schema.Faction;
 import de.rettichlp.pkutils.common.storage.schema.FactionMember;
 import de.rettichlp.pkutils.listener.IMessageReceiveListener;
