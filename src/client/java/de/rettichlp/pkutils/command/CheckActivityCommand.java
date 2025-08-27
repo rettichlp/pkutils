@@ -2,87 +2,95 @@ package de.rettichlp.pkutils.command;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.suggestion.Suggestions;
-import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import de.rettichlp.pkutils.common.registry.CommandBase;
 import de.rettichlp.pkutils.common.registry.PKUtilsCommand;
 import de.rettichlp.pkutils.common.storage.schema.Faction;
+import de.rettichlp.pkutils.common.storage.schema.FactionMember;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
-import net.minecraft.command.CommandSource;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
-import net.minecraft.text.Text;
+import net.minecraft.text.MutableText;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.concurrent.CompletableFuture;
-
+import static com.mojang.brigadier.arguments.StringArgumentType.getString;
+import static com.mojang.brigadier.suggestion.Suggestions.*;
 import static de.rettichlp.pkutils.PKUtilsClient.player;
 import static de.rettichlp.pkutils.PKUtilsClient.storage;
+import static de.rettichlp.pkutils.common.storage.schema.Faction.NULL;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument;
+import static net.minecraft.command.CommandSource.suggestMatching;
+import static net.minecraft.text.ClickEvent.Action.*;
+import static net.minecraft.text.HoverEvent.Action.SHOW_TEXT;
 import static net.minecraft.text.Text.of;
 
 @PKUtilsCommand(label = "checkactivity")
 public class CheckActivityCommand extends CommandBase {
 
-    private static final String BASE_URL = "https://activitycheck.pkutils.eu/user/";
+    private static final String BASE_URL = "https://activitycheck.pkutils.eu";
 
     @Override
     public LiteralArgumentBuilder<FabricClientCommandSource> execute(@NotNull LiteralArgumentBuilder<FabricClientCommandSource> node) {
         return node
-                .executes(context -> {
-                    if (player == null) return 0;
-                    String playerName = player.getName().getString();
-                    sendActivityLink(playerName);
-                    return 1;
-                })
-                .then(argument("playerName", StringArgumentType.word())
-                        .suggests(this::factionMemberSuggestions)
+                .then(argument("player", StringArgumentType.word())
+                        .suggests((context, builder) -> {
+                            Faction faction = storage.getFaction(player.getName().getString());
+                            return faction == NULL ? empty() : suggestMatching(faction.getMembers().stream()
+                                    .map(FactionMember::getPlayerName), builder);
+                        })
                         .executes(context -> {
-                            if (player == null) return 0;
+                            String playerName = player.getName().getString();
+                            Faction faction = storage.getFaction(playerName);
 
-                            String ownPlayerName = player.getName().getString();
-                            String targetPlayerName = StringArgumentType.getString(context, "playerName");
+                            String targetName = getString(context, "player");
+                            Faction targetFaction = storage.getFaction(targetName);
 
-                            if (ownPlayerName.equalsIgnoreCase(targetPlayerName)) {
-                                sendActivityLink(ownPlayerName);
+                            boolean isNotSuperUser = !"25855f4d-3874-4a7f-a6ad-e9e4f3042e19".equals(player.getUuidAsString());
+
+                            if (isNotSuperUser && faction != targetFaction) {
+                                sendModMessage("Der Spieler ist nicht in deiner Fraktion.", false);
                                 return 1;
                             }
 
-                            Faction ownFaction = storage.getFaction(ownPlayerName);
-                            Faction targetFaction = storage.getFaction(targetPlayerName);
-
-                            if (ownFaction != Faction.NULL && ownFaction == targetFaction) {
-                                sendActivityLink(targetPlayerName);
-                            } else {
-                                sendModMessage("§cDu kannst nur die Aktivitäten von Mitgliedern deiner eigenen Fraktion einsehen.", false);
+                            if (isNotSuperUser && targetFaction == NULL) {
+                                sendModMessage("Der Spieler ist in keiner Fraktion.", false);
+                                return 1;
                             }
+
+                            if (isNotSuperUser && storage.getFactionMembers(faction).stream()
+                                    .filter(factionMember -> factionMember.getPlayerName().equals(playerName))
+                                    .findFirst()
+                                    .map(factionMember -> factionMember.getRank() < 4)
+                                    .orElse(true)) {
+                                sendModMessage("Du musst Rang 4 oder höher sein, um die Aktivitäten von anderen Mitgliedern einsehen zu können.", false);
+                                return 1;
+                            }
+
+                            sendActivityLink(targetName);
                             return 1;
                         })
-                );
+                )
+                .executes(context -> {
+                    String playerName = player.getName().getString();
+                    sendActivityLink(playerName);
+                    return 1;
+                });
     }
 
     private void sendActivityLink(String playerName) {
-        String personalUrl = BASE_URL + playerName;
-        Text linkText = of("Klicke hier, um die Aktivitäten von " + playerName + " anzuzeigen")
-                .copy()
-                .formatted(Formatting.GREEN)
-                .styled(style -> style
-                        .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, personalUrl))
-                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, of("Öffnet: " + personalUrl))));
-        player.sendMessage(linkText, false);
-    }
+        String personalUrl = BASE_URL + "/user/" + playerName;
 
-    private CompletableFuture<Suggestions> factionMemberSuggestions(com.mojang.brigadier.context.CommandContext<FabricClientCommandSource> context, SuggestionsBuilder builder) {
-        if (player == null) return Suggestions.empty();
-        Faction ownFaction = storage.getFaction(player.getName().getString());
-        if (ownFaction != Faction.NULL) {
-            return CommandSource.suggestMatching(
-                    storage.getFactionMembers(ownFaction).stream()
-                            .map(factionMember -> factionMember.getPlayerName()),
-                    builder
-            );
-        }
-        return Suggestions.empty();
+        MutableText linkText = modMessagePrefix.copy()
+                .append(of("Klicke hier, um die Aktivitäten von")).append(" ")
+                .append(of(playerName).copy().formatted(Formatting.BLUE, Formatting.UNDERLINE)).append(" ")
+                .append(of("anzuzeigen."));
+
+        MutableText clickableLinkText = linkText.styled(style -> {
+            style.withClickEvent(new ClickEvent(OPEN_URL, personalUrl));
+            style.withHoverEvent(new HoverEvent(SHOW_TEXT, of("Öffnet: " + personalUrl)));
+            return style;
+        });
+
+        player.sendMessage(clickableLinkText, false);
     }
 }
