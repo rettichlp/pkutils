@@ -2,7 +2,14 @@ package de.rettichlp.pkutils.common.registry;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import de.rettichlp.pkutils.command.*;
+import de.rettichlp.pkutils.command.ADropMoneyCommand;
+import de.rettichlp.pkutils.command.CheckActivityCommand;
+import de.rettichlp.pkutils.command.ClearActivityCommand;
+import de.rettichlp.pkutils.command.RichTaxesCommand;
+import de.rettichlp.pkutils.command.SyncCommand;
+import de.rettichlp.pkutils.command.ToggleDChatCommand;
+import de.rettichlp.pkutils.command.ToggleFChatCommand;
+import de.rettichlp.pkutils.command.ModCommand;
 import de.rettichlp.pkutils.common.manager.CommandBase;
 import de.rettichlp.pkutils.common.manager.PKUtilsBase;
 import de.rettichlp.pkutils.common.manager.SyncManager;
