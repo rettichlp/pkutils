@@ -14,6 +14,7 @@ import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.NotNull;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
+import static com.mojang.brigadier.arguments.StringArgumentType.word;
 import static com.mojang.brigadier.suggestion.Suggestions.*;
 import static de.rettichlp.pkutils.PKUtilsClient.player;
 import static de.rettichlp.pkutils.PKUtilsClient.storage;
@@ -32,7 +33,7 @@ public class CheckActivityCommand extends CommandBase {
     @Override
     public LiteralArgumentBuilder<FabricClientCommandSource> execute(@NotNull LiteralArgumentBuilder<FabricClientCommandSource> node) {
         return node
-                .then(argument("player", StringArgumentType.word())
+                .then(argument("player", word())
                         .suggests((context, builder) -> {
                             Faction faction = storage.getFaction(player.getName().getString());
                             return faction == NULL ? empty() : suggestMatching(faction.getMembers().stream()
