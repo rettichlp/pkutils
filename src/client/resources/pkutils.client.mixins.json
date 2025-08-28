@@ -3,7 +3,8 @@
     "package": "de.rettichlp.pkutils.mixin.client",
     "compatibilityLevel": "JAVA_21",
     "client": [
-        "EntityRendererMixin"
+        "EntityRendererMixin",
+        "PlayerListHudMixin"
     ],
     "injectors": {
         "defaultRequire": 1
