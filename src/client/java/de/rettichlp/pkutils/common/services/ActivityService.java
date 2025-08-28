@@ -102,7 +102,7 @@ public class ActivityService extends PKUtilsBase {
 
     @Builder
     @AllArgsConstructor
-    private class ActivityRequest {
+    private static class ActivityRequest {
 
         private final String playerName;
         private final String activity;
@@ -110,19 +110,19 @@ public class ActivityService extends PKUtilsBase {
         private final String serverHash;
 
         public String toJsonString() {
-            return ActivityService.this.gson.toJson(this);
+            return new Gson().toJson(this);
         }
     }
 
     @Builder
     @AllArgsConstructor
-    private class ActivityClearRequest {
+    private static class ActivityClearRequest {
 
         private final String playerName;
         private final String sessionToken;
 
         public String toJsonString() {
-            return ActivityService.this.gson.toJson(this);
+            return new Gson().toJson(this);
         }
     }
 
