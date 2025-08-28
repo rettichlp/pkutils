@@ -1,129 +1,135 @@
 package de.rettichlp.pkutils.common.services;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.Gson;
 import de.rettichlp.pkutils.common.registry.PKUtilsBase;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ServerInfo;
+import org.jetbrains.annotations.NotNull;
 
-import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.concurrent.CompletableFuture;
 
+import static com.google.common.hash.Hashing.sha256;
 import static de.rettichlp.pkutils.PKUtils.LOGGER;
 import static de.rettichlp.pkutils.PKUtilsClient.player;
+import static java.net.URI.create;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.apache.http.HttpHeaders.CONTENT_TYPE;
+import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 
 public class ActivityService extends PKUtilsBase {
 
     private static final String PROXY_URL = "https://activitycheck.pkutils.eu/proxy";
     private static final String CLEAR_URL = "https://activitycheck.pkutils.eu/clearactivity";
-
     private static final String SERVER_SECRET_SALT = "^HnBssKA:?qj8@..d!t!BA^vu9vq5y"; // ÄNDERN!
 
+    private final Gson gson = new Gson();
     private final HttpClient httpClient = HttpClient.newHttpClient();
+    private final String sessionToken = MinecraftClient.getInstance().getSession().getAccessToken();
 
     public void trackActivity(String activityType, String successMessage) {
-        if (player == null) return;
-
         ServerInfo serverInfo = MinecraftClient.getInstance().getCurrentServerEntry();
         if (serverInfo == null) {
-            sendModMessage("§cFehler: Du bist nicht auf einem Server.", false);
+            sendModMessage("Du bist auf keinem Server.", false);
             return;
         }
 
         String serverIp = serverInfo.address;
         String playerName = player.getName().getString();
-        String sessionToken = MinecraftClient.getInstance().getSession().getAccessToken();
 
-        String serverHash = createSha256(serverIp + sessionToken + SERVER_SECRET_SALT);
-        if (serverHash == null) {
-            sendModMessage("§cFehler bei der Hash-Erstellung.", false);
-            return;
-        }
+        String serverHash = createSha256(serverIp + this.sessionToken + SERVER_SECRET_SALT);
 
-        JsonObject json = new JsonObject();
-        json.addProperty("playerName", playerName);
-        json.addProperty("activity", activityType);
-        json.addProperty("sessionToken", sessionToken);
-        json.addProperty("serverHash", serverHash);
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(PROXY_URL))
-                .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(json.toString()))
+        ActivityRequest activityRequest = ActivityRequest.builder()
+                .playerName(playerName)
+                .activity(activityType)
+                .sessionToken(this.sessionToken)
+                .serverHash(serverHash)
                 .build();
 
-        CompletableFuture.runAsync(() -> {
+        HttpRequest request = getHttpRequest(activityRequest.toJsonString(), PROXY_URL);
+
+        new Thread(() -> {
             try {
-                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-                if (response.statusCode() == 200) {
-                    LOGGER.info("Aktivität '{}' für {} erfolgreich getrackt.", activityType, playerName);
-                    sendModMessage(successMessage, true);
-                } else {
-                    LOGGER.warn("Fehler beim Tracken der Aktivität '{}' für {}. Status: {}, Antwort: {}",
-                            activityType, playerName, response.statusCode(), response.body());
-                    sendModMessage("§cFehler beim Tracken der Aktivität!", true);
-                }
+                HttpResponse<String> response = this.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                ActivityResponse activityResponse = this.gson.fromJson(response.body(), ActivityResponse.class);
+                LOGGER.info("Tracked activity: {}", activityResponse.getMessage());
+                sendModMessage(response.statusCode() == 200 ? successMessage : "Fehler beim Tracken der Aktivität!", false);
             } catch (Exception e) {
-                LOGGER.error("Schwerer Fehler beim Senden der Aktivität an den Proxy.", e);
-                sendModMessage("§cProxy-Server nicht erreichbar!", true);
+                LOGGER.error("Failed to send activity to proxy", e);
+                sendModMessage("PKUtils-Server nicht erreichbar!", true);
             }
-        });
+        }).start();
     }
 
     public void clearActivity(String targetName) {
-        if (player == null) return;
-
-        String sessionToken = MinecraftClient.getInstance().getSession().getAccessToken();
-
-        JsonObject json = new JsonObject();
-        json.addProperty("sessionToken", sessionToken);
-        json.addProperty("targetName", targetName);
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(CLEAR_URL))
-                .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(json.toString()))
+        ActivityClearRequest activityClearRequest = ActivityClearRequest.builder()
+                .playerName(targetName)
+                .sessionToken(this.sessionToken)
                 .build();
 
-        sendModMessage("Sende Anfrage zum Zurücksetzen...", false);
+        HttpRequest request = getHttpRequest(activityClearRequest.toJsonString(), CLEAR_URL);
 
-        CompletableFuture.runAsync(() -> {
+        new Thread(() -> {
             try {
-                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-                JsonObject responseJson = JsonParser.parseString(response.body()).getAsJsonObject();
-
-                if (response.statusCode() == 200) {
-                    sendModMessage("§a" + responseJson.get("message").getAsString(), false);
-                } else {
-                    sendModMessage("§cFehler: " + responseJson.get("error").getAsString(), false);
-                }
+                HttpResponse<String> response = this.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                ActivityResponse activityResponse = this.gson.fromJson(response.body(), ActivityResponse.class);
+                LOGGER.info("Cleared activity response: {}", activityResponse.getMessage());
+                sendModMessage(activityResponse.getMessage(), false);
             } catch (Exception e) {
-                LOGGER.error("Fehler beim Senden der Clear-Anfrage.", e);
-                sendModMessage("§cServer nicht erreichbar oder fehlerhafte Antwort.", false);
+                LOGGER.error("Failed to send clear activity to proxy", e);
+                sendModMessage("PKUtils-Server nicht erreichbar!", true);
             }
-        });
+        }).start();
     }
 
-    private String createSha256(String input) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : hash) {
-                String hex = Integer.toHexString(0xff & b);
-                if (hex.length() == 1) hexString.append('0');
-                hexString.append(hex);
-            }
-            return hexString.toString();
-        } catch (NoSuchAlgorithmException e) {
-            LOGGER.error("SHA-256 Algorithmus nicht gefunden.", e);
-            return null;
+    private @NotNull String createSha256(CharSequence input) {
+        return sha256()
+                .hashString(input, UTF_8)
+                .toString();
+    }
+
+    private HttpRequest getHttpRequest(String body, String url) {
+        return HttpRequest.newBuilder()
+                .uri(create(url))
+                .header(CONTENT_TYPE, APPLICATION_JSON.getMimeType())
+                .POST(HttpRequest.BodyPublishers.ofString(body))
+                .build();
+    }
+
+    @Builder
+    @AllArgsConstructor
+    private class ActivityRequest {
+
+        private final String playerName;
+        private final String activity;
+        private final String sessionToken;
+        private final String serverHash;
+
+        public String toJsonString() {
+            return ActivityService.this.gson.toJson(this);
         }
+    }
+
+    @Builder
+    @AllArgsConstructor
+    private class ActivityClearRequest {
+
+        private final String playerName;
+        private final String sessionToken;
+
+        public String toJsonString() {
+            return ActivityService.this.gson.toJson(this);
+        }
+    }
+
+    @Getter
+    @AllArgsConstructor
+    private static class ActivityResponse {
+
+        private final String message;
     }
 }
