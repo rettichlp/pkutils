@@ -197,7 +197,7 @@ public class WantedListener extends PKUtilsBase implements IMessageReceiveListen
                 activityService.trackActivity("ticket", "Aktivität 'Strafzettel' +1");
             }
 
-            return false;
+            return true;
         }
 
         Matcher wantedUnarrestMatcher = WANTED_UNARREST_PATTERN.matcher(message);
