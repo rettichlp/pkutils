@@ -1,6 +1,8 @@
 package de.rettichlp.pkutils.listener;
 
+import org.jetbrains.annotations.NotNull;
+
 public interface ICommandSendListener {
 
-    boolean onCommandSend(String command);
+    boolean onCommandSend(@NotNull String command);
 }
