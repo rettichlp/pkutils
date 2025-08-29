@@ -86,11 +86,10 @@ public class CheckActivityCommand extends CommandBase {
                 .append(of(playerName).copy().formatted(Formatting.BLUE, Formatting.UNDERLINE)).append(" ")
                 .append(of("anzuzeigen."));
 
-        MutableText clickableLinkText = linkText.styled(style -> {
-            style.withClickEvent(new ClickEvent(OPEN_URL, personalUrl));
-            style.withHoverEvent(new HoverEvent(SHOW_TEXT, of("Öffnet: " + personalUrl)));
-            return style;
-        });
+        MutableText clickableLinkText = linkText.styled(style -> style
+                .withClickEvent(new ClickEvent(OPEN_URL, personalUrl))
+                .withHoverEvent(new HoverEvent(SHOW_TEXT, of("Öffnet: " + personalUrl)))
+        );
 
         player.sendMessage(clickableLinkText, false);
     }
