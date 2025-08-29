@@ -4,7 +4,9 @@ import de.rettichlp.pkutils.common.registry.PKUtilsBase;
 import de.rettichlp.pkutils.common.registry.PKUtilsListener;
 import de.rettichlp.pkutils.common.storage.schema.Faction;
 import de.rettichlp.pkutils.common.storage.schema.FactionMember;
+import de.rettichlp.pkutils.listener.ICommandSendListener;
 import de.rettichlp.pkutils.listener.IMessageReceiveListener;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,7 +20,7 @@ import static java.util.Objects.nonNull;
 import static java.util.regex.Pattern.compile;
 
 @PKUtilsListener
-public class SyncListener extends PKUtilsBase implements IMessageReceiveListener {
+public class SyncListener extends PKUtilsBase implements ICommandSendListener, IMessageReceiveListener {
 
     private static final Pattern SERVER_PASSWORD_MISSING_PATTERN = compile("^» Schütze deinen Account mit /passwort new \\[Passwort]$");
     private static final Pattern SERVER_PASSWORD_ACCEPTED_PATTERN = compile("^Du hast deinen Account freigeschaltet\\.$");
@@ -28,6 +30,16 @@ public class SyncListener extends PKUtilsBase implements IMessageReceiveListener
 
     private Faction factionMemberRetrievalFaction;
     private long factionMemberRetrievalTimestamp;
+
+    @Override
+    public boolean onCommandSend(@NotNull String command) {
+        if (syncService.isGameSyncProcessActive() && !command.contains("memberinfoall") && !command.contains("wanteds") && !command.contains("blacklist")) {
+            sendModMessage("Während des Synchronisationsprozesses können keine Befehle ausgeführt werden.", false);
+            return false;
+        }
+
+        return true;
+    }
 
     @Override
     public boolean onMessageReceive(String message) {
