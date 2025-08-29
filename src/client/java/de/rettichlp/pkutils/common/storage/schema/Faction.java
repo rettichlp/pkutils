@@ -7,7 +7,9 @@ import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
+import java.util.Set;
 
+import static de.rettichlp.pkutils.PKUtilsClient.storage;
 import static java.util.Arrays.stream;
 import static net.minecraft.text.Text.empty;
 import static net.minecraft.util.Formatting.AQUA;
@@ -67,6 +69,10 @@ public enum Faction {
 
     public String getMemberInfoCommandName() {
         return this == OBRIEN ? "Obrien" : this.displayName;
+    }
+
+    public Set<FactionMember> getMembers() {
+        return storage.getFactionMembers(this);
     }
 
     public static @NotNull Optional<Faction> fromDisplayName(String displayName) {
