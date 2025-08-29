@@ -25,7 +25,7 @@ public class ActivityService extends PKUtilsBase {
 
     private static final String PROXY_URL = "https://activitycheck.pkutils.eu/proxy";
     private static final String CLEAR_URL = "https://activitycheck.pkutils.eu/clearactivity";
-    private static final String SERVER_SECRET_SALT = "^HnBssKA:?qj8@..d!t!BA^vu9vq5y"; // ÄNDERN!
+    private static final String SERVER_SECRET_SALT = "^HnBssKA:?qj8@..d!t!BA^vu9vq5y";
 
     private final Gson gson = new Gson();
     private final HttpClient httpClient = HttpClient.newHttpClient();
