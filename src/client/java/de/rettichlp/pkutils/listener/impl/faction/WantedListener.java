@@ -70,7 +70,7 @@ public class WantedListener extends PKUtilsBase implements IMessageReceiveListen
                     });
 
             Text modifiedMessage = empty()
-                    .append(of("➥").copy().formatted(DARK_GRAY)).append(" ")
+                    .append(of("➥").copy().formatted(GRAY)).append(" ")
                     .append(of(wantedGivenPointsMatcher.group(2)).copy().formatted(BLUE)).append(" ")
                     .append(of("Wanteds").copy().formatted(BLUE));
 
@@ -107,7 +107,7 @@ public class WantedListener extends PKUtilsBase implements IMessageReceiveListen
             String time = wantedReasonMatcher.group("time");
 
             Text modifiedMessage = empty()
-                    .append(of("➥").copy().formatted(DARK_GRAY)).append(" ")
+                    .append(of("➥").copy().formatted(GRAY)).append(" ")
                     .append(of(reason).copy().formatted(BLUE)).append(" ")
                     .append(of("-").copy().formatted(GRAY)).append(" ")
                     .append(of(time).copy().formatted(BLUE));
@@ -238,7 +238,7 @@ public class WantedListener extends PKUtilsBase implements IMessageReceiveListen
 
             if (!syncService.isGameSyncProcessActive()) {
                 Text modifiedMessage = empty()
-                        .append(of("➥").copy().formatted(DARK_GRAY)).append(" ")
+                        .append(of("➥").copy().formatted(GRAY)).append(" ")
                         .append(of(playerName).copy().formatted(color)).append(" ")
                         .append(of("-").copy().formatted(GRAY)).append(" ")
                         .append(of(reason).copy().formatted(color)).append(" ")
