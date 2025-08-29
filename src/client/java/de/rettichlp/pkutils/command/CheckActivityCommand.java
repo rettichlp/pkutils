@@ -1,6 +1,5 @@
 package de.rettichlp.pkutils.command;
 
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import de.rettichlp.pkutils.common.registry.CommandBase;
 import de.rettichlp.pkutils.common.registry.PKUtilsCommand;
@@ -15,13 +14,13 @@ import org.jetbrains.annotations.NotNull;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.word;
-import static com.mojang.brigadier.suggestion.Suggestions.*;
+import static com.mojang.brigadier.suggestion.Suggestions.empty;
 import static de.rettichlp.pkutils.PKUtilsClient.player;
 import static de.rettichlp.pkutils.PKUtilsClient.storage;
 import static de.rettichlp.pkutils.common.storage.schema.Faction.NULL;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument;
 import static net.minecraft.command.CommandSource.suggestMatching;
-import static net.minecraft.text.ClickEvent.Action.*;
+import static net.minecraft.text.ClickEvent.Action.OPEN_URL;
 import static net.minecraft.text.HoverEvent.Action.SHOW_TEXT;
 import static net.minecraft.text.Text.of;
 
