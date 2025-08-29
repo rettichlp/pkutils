@@ -128,8 +128,8 @@ public class WantedListener extends PKUtilsBase implements IMessageReceiveListen
                     .append(of("Gelöscht").copy().formatted(RED)).append(" ")
                     .append(of("-").copy().formatted(GRAY)).append(" ")
                     .append(of(targetName).copy().formatted(BLUE)).append(" ")
-                    .append(of("(").copy().formatted(GRAY)).append(" ")
-                    .append(of(valueOf(wpAmount)).copy().formatted(RED)).append(" ")
+                    .append(of("(").copy().formatted(GRAY))
+                    .append(of(valueOf(wpAmount)).copy().formatted(RED))
                     .append(of(")").copy().formatted(GRAY)).append(" ")
                     .append(of("-").copy().formatted(GRAY)).append(" ")
                     .append(of(playerName).copy().formatted(BLUE));
@@ -153,8 +153,8 @@ public class WantedListener extends PKUtilsBase implements IMessageReceiveListen
                     .append(of("Getötet").copy().formatted(RED)).append(" ")
                     .append(of("-").copy().formatted(GRAY)).append(" ")
                     .append(of(targetName).copy().formatted(BLUE)).append(" ")
-                    .append(of("(").copy().formatted(GRAY)).append(" ")
-                    .append(of(valueOf(wpAmount)).copy().formatted(RED)).append(" ")
+                    .append(of("(").copy().formatted(GRAY))
+                    .append(of(valueOf(wpAmount)).copy().formatted(RED))
                     .append(of(")").copy().formatted(GRAY)).append(" ")
                     .append(of("-").copy().formatted(GRAY)).append(" ")
                     .append(of(playerName).copy().formatted(BLUE));
@@ -178,8 +178,8 @@ public class WantedListener extends PKUtilsBase implements IMessageReceiveListen
                     .append(of("Eingesperrt").copy().formatted(RED)).append(" ")
                     .append(of("-").copy().formatted(GRAY)).append(" ")
                     .append(of(targetName).copy().formatted(BLUE)).append(" ")
-                    .append(of("(").copy().formatted(GRAY)).append(" ")
-                    .append(of(valueOf(wpAmount)).copy().formatted(RED)).append(" ")
+                    .append(of("(").copy().formatted(GRAY))
+                    .append(of(valueOf(wpAmount)).copy().formatted(RED))
                     .append(of(")").copy().formatted(GRAY)).append(" ")
                     .append(of("-").copy().formatted(GRAY)).append(" ")
                     .append(of(playerName).copy().formatted(BLUE));
