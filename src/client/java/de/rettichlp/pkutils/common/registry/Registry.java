@@ -22,7 +22,7 @@ import de.rettichlp.pkutils.listener.ITickListener;
 import de.rettichlp.pkutils.listener.impl.CommandSendListener;
 import de.rettichlp.pkutils.listener.impl.SyncListener;
 import de.rettichlp.pkutils.listener.impl.faction.BlacklistListener;
-import de.rettichlp.pkutils.listener.impl.faction.FactionChatListener;
+import de.rettichlp.pkutils.listener.impl.faction.FactionListener;
 import de.rettichlp.pkutils.listener.impl.faction.WantedListener;
 import de.rettichlp.pkutils.listener.impl.job.FisherListener;
 import de.rettichlp.pkutils.listener.impl.job.GarbageManListener;
@@ -63,7 +63,7 @@ public class Registry {
     private final Set<Class<?>> listeners = Set.of(
             // faction
             BlacklistListener.class,
-            FactionChatListener.class,
+            FactionListener.class,
             WantedListener.class,
             // job
             FisherListener.class,

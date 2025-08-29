@@ -10,7 +10,7 @@ import static de.rettichlp.pkutils.PKUtilsClient.storage;
 import static de.rettichlp.pkutils.common.storage.Storage.ToggledChat.NONE;
 
 @PKUtilsListener
-public class FactionChatListener extends PKUtilsBase implements IMessageSendListener {
+public class FactionListener extends PKUtilsBase implements IMessageSendListener {
 
     @Override
     public boolean onMessageSend(String message) {
