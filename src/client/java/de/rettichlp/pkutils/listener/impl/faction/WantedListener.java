@@ -38,7 +38,7 @@ public class WantedListener extends PKUtilsBase implements IMessageReceiveListen
     private static final Pattern WANTED_DELETE_PATTERN = compile("^HQ: (?<playerName>[a-zA-Z0-9_]+) hat (?<targetName>[a-zA-Z0-9_]+)(?:'s)* Akten gelöscht, over\\.$");
     private static final Pattern WANTED_KILL_PATTERN = compile("^HQ: (?<targetName>[a-zA-Z0-9_]+) wurde von (?<playerName>[a-zA-Z0-9_]+) getötet\\.$");
     private static final Pattern WANTED_ARREST_PATTERN = compile("^HQ: (?<targetName>[a-zA-Z0-9_]+) wurde von (?<playerName>[a-zA-Z0-9_]+) eingesperrt\\.$");
-    private static final Pattern STRAFZETTEL_PATTERN = compile("^HQ: (?<playerName>[a-zA-Z0-9_]+) hat ein Strafzettel an das Fahrzeug \\[[A-Z0-9-]+] vergeben\\.$");
+    private static final Pattern PARKTICKET_PATTERN = compile("^HQ: (?<playerName>[a-zA-Z0-9_]+) hat ein Strafzettel an das Fahrzeug \\[[A-Z0-9-]+] vergeben\\.$");
     private static final Pattern WANTED_UNARREST_PATTERN = compile("^HQ: (?<playerName>[a-zA-Z0-9_]+) hat (?<targetName>[a-zA-Z0-9_]+) aus dem Gefängnis entlassen\\.$");
     private static final Pattern WANTED_LIST_HEADER_PATTERN = compile("Online Spieler mit WantedPunkten:");
     private static final Pattern WANTED_LIST_ENTRY_PATTERN = compile("- (?<playerName>[a-zA-Z0-9_]+) \\| (?<wantedPointAmount>\\d+) \\| (?<reason>.+)(?<afk> \\| AFK|)");
@@ -189,9 +189,9 @@ public class WantedListener extends PKUtilsBase implements IMessageReceiveListen
             return false;
         }
 
-        Matcher strafzettelMatcher = STRAFZETTEL_PATTERN.matcher(message);
-        if (strafzettelMatcher.find()) {
-            String officerName = strafzettelMatcher.group("playerName");
+        Matcher parkticketMatcher = PARKTICKET_PATTERN.matcher(message);
+        if (parkticketMatcher.find()) {
+            String officerName = parkticketMatcher.group("playerName");
 
             if (clientPlayerName.equals(officerName)) {
                 activityService.trackActivity("ticket", "Aktivität 'Strafzettel' +1");
