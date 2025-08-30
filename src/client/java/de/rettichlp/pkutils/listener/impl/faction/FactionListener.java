@@ -5,6 +5,7 @@ import de.rettichlp.pkutils.common.registry.PKUtilsListener;
 import de.rettichlp.pkutils.common.storage.Storage;
 import de.rettichlp.pkutils.listener.IMessageReceiveListener;
 import de.rettichlp.pkutils.listener.IMessageSendListener;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
 
 import java.util.regex.Matcher;
@@ -14,6 +15,7 @@ import static de.rettichlp.pkutils.PKUtilsClient.networkHandler;
 import static de.rettichlp.pkutils.PKUtilsClient.player;
 import static de.rettichlp.pkutils.PKUtilsClient.storage;
 import static de.rettichlp.pkutils.common.storage.Storage.ToggledChat.NONE;
+import static java.util.Optional.ofNullable;
 import static java.util.regex.Pattern.compile;
 import static net.minecraft.text.Text.empty;
 import static net.minecraft.text.Text.of;
@@ -26,7 +28,8 @@ import static net.minecraft.util.Formatting.RED;
 @PKUtilsListener
 public class FactionListener extends PKUtilsBase implements IMessageReceiveListener, IMessageSendListener {
 
-    private static final Pattern REINFORCEMENT_PATTERN = compile("^(?<type>.+)! (?<sender>.+) benötigt Unterstützung in der Nähe von (?<naviPoint>.+) \\((?<distance>\\d+)m\\)!$");
+    private static final Pattern REINFORCEMENT_PATTERN = compile("^(?:(?<type>.+)! )?(?<sender>.+) benötigt Unterstützung in der Nähe von (?<naviPoint>.+) \\((?<distance>\\d+)m\\)!$");
+    private static final Pattern REINFORCEMENT_BUTTON_PATTERN = compile("^ §7» §cRoute anzeigen §7\\| §cUnterwegs$");
     private static final Pattern REINFORCMENT_ON_THE_WAY_PATTERN = compile("^(?<sender>.+) kommt zum Verstärkungsruf von (?<target>.+)! \\((?<distance>\\d+) Meter entfernt\\)$");
 
     private static final ReinforcementConsumer<String, String, String, String> REINFORCEMENT = (type, sender, naviPoint, distance) -> empty()
@@ -50,15 +53,23 @@ public class FactionListener extends PKUtilsBase implements IMessageReceiveListe
     public boolean onMessageReceive(String message) {
         Matcher reinforcementMatcher = REINFORCEMENT_PATTERN.matcher(message);
         if (reinforcementMatcher.find()) {
-            String type = reinforcementMatcher.group("type");
+            String type = ofNullable(reinforcementMatcher.group("type")).orElse("Reinforcement");
             String sender = reinforcementMatcher.group("sender");
             String naviPoint = reinforcementMatcher.group("naviPoint");
             String distance = reinforcementMatcher.group("distance");
 
             Text reinforcement = REINFORCEMENT.create(type, sender, naviPoint, distance);
+            player.sendMessage(empty(), false);
             player.sendMessage(reinforcement, false);
 
             return false;
+        }
+
+        Matcher reinforcementButtonMatcher = REINFORCEMENT_BUTTON_PATTERN.matcher(message);
+        if (reinforcementButtonMatcher.find()) {
+            // send empty line after buttons
+            MinecraftClient.getInstance().execute(() -> player.sendMessage(empty(), false));
+            return true;
         }
 
         Matcher reinforcementOnTheWayMatcher = REINFORCMENT_ON_THE_WAY_PATTERN.matcher(message);
