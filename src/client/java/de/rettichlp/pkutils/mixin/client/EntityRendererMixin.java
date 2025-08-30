@@ -20,7 +20,6 @@ import static de.rettichlp.pkutils.PKUtilsClient.player;
 import static de.rettichlp.pkutils.PKUtilsClient.storage;
 import static de.rettichlp.pkutils.common.storage.schema.Faction.NULL;
 import static java.util.Objects.nonNull;
-import static java.util.Objects.requireNonNull;
 import static net.minecraft.text.Text.empty;
 import static net.minecraft.text.Text.of;
 import static net.minecraft.util.Formatting.BLUE;

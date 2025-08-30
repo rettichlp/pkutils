@@ -15,7 +15,7 @@ import static net.minecraft.util.Formatting.WHITE;
 
 public abstract class PKUtilsBase {
 
-    private static final Text modMessagePrefix = Text.empty()
+    protected static final Text modMessagePrefix = Text.empty()
             .append(of("✦").copy().formatted(DARK_PURPLE))
             .append(of(" "))
             .append(of("PKU").copy().formatted(LIGHT_PURPLE))

@@ -5,6 +5,8 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import de.rettichlp.pkutils.command.ACallCommand;
 import de.rettichlp.pkutils.command.ADropMoneyCommand;
 import de.rettichlp.pkutils.command.ASMSCommand;
+import de.rettichlp.pkutils.command.CheckActivityCommand;
+import de.rettichlp.pkutils.command.ClearActivityCommand;
 import de.rettichlp.pkutils.command.ModCommand;
 import de.rettichlp.pkutils.command.RichTaxesCommand;
 import de.rettichlp.pkutils.command.SyncCommand;
@@ -20,10 +22,11 @@ import de.rettichlp.pkutils.listener.ITickListener;
 import de.rettichlp.pkutils.listener.impl.CommandSendListener;
 import de.rettichlp.pkutils.listener.impl.SyncListener;
 import de.rettichlp.pkutils.listener.impl.faction.BlacklistListener;
-import de.rettichlp.pkutils.listener.impl.faction.FactionChatListener;
+import de.rettichlp.pkutils.listener.impl.faction.FactionListener;
 import de.rettichlp.pkutils.listener.impl.faction.WantedListener;
 import de.rettichlp.pkutils.listener.impl.job.FisherListener;
 import de.rettichlp.pkutils.listener.impl.job.GarbageManListener;
+import de.rettichlp.pkutils.listener.impl.job.LumberjackListener;
 import de.rettichlp.pkutils.listener.impl.job.TransportListener;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -47,22 +50,25 @@ public class Registry {
             ACallCommand.class,
             ADropMoneyCommand.class,
             ASMSCommand.class,
-            WSUCommand.class,
+            CheckActivityCommand.class,
+            ClearActivityCommand.class,
             ModCommand.class,
             RichTaxesCommand.class,
             SyncCommand.class,
             ToggleDChatCommand.class,
-            ToggleFChatCommand.class
+            ToggleFChatCommand.class,
+            WSUCommand.class
     );
 
     private final Set<Class<?>> listeners = Set.of(
             // faction
             BlacklistListener.class,
-            FactionChatListener.class,
+            FactionListener.class,
             WantedListener.class,
             // job
             FisherListener.class,
             GarbageManListener.class,
+            LumberjackListener.class,
             TransportListener.class,
             // other
             CommandSendListener.class,

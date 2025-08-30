@@ -14,7 +14,7 @@ import static java.lang.Character.isUpperCase;
 public class CommandSendListener extends PKUtilsBase implements ICommandSendListener {
 
     @Override
-    public boolean onCommandSend(String command) {
+    public boolean onCommandSend(@NotNull String command) {
         String[] parts = command.split(" ", 2); // split the message into command label and arguments
         String commandLabel = parts[0]; // get the command label
 

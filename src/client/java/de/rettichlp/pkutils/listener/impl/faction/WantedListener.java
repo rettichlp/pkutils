@@ -11,6 +11,7 @@ import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static de.rettichlp.pkutils.PKUtilsClient.activityService;
 import static de.rettichlp.pkutils.PKUtilsClient.factionService;
 import static de.rettichlp.pkutils.PKUtilsClient.player;
 import static de.rettichlp.pkutils.PKUtilsClient.storage;
@@ -37,6 +38,7 @@ public class WantedListener extends PKUtilsBase implements IMessageReceiveListen
     private static final Pattern WANTED_DELETE_PATTERN = compile("^HQ: (?<playerName>[a-zA-Z0-9_]+) hat (?<targetName>[a-zA-Z0-9_]+)(?:'s)* Akten gelöscht, over\\.$");
     private static final Pattern WANTED_KILL_PATTERN = compile("^HQ: (?<targetName>[a-zA-Z0-9_]+) wurde von (?<playerName>[a-zA-Z0-9_]+) getötet\\.$");
     private static final Pattern WANTED_ARREST_PATTERN = compile("^HQ: (?<targetName>[a-zA-Z0-9_]+) wurde von (?<playerName>[a-zA-Z0-9_]+) eingesperrt\\.$");
+    private static final Pattern PARKTICKET_PATTERN = compile("^HQ: (?<playerName>[a-zA-Z0-9_]+) hat ein Strafzettel an das Fahrzeug \\[[A-Z0-9-]+] vergeben\\.$");
     private static final Pattern WANTED_UNARREST_PATTERN = compile("^HQ: (?<playerName>[a-zA-Z0-9_]+) hat (?<targetName>[a-zA-Z0-9_]+) aus dem Gefängnis entlassen\\.$");
     private static final Pattern WANTED_LIST_HEADER_PATTERN = compile("Online Spieler mit WantedPunkten:");
     private static final Pattern WANTED_LIST_ENTRY_PATTERN = compile("- (?<playerName>[a-zA-Z0-9_]+) \\| (?<wantedPointAmount>\\d+) \\| (?<reason>.+)(?<afk> \\| AFK|)");
@@ -52,6 +54,8 @@ public class WantedListener extends PKUtilsBase implements IMessageReceiveListen
 
     @Override
     public boolean onMessageReceive(String message) {
+        String clientPlayerName = player.getName().getString();
+
         Matcher wantedGivenPointsMatcher = WANTED_GIVEN_POINTS_PATTERN.matcher(message);
         if (wantedGivenPointsMatcher.find()) {
             String playerName = wantedGivenPointsMatcher.group(1);
@@ -66,7 +70,7 @@ public class WantedListener extends PKUtilsBase implements IMessageReceiveListen
                     });
 
             Text modifiedMessage = empty()
-                    .append(of("➥").copy().formatted(DARK_GRAY)).append(" ")
+                    .append(of("➥").copy().formatted(GRAY)).append(" ")
                     .append(of(wantedGivenPointsMatcher.group(2)).copy().formatted(BLUE)).append(" ")
                     .append(of("Wanteds").copy().formatted(BLUE));
 
@@ -103,7 +107,7 @@ public class WantedListener extends PKUtilsBase implements IMessageReceiveListen
             String time = wantedReasonMatcher.group("time");
 
             Text modifiedMessage = empty()
-                    .append(of("➥").copy().formatted(DARK_GRAY)).append(" ")
+                    .append(of("➥").copy().formatted(GRAY)).append(" ")
                     .append(of(reason).copy().formatted(BLUE)).append(" ")
                     .append(of("-").copy().formatted(GRAY)).append(" ")
                     .append(of(time).copy().formatted(BLUE));
@@ -124,8 +128,8 @@ public class WantedListener extends PKUtilsBase implements IMessageReceiveListen
                     .append(of("Gelöscht").copy().formatted(RED)).append(" ")
                     .append(of("-").copy().formatted(GRAY)).append(" ")
                     .append(of(targetName).copy().formatted(BLUE)).append(" ")
-                    .append(of("(").copy().formatted(GRAY)).append(" ")
-                    .append(of(valueOf(wpAmount)).copy().formatted(RED)).append(" ")
+                    .append(of("(").copy().formatted(GRAY))
+                    .append(of(valueOf(wpAmount)).copy().formatted(RED))
                     .append(of(")").copy().formatted(GRAY)).append(" ")
                     .append(of("-").copy().formatted(GRAY)).append(" ")
                     .append(of(playerName).copy().formatted(BLUE));
@@ -139,15 +143,18 @@ public class WantedListener extends PKUtilsBase implements IMessageReceiveListen
         if (wantedKillMatcher.find()) {
             String targetName = wantedKillMatcher.group("targetName");
             String playerName = wantedKillMatcher.group("playerName");
-
             int wpAmount = getWpAmountAndDelete(targetName);
+
+            if (clientPlayerName.equals(playerName)) {
+                activityService.trackActivity("arrest", "Aktivität 'Verhaftung' +1");
+            }
 
             Text modifiedMessage = empty()
                     .append(of("Getötet").copy().formatted(RED)).append(" ")
                     .append(of("-").copy().formatted(GRAY)).append(" ")
                     .append(of(targetName).copy().formatted(BLUE)).append(" ")
-                    .append(of("(").copy().formatted(GRAY)).append(" ")
-                    .append(of(valueOf(wpAmount)).copy().formatted(RED)).append(" ")
+                    .append(of("(").copy().formatted(GRAY))
+                    .append(of(valueOf(wpAmount)).copy().formatted(RED))
                     .append(of(")").copy().formatted(GRAY)).append(" ")
                     .append(of("-").copy().formatted(GRAY)).append(" ")
                     .append(of(playerName).copy().formatted(BLUE));
@@ -161,15 +168,18 @@ public class WantedListener extends PKUtilsBase implements IMessageReceiveListen
         if (wantedJailMatcher.find()) {
             String targetName = wantedJailMatcher.group("targetName");
             String playerName = wantedJailMatcher.group("playerName");
-
             int wpAmount = getWpAmountAndDelete(targetName);
+
+            if (clientPlayerName.equals(playerName)) {
+                activityService.trackActivity("arrest", "Aktivität 'Verhaftung' +1");
+            }
 
             Text modifiedMessage = empty()
                     .append(of("Eingesperrt").copy().formatted(RED)).append(" ")
                     .append(of("-").copy().formatted(GRAY)).append(" ")
                     .append(of(targetName).copy().formatted(BLUE)).append(" ")
-                    .append(of("(").copy().formatted(GRAY)).append(" ")
-                    .append(of(valueOf(wpAmount)).copy().formatted(RED)).append(" ")
+                    .append(of("(").copy().formatted(GRAY))
+                    .append(of(valueOf(wpAmount)).copy().formatted(RED))
                     .append(of(")").copy().formatted(GRAY)).append(" ")
                     .append(of("-").copy().formatted(GRAY)).append(" ")
                     .append(of(playerName).copy().formatted(BLUE));
@@ -177,6 +187,17 @@ public class WantedListener extends PKUtilsBase implements IMessageReceiveListen
             player.sendMessage(modifiedMessage, false);
 
             return false;
+        }
+
+        Matcher parkticketMatcher = PARKTICKET_PATTERN.matcher(message);
+        if (parkticketMatcher.find()) {
+            String officerName = parkticketMatcher.group("playerName");
+
+            if (clientPlayerName.equals(officerName)) {
+                activityService.trackActivity("ticket", "Aktivität 'Strafzettel' +1");
+            }
+
+            return true;
         }
 
         Matcher wantedUnarrestMatcher = WANTED_UNARREST_PATTERN.matcher(message);
@@ -217,7 +238,7 @@ public class WantedListener extends PKUtilsBase implements IMessageReceiveListen
 
             if (!syncService.isGameSyncProcessActive()) {
                 Text modifiedMessage = empty()
-                        .append(of("➥").copy().formatted(DARK_GRAY)).append(" ")
+                        .append(of("➥").copy().formatted(GRAY)).append(" ")
                         .append(of(playerName).copy().formatted(color)).append(" ")
                         .append(of("-").copy().formatted(GRAY)).append(" ")
                         .append(of(reason).copy().formatted(color)).append(" ")
